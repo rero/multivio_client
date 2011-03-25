@@ -1,13 +1,13 @@
 Multivio.mainStatechart = Ki.Statechart.create({
   initialState: 'initializing',
-	trace: YES,
+	//trace: YES,
 
   initializing: Ki.State.design({
     enterState: function() {
 			SC.Logger.debug('Initializing...');
       var panel = Multivio.getPath('loadingPage.mainPane');
 			panel.append();
-			Multivio.documentController.set('content', Multivio.CDM);
+			Multivio.inputParameters.read();
 			Multivio.CDM.getServerInfo();
 			SC.Logger.debug('After');
     },
@@ -18,6 +18,8 @@ Multivio.mainStatechart = Ki.Statechart.create({
 
 		initializationOk: function() {
 			SC.Logger.debug('Go to ready');
+			Multivio.documentController.set('content', Multivio.CDM);
+			Multivio.documentController.fetchFile(Multivio.inputParameters.get('url'));
 			this.gotoState('applicationReady');	
 		},
 

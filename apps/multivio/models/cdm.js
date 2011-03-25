@@ -32,7 +32,15 @@ Multivio.fileRecord = SC.Object.extend({
 
 	init: function(){
 		sc_super();
-	}
+	},
+
+	isComplete: function(){
+		if(this.get('received').length === 3){
+			return YES;
+		}
+		return NO;
+	}.property('received').cacheable()
+
 });
 
 Multivio.CDM = SC.Object.create(SC.Enumerable, SC.Array,{

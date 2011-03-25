@@ -4,6 +4,8 @@
 // ==========================================================================
 /*globals Multivio */
 
+sc_require('controller.file.js');
+
 // This page describes the main user interface for your application.  
 Multivio.mainPage = SC.Page.design({
 	// The main pane is made visible on screen as soon as your app is loaded.
@@ -27,7 +29,9 @@ Multivio.mainPage = SC.Page.design({
 
 						welcomeLabel: SC.LabelView.design({
 							layout: { width: 500, height: 18 },
-							value: "Welcome on pdfView"
+							value: "Welcome on pdfView",
+							contentBinding: 'Multivio.fileController.metadata',
+							contentValueKey: 'title'
 						})
 					})
 				})
