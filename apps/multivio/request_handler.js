@@ -2,12 +2,12 @@
 ==============================================================================
   Project:    Multivio - https://www.multivio.org/
   Copyright:  (c) 2009-2011 RERO
-  License:    See file license.js
+  License:    See file COPYING
 ==============================================================================
 */
 
 /**
-  @class
+  @namespace
 
   Object that manages the communication with the server.
 
@@ -27,8 +27,8 @@ Multivio.requestHandler = SC.Object.create(
     Return Yes if the request has not been yet asked and No if the request 
     has been already send.
     
-    @param {String} request the request to ask
-    @returns {Boolean}
+    @param String request the request to ask
+    @returns Boolean
   */
   notAsked: function (request) {
     if (SC.none(this.listOfRequest)) {
@@ -48,19 +48,19 @@ Multivio.requestHandler = SC.Object.create(
     Send a request to the server and when the response is received
     call the callback method
     
-    @param {String} uri the url of the server
-    @param {String} callbackTarget the class to call after the response 
+    @param String uri the url of the server
+    @param String callbackTarget the class to call after the response 
       has been received
-    @param {String} callbackMethod the method to call after the response 
+    @param String callbackMethod the method to call after the response 
       has been received
-    @param {String} param1 the key (url) to store the response 
+    @param String param1 the key (url) to store the response 
   */
   sendGetRequest: function (uri, callbackTarget, callbackMethod, param1, param2) {
     if (this.notAsked(uri)) {
       var serverName = Multivio.configurator.get('serverName');
       var req = SC.Request.getUrl(serverName + uri)
           .json().notify(callbackTarget, callbackMethod, param1, param2);
-			SC.Logger.debug('Send get request');
+      SC.Logger.debug('Send get request');
       req.send();
     }
   }

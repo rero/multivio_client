@@ -2,14 +2,14 @@
 ==============================================================================
   Project:    Multivio - https://www.multivio.org/
   Copyright:  (c) 2009-2011 RERO
-  License:    See file license.js
+  License:    See file COPYING
 ==============================================================================
 */
 
 /**
-  @class
+  @namespace
 
-  Object that get and store all config parameters.
+  Object that stores and manages all configuration parameters
 
   @author che
   @extends SC.Object
@@ -26,7 +26,7 @@ Multivio.configurator = SC.Object.create(
   /**
     The name of the multivio server
     
-    @property {String}
+    @property String
     @default server
   */
   serverName: '/server',
@@ -34,7 +34,7 @@ Multivio.configurator = SC.Object.create(
   /**
     The version of the server
     
-    @property {String}
+    @property String
   */  
   serverVersion: undefined,
   
@@ -75,7 +75,7 @@ Multivio.configurator = SC.Object.create(
   /**
     This object contains all parameters for logs
     
-    @property {Object}
+    @property Object
   */
   logParameters: {
     log: {
@@ -89,7 +89,7 @@ Multivio.configurator = SC.Object.create(
   /**
     This object contains parameters for the zoom
     
-    @property {Object}
+    @property Object
   */
   zoomParameters: {
     maxResolution:          4000000,
@@ -102,7 +102,7 @@ Multivio.configurator = SC.Object.create(
   /**
     This object contains all urls used by the application
     
-    @property {Object}
+    @property Object
   */
   baseUrlParameters: {
     version: "/version",
@@ -127,7 +127,7 @@ Multivio.configurator = SC.Object.create(
   /**
     Definition of the different layouts that can be set on the main page
     
-    @property {Object}
+    @property Object
   */
   layouts: {
     'default': {
@@ -150,7 +150,7 @@ Multivio.configurator = SC.Object.create(
     The 'baseLayout' key points to the one of the members of the property
     'this.layouts'.
   
-    @property {Object}
+    @property Object
   */
   componentLayouts: {
     'init': {
@@ -204,8 +204,8 @@ Multivio.configurator = SC.Object.create(
     Return a local type used by the application that matches the mime type 
     received from the server
     
-    @param {String} mime the mime type received
-    @return {String} the local type
+    @param String mime the mime type received
+    @return String the local type
   */
   getTypeForMimeType: function (mime) {
     var typeToReturn = undefined;
@@ -230,8 +230,8 @@ Multivio.configurator = SC.Object.create(
     returns the equivalent of this.get('baseUrlParameters').image.small
     
     @method
-    @param {String} configPath
-    @return {String}
+    @param String configPath
+    @return String
   */
   getPath: function (configPath) {
     if (SC.typeOf(configPath) !== SC.T_STRING) {
@@ -260,9 +260,9 @@ Multivio.configurator = SC.Object.create(
   /**
     Return the adapted url for a file
 
-    @param {String} url the url of the file
+    @param String url the url of the file
     @param {Number} pageNumber the page number is optional
-    @return {String} the new encoded url
+    @return String the new encoded url
   */
   getImageUrl: function (url, pageNumber) {
     var scenario = Multivio.initializer.get('inputParameters').scenario;
@@ -296,9 +296,9 @@ Multivio.configurator = SC.Object.create(
   /**
     Return the adapted url for the thumbnail image
 
-    @param {String} url the default url of the file
+    @param String url the default url of the file
     @param {Number} pageNumber the page number is optional
-    @return {String} the new encoded url
+    @return String the new encoded url
   */
   getThumbnailUrl: function (url, pageNumber) {
     var scenario = Multivio.initializer.get('inputParameters').scenario;

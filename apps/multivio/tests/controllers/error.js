@@ -1,7 +1,10 @@
-// ==========================================================================
-// Project:   Multivio.errorController Unit Test
-// Copyright: ©2011 My Company, Inc.
-// ==========================================================================
+/**
+==============================================================================
+Project: Multivio - https://www.multivio.org/
+Copyright: (c) 2009-2011 RERO
+License: See file COPYING
+==============================================================================
+*/
 /*globals Multivio module test ok equals same stop start */
 
 module("Multivio.errorController");

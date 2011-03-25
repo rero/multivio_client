@@ -1,7 +1,10 @@
-// ==========================================================================
-// Project:   Multivio
-// Copyright: ©2011 My Company, Inc.
-// ==========================================================================
+/**
+==============================================================================
+Project: Multivio - https://www.multivio.org/
+Copyright: (c) 2009-2011 RERO
+License: See file COPYING
+==============================================================================
+*/
 /*globals Multivio */
 
 // This is the function that will start your app running.  The default
@@ -18,9 +21,9 @@ Multivio.main = function main() {
   // on screen.  If you app gets any level of complexity, you will probably 
   // create multiple pages and panes.  
   //Multivio.getPath('mainPage.mainPane').append() ;
-	Multivio.mainStatechart.initStatechart();
+  Multivio.mainStatechart.initStatechart();
 
-	//Multivio.getPath('mainPage.mainPane').append();
+  //Multivio.getPath('mainPage.mainPane').append();
 
 
   // Step 2. Set the content property on your primary controller.

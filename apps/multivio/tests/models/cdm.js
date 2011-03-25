@@ -1,7 +1,10 @@
-// ==========================================================================
-// Project:   Multivio.RecordFile Unit Test
-// Copyright: ©2011 My Company, Inc.
-// ==========================================================================
+/**
+==============================================================================
+Project: Multivio - https://www.multivio.org/
+Copyright: (c) 2009-2011 RERO
+License: See file COPYING
+==============================================================================
+*/
 /*globals Multivio module test ok equals same stop start */
 
 
@@ -9,7 +12,7 @@ module("Multivio.CDM");
 
 function checkServerHasVersion() {
   // Should be to find record now
-	SC.Logger.debug(Multivio.CDM.get('serverVersion'));
+  SC.Logger.debug(Multivio.CDM.get('serverVersion'));
   ok(Multivio.configurator.get('serverVersion') !== undefined, 'serverVersion should be defined');
   // Resume the test runner again
   start();
@@ -25,8 +28,8 @@ function checkServerVersionKo() {
 
 function checkTitle() {
   // Should be to find record now
-	var url = 'http://doc.rero.ch/record/4321/export/xm';
-	var title = Multivio.CDM.find(url).get('metadata').title;
+  var url = 'http://doc.rero.ch/record/4321/export/xm';
+  var title = Multivio.CDM.find(url).get('metadata').title;
   equals(title, '"Ho rifatto la mia vita due volte"', 'serverVersion should not be defined');
   start();
   // Resume the test runner again
@@ -34,8 +37,8 @@ function checkTitle() {
 
 function checkLogic() {
   // Should be to find record now
-	var url = 'http://doc.rero.ch/lm.php?url=1000,40,6,20091106095458-OI/2009INFO006.pdf';
-	var logic = Multivio.CDM.find(url).get('logicalStructure');
+  var url = 'http://doc.rero.ch/lm.php?url=1000,40,6,20091106095458-OI/2009INFO006.pdf';
+  var logic = Multivio.CDM.find(url).get('logicalStructure');
   equals(logic[0].label, 'Contents', 'first entry for logical should be Content');
   start();
   // Resume the test runner again
@@ -43,8 +46,8 @@ function checkLogic() {
 
 function checkPhysic() {
   // Should be to find record now
-	var url = 'http://doc.rero.ch/lm.php?url=1000,40,6,20091106095458-OI/2009INFO006.pdf';
-	var physic = Multivio.CDM.find(url).get('physicalStructure');
+  var url = 'http://doc.rero.ch/lm.php?url=1000,40,6,20091106095458-OI/2009INFO006.pdf';
+  var physic = Multivio.CDM.find(url).get('physicalStructure');
   equals(physic[0].label, '2009INFO006.pdf', 'first entry for physical should be 2009INFO006.pdf');
   start();
   // Resume the test runner again
@@ -53,7 +56,7 @@ function checkPhysic() {
 test('check Server has Version', function() {
   // Pause the test runner. If start() is not called within 2 seconds, fail the test.
   stop(2000);
-	Multivio.CDM.getServerInfo(); 
+  Multivio.CDM.getServerInfo(); 
   // Give our store 1 second to commit records to the remote server
   setTimeout(checkServerHasVersion, 1000);
 });
@@ -61,8 +64,8 @@ test('check Server has Version', function() {
 test('check Server Compatibility Ko', function() {
   // Pause the test runner. If start() is not called within 2 seconds, fail the test.
   stop(2000);
-	Multivio.configurator.set('serverCompatibility', '0.0.0');
-	Multivio.CDM.getServerInfo(); 
+  Multivio.configurator.set('serverCompatibility', '0.0.0');
+  Multivio.CDM.getServerInfo(); 
   // Give our store 1 second to commit records to the remote server
   setTimeout(checkServerVersionKo, 1000);
 });
@@ -70,8 +73,8 @@ test('check Server Compatibility Ko', function() {
 test('check Metadata', function() {
   // Pause the test runner. If start() is not called within 2 seconds, fail the test.
   stop(2000);
-	var url = 'http://doc.rero.ch/record/4321/export/xm';
-	Multivio.CDM.getMetadata(url); 
+  var url = 'http://doc.rero.ch/record/4321/export/xm';
+  Multivio.CDM.getMetadata(url); 
   // Give our store 1 second to commit records to the remote server
   setTimeout(checkTitle, 1000);
 });
@@ -79,8 +82,8 @@ test('check Metadata', function() {
 test('check Logical structure', function() {
   // Pause the test runner. If start() is not called within 2 seconds, fail the test.
   stop(2000);
-	var url = 'http://doc.rero.ch/lm.php?url=1000,40,6,20091106095458-OI/2009INFO006.pdf';
-	Multivio.CDM.getLogicalStructure(url); 
+  var url = 'http://doc.rero.ch/lm.php?url=1000,40,6,20091106095458-OI/2009INFO006.pdf';
+  Multivio.CDM.getLogicalStructure(url); 
   // Give our store 1 second to commit records to the remote server
   setTimeout(checkLogic, 1000);
 });
@@ -88,22 +91,22 @@ test('check Logical structure', function() {
 test('check Physical structure', function() {
   // Pause the test runner. If start() is not called within 2 seconds, fail the test.
   stop(2000);
-	var url = 'http://doc.rero.ch/lm.php?url=1000,40,6,20091106095458-OI/2009INFO006.pdf';
-	Multivio.CDM.getPhysicalStructure(url); 
+  var url = 'http://doc.rero.ch/lm.php?url=1000,40,6,20091106095458-OI/2009INFO006.pdf';
+  Multivio.CDM.getPhysicalStructure(url); 
   // Give our store 1 second to commit records to the remote server
   setTimeout(checkPhysic, 1000);
 });
 
 test('file record creation', function() {
-	var url = "http://doc.rero.ch/record/4321/export/xm";
-	var file_rec = Multivio.fileRecord.create({url: url});
-	equals(file_rec.url, url, "Objects should be equals");
+  var url = "http://doc.rero.ch/record/4321/export/xm";
+  var file_rec = Multivio.fileRecord.create({url: url});
+  equals(file_rec.url, url, "Objects should be equals");
 });
 
 test('check push cdm', function() {
-	var url = "http://doc.rero.ch/record/4321/export/xm";
-	var file_rec = Multivio.fileRecord.create({url: url});
-	Multivio.CDM.pushObject(file_rec);
-	var result = Multivio.CDM.find(url);
-	equals(url, result.url, "Objects should be equals");
+  var url = "http://doc.rero.ch/record/4321/export/xm";
+  var file_rec = Multivio.fileRecord.create({url: url});
+  Multivio.CDM.pushObject(file_rec);
+  var result = Multivio.CDM.find(url);
+  equals(url, result.url, "Objects should be equals");
 });

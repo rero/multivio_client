@@ -4,7 +4,8 @@
 // ==========================================================================
 /*globals Multivio */
 
-/** @class
+/**
+  @namespace
 
   (Document Your Controller Here)
 
@@ -14,6 +15,6 @@ Multivio.errorController = SC.ObjectController.create(
 /** @scope Multivio.errorController.prototype */ {
 
   // TODO: Add your own code here.
-	errorMessage: 'unexpectedError',
+  errorMessage: 'unexpectedError'
 
 }) ;
