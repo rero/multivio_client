@@ -11,6 +11,7 @@ sc_require('configurator.js');
 
 Multivio.fileRecord = SC.Object.extend({
   received: [],
+  parent: undefined,
   metadata: null,
   physicalStructure: null,
   logicalStructure: null,
@@ -31,7 +32,7 @@ Multivio.fileRecord = SC.Object.extend({
 
 
 /** 
-  @class
+@class
 
   CDM (Core Document Model) is the global model of the application. 
   The CDM consists of 4 objects.
@@ -41,8 +42,8 @@ Multivio.fileRecord = SC.Object.extend({
         the request has been transmitted to the server
     Object: the response of the request. The response can be 'null'
 
-  @extends SC.Object
-  @version 0.2.0
+@extends SC.Object
+@version 0.2.0
 */
 Multivio.CDM = SC.Object.create(SC.Enumerable, SC.Array,{
   requestHandler: Multivio.requestHandler,
@@ -63,7 +64,7 @@ Multivio.CDM = SC.Object.create(SC.Enumerable, SC.Array,{
   replace: function(start, amt, items) {
     var array = this._array;
     if (!array) { array = this._array = [];}
-      array.replace(start, amt, items);  // pass through
+    array.replace(start, amt, items);  // pass through
 
     // compute the delta change...remember items may be null
     var len = items ? items.length : 0 ;
