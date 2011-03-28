@@ -1,8 +1,8 @@
 /**
 ==============================================================================
-Project: Multivio - https://www.multivio.org/
-Copyright: (c) 2009-2011 RERO
-License: See file COPYING
+  Project:    Multivio - https://www.multivio.org/
+  Copyright:  (c) 2009-2011 RERO
+  License:    See file COPYING
 ==============================================================================
 */
 /*globals Multivio */
@@ -29,7 +29,7 @@ Multivio.documentController = SC.ArrayController.create(
 
   fetchFile: function(url, parent) {
     if(!SC.none(this.get('currentUrl'))) {
-      throw	new Error('documentController: concurrent fetch file');
+      throw	new Error('documentController: concurrent file fetch');
     }
     var alreadyLoaded = this.find(url);
     if(alreadyLoaded && alreadyLoaded.get('isComplete')) {

@@ -1,8 +1,8 @@
 /**
 ==============================================================================
-Project: Multivio - https://www.multivio.org/
-Copyright: (c) 2009-2011 RERO
-License: See file COPYING
+  Project:    Multivio - https://www.multivio.org/
+  Copyright:  (c) 2009-2011 RERO
+  License:    See file COPYING
 ==============================================================================
 */
 /*globals Multivio */
@@ -19,11 +19,8 @@ Multivio.main = function main() {
   // Step 1: Instantiate Your Views
   // The default code here will make the mainPane for your application visible
   // on screen.  If you app gets any level of complexity, you will probably 
-  // create multiple pages and panes.  
-  //Multivio.getPath('mainPage.mainPane').append() ;
+  // create multiple pages and panes.
   Multivio.mainStatechart.initStatechart();
-  
-  //SC.routes.add('*', Multivio.inputParameters, 'restart');
 
   // Step 2. Set the content property on your primary controller.
   // This will make your app come alive!
