@@ -18,12 +18,11 @@ function checkServerHasVersion() {
   start();
 }
 
-
 function checkServerVersionKo() {
   // Should be to find record now
   equals(Multivio.configurator.get('serverVersion'), undefined, 'serverVersion should not be defined');
-  start();
   // Resume the test runner again
+  start();
 }
 
 function checkTitle() {
@@ -31,8 +30,8 @@ function checkTitle() {
   var url = 'http://doc.rero.ch/record/4321/export/xm';
   var title = Multivio.CDM.find(url).get('metadata').title;
   equals(title, '"Ho rifatto la mia vita due volte"', 'serverVersion should not be defined');
-  start();
   // Resume the test runner again
+  start();
 }
 
 function checkLogic() {
@@ -40,8 +39,8 @@ function checkLogic() {
   var url = 'http://doc.rero.ch/lm.php?url=1000,40,6,20091106095458-OI/2009INFO006.pdf';
   var logic = Multivio.CDM.find(url).get('logicalStructure');
   equals(logic[0].label, 'Contents', 'first entry for logical should be Content');
-  start();
   // Resume the test runner again
+  start();
 }
 
 function checkPhysic() {
@@ -49,8 +48,8 @@ function checkPhysic() {
   var url = 'http://doc.rero.ch/lm.php?url=1000,40,6,20091106095458-OI/2009INFO006.pdf';
   var physic = Multivio.CDM.find(url).get('physicalStructure');
   equals(physic[0].label, '2009INFO006.pdf', 'first entry for physical should be 2009INFO006.pdf');
-  start();
   // Resume the test runner again
+  start();
 }
 
 test('check Server has Version', function() {
@@ -99,14 +98,14 @@ test('check Physical structure', function() {
 
 test('file record creation', function() {
   var url = "http://doc.rero.ch/record/4321/export/xm";
-  var file_rec = Multivio.fileRecord.create({url: url});
-  equals(file_rec.url, url, "Objects should be equals");
+  var fileRec = Multivio.FileRecord.create({url: url});
+  equals(fileRec.url, url, "Objects should be equals");
 });
 
 test('check push cdm', function() {
   var url = "http://doc.rero.ch/record/4321/export/xm";
-  var file_rec = Multivio.fileRecord.create({url: url});
-  Multivio.CDM.pushObject(file_rec);
+  var fileRec = Multivio.FileRecord.create({url: url});
+  Multivio.CDM.pushObject(fileRec);
   var result = Multivio.CDM.find(url);
   equals(url, result.url, "Objects should be equals");
 });

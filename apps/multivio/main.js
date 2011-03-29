@@ -22,16 +22,16 @@ Multivio.main = function main() {
   // create multiple pages and panes.  
   //Multivio.getPath('mainPage.mainPane').append() ;
   Multivio.mainStatechart.initStatechart();
-
-  //Multivio.getPath('mainPage.mainPane').append();
-
+  
+  //SC.routes.add('*', Multivio.inputParameters, 'restart');
 
   // Step 2. Set the content property on your primary controller.
   // This will make your app come alive!
+  //Multivio.getPath('mainPage.mainPane').append();
 
   // TODO: Set the content property on your primary controller
   // ex: Multivio.contactsController.set('content',Multivio.contacts);
 
-} ;
+};
 
 function main() { Multivio.main(); }

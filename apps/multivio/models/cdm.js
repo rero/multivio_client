@@ -9,8 +9,8 @@
 sc_require('request_handler.js');
 sc_require('configurator.js');
 
-Multivio.fileRecord = SC.Object.extend({
-  received: [],
+Multivio.FileRecord = SC.Object.extend({
+  received: null,
   parent: undefined,
   metadata: null,
   physicalStructure: null,
@@ -19,6 +19,7 @@ Multivio.fileRecord = SC.Object.extend({
 
   init: function(){
     sc_super();
+    this.set('received', []);
   },
 
   isComplete: function(){
@@ -26,7 +27,7 @@ Multivio.fileRecord = SC.Object.extend({
       return YES;
     }
     return NO;
-  }.property('received').cacheable()
+  }.property('received')//.cacheable()
 
 });
 
@@ -83,22 +84,23 @@ Multivio.CDM = SC.Object.create(SC.Enumerable, SC.Array,{
   },
 
   _requestError: function () {
+    SC.Logger.debug('http error');
     Multivio.setPath("errorController.errorMessage", "Server is not responding");
     Multivio.mainStatechart.sendEvent('initializationError');
   },
 
-  _checkIsVersionSupported: function(version, to_compare){
-    if(SC.none(version) || SC.none(to_compare)) {
+  _checkIsVersionSupported: function(version, toCompare){
+    if(SC.none(version) || SC.none(toCompare)) {
       return NO;
     }
     var vers = version.split(".");
-    var to_compare_vers = to_compare.split(".");  
-    if(vers.length !== to_compare_vers.length) {
+    var toCompareVersion = toCompare.split(".");  
+    if(vers.length !== toCompareVersion.length) {
       return NO;
     }
 
     for(var i=0;i<3;i++) {
-      if (parseInt(vers[i], 10) < parseInt(to_compare_vers[i], 10)) {
+      if (parseInt(vers[i], 10) < parseInt(toCompareVersion[i], 10)) {
         SC.Logger.debug("i:" + i);
         return NO;
       }  
@@ -130,15 +132,18 @@ Multivio.CDM = SC.Object.create(SC.Enumerable, SC.Array,{
     if (SC.ok(response)) {
       var result = response.get("body");
       var rec = this.find(url);
+      SC.Logger.debug('_receivedData for ' + url + ' :' + rec);
       if(SC.none(rec)) {
-        rec = Multivio.fileRecord.create({url: url});
+        rec = Multivio.FileRecord.create({url: url});
+        rec.get('received').push(field);
+        rec.set(field, result);
         this.pushObject(rec);
       }else{
+        rec.get('received').push(field);
+        rec.set(field, result);
         /* notify changes */
         this.enumerableContentDidChange();
       }
-      rec.get('received').push(field);
-      rec.set(field, result);
     }else{
       this._requestError();
     }
@@ -169,7 +174,7 @@ Multivio.CDM = SC.Object.create(SC.Enumerable, SC.Array,{
   },
 
   find: function(url) {
-    var records = this.get('fileRecords');
+    var records = this.get('content');
     for(var i=0;i<this.length();i++) {
       if(this.objectAt(i).url === url) {
         return this.objectAt(i);

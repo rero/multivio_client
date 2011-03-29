@@ -7,7 +7,7 @@ License: See file COPYING
 */
 /*globals Multivio */
 
-sc_require('controller.file.js');
+sc_require('controllers/file.js');
 
 /**
   @namespace

@@ -30,24 +30,24 @@ Multivio.inputParameters = SC.Object.create({
 	read: function(){
 		this.set('url', undefined);
 		this.set('options', {});
-		var input_url = !SC.none(location.hash) ? location.hash.slice(1) : undefined;
-		SC.Logger.debug("Read input args: " + input_url);
-		if (!SC.none(input_url)) {
-			var input_regexp = /(.*?)url=(.*)/;
-			var input_parts = input_regexp.exec(input_url);
+		var inputUrl = !SC.none(location.hash) ? location.hash.slice(1) : undefined;
+		SC.Logger.debug("Read input args: " + inputUrl);
+		if (!SC.none(inputUrl)) {
+			var inputRegExp = /(.*?)url=(.*)/;
+			var inputParts = inputRegExp.exec(inputUrl);
 
 			//get input url argument
-			var referer = input_parts.pop();
+			var referer = inputParts.pop();
 			this.set('url', referer);
 			SC.Logger.debug("Referer: " + referer);
 
 			//remove all match
-			input_parts.shift();
+			inputParts.shift();
 			var options = {};
 			
-			var options_parts = input_parts.pop().slice(0,-1).split('&');
-			for(var val in options_parts){
-				if(options_parts.hasOwnProperty(val)){  
+			var optionsParts = inputParts.pop().slice(0,-1).split('&');
+			for(var val in optionsParts){
+				if(optionsParts.hasOwnProperty(val)){  
 					res = val.split('=');	
 					options[res[0]] = options[res[1]];
 				}

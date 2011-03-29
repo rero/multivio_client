@@ -23,7 +23,8 @@ proxy '/local',
 mode :all do
  config :all,
    :required => [:sproutcore, :ki],
-   :theme_name => 'sc-theme mvo-dark-gray-theme'
+   :theme_name => 'sc-theme mvo-dark-gray-theme',
+	 :load_fixtures => true
 end
 
 # URL prefix - production

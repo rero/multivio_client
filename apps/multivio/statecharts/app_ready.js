@@ -48,12 +48,13 @@ Multivio.ApplicationReadyState = Ki.State.extend({
     },
 
     loadingFile: Ki.State.design({
-      enterState: function() {
-        Multivio.CDM.getMetadata('http://doc.rero.ch/record/4321/export/xm');
-        Multivio.CDM.getPhysicalStructure('http://doc.rero.ch/record/4321/export/xm');
-        Multivio.CDM.getLogicalStructure('http://doc.rero.ch/record/4321/export/xm');
+      currentFileDidChange:function() {
         this.gotoState('contentReady');
       }
+      /*
+      enterState: function() {
+      }
+      */
     }),
 
     loadingPosition: Ki.State.design({
