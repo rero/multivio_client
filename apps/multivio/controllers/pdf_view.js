@@ -23,6 +23,10 @@ Multivio.pdfViewController = SC.ObjectController.create(
             2.0, 3.0, 4.0],
   _currentZoomIndex: 7,
   
+	_resetCurrentPage: function() {
+		this.set('_currentPage', 1);
+	}.observes('url'),
+
   pdfUrl: function() {
     SC.Logger.debug('pdfViewController: url changed: ');
     if(!SC.none(this.get('metadata'))){
@@ -64,14 +68,14 @@ Multivio.pdfViewController = SC.ObjectController.create(
       return YES;
     }
     return NO;
-  }.property('_nPages'),
+  }.property('_nPages', '_currentPage'),
 
   hasPreviousPage: function() {
     if(this.get('_currentPage') > 1) {
       return YES;
     }
     return NO;
-  }.property('_nPages'),
+  }.property('_nPages', '_currentPage'),
 
   rotateLeft: function() {
     var currentAngle = this.get('rotationAngle');
