@@ -18,7 +18,7 @@ License: See file COPYING
 */
 Multivio.mainStatechart = Ki.Statechart.create({
   initialState: 'initializing',
-  //trace: YES,
+  trace: YES,
 
   initializing: Ki.State.design({
     enterState: function() {

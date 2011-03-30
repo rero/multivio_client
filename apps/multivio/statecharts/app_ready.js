@@ -8,6 +8,7 @@ License: See file COPYING
 /*globals Multivio */
 
 sc_require('resources/main_page.js');
+sc_require('controllers/document.js');
 
 /**
   @class
@@ -21,7 +22,8 @@ sc_require('resources/main_page.js');
 */
 Multivio.ApplicationReadyState = Ki.State.extend({
 
-  initialSubstate: 'loading',
+  initialSubstate: 'contentReady',
+
   enterState: function() {
     Multivio.getPath('mainPage.mainPane').append();
   },
@@ -66,6 +68,16 @@ Multivio.ApplicationReadyState = Ki.State.extend({
   }),
 
   contentReady: Ki.State.design({
+
+    nextFile: function(){
+      SC.Logger.debug("Run nextFile.");
+      Multivio.documentController.nextFile();
+    },
+
+    previousFile: function(){
+        Multivio.documentController.previousFile();
+    },
+
     changeCurrentFile: function(){
       this.gotoState('loadingFile');
     },

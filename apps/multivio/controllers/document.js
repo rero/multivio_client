@@ -19,6 +19,8 @@ sc_require('models/cdm.js');
 Multivio.documentController = SC.ArrayController.create(
   /** @scope Multivio.documentController.prototype */ {
 
+  _currentRecord: undefined,
+  _currentRecordBinding: 'Multivio.fileController.content',
   allowsMultipleSelection: NO,
   refererBinding: 'Multivio.inputParameters.url',
   currentUrl: undefined,
@@ -44,110 +46,108 @@ Multivio.documentController = SC.ArrayController.create(
     }
   },
 
-  _findPreviousFile: function(fileRecord) {
-    var currentUrl = fileRecord.get('url');
-    var parent = fileRecord.get('parent');
-    if(SC.none(parent)) {
-      return null;
+
+
+  _nextFile: function(fileRecord, childRecord, go) {
+    if(SC.none(fileRecord) || SC.none(fileRecord.get('url'))) {
+      return NO;
     }
-    var physicalStructure = parent.get('physicalStructure');
-    var currentIndex = -1;
-    for(var i=0; i<physicalStructure.length;i++) {
-      if(currentUrl === physicalStructure[i].url) {
-        currentIndex = i;
+    SC.Logger.debug('Next to :' + fileRecord.get('url'));
+    SC.Logger.debug('Phys :' + fileRecord.get('isComplete'));
+    var currentUrl = fileRecord.get('url');
+    var physicalStructure = fileRecord.get('physicalStructure');
+
+    //deep first
+    if(SC.none(childRecord)) {
+      //has childs?
+      if(physicalStructure[0].url !== currentUrl) {
+        if(go) {
+          this.fetchFile(physicalStructure[0].url, fileRecord);
+        }
+        return YES;
+      }
+    }else{
+
+      //brothers and sisters
+      //get index of the currentChild
+      var currentIndex = -1;
+      for(var i=0; i<physicalStructure.length; i++) {
+        if(childRecord.get('url') === physicalStructure[i].url) {
+          currentIndex = i;
+        }
+      }
+      // TODO: generate exception if not found!
+      // Is current index not the last?
+      // found sister
+      if(currentIndex < (physicalStructure.length - 1)) {
+        if(go) {this.fetchFile(physicalStructure[currentIndex + 1].url, fileRecord);}
+        return YES;
       }
     }
-    // TODO: generate exception if not found!
-    // Is current index not the last?
-    if(currentIndex > 0 ) {
-        return this.fetchFile(physicalStructure[currentIndex - 1].url, parent);
+
+    if(SC.none(fileRecord.get('parent'))) {
+      return NO;
     }
-    this._findNextFile(parent);
-  },
 
-  previousFile: function() {
-    this._findPreviousFile(Multivio.fileController);
+    //find in parents
+    return this._nextFile(fileRecord.get('parent'), fileRecord, go);
   },
-
-  _findNextFile: function(fileRecord) {
+  
+  _previousFile: function(fileRecord, childRecord, go) {
+    if(SC.none(fileRecord) || SC.none(fileRecord.get('url'))) {
+      return NO;
+    }
     var currentUrl = fileRecord.get('url');
-    var parent = fileRecord.get('parent');
-    if(SC.none(parent)) {
-      return null;
-    }
-    var physicalStructure = parent.get('physicalStructure');
-    var currentIndex = -1;
-    for(var i=0; i<physicalStructure.length;i++) {
-      if(currentUrl === physicalStructure[i].url) {
-        currentIndex = i;
+    var physicalStructure = fileRecord.get('physicalStructure');
+
+    if(SC.none(childRecord)){
+      //root node?
+      if(SC.none(fileRecord.get('parent'))) {
+        return NO;
+      }else {
+        return this._previousFile(fileRecord.get('parent'), fileRecord, go);
       }
+    }else{
+
+      //brothers and sisters
+      //get index of the currentChild
+      var currentIndex = -1;
+      for(var i=0; i<physicalStructure.length; i++) {
+        if(childRecord.get('url') === physicalStructure[i].url) {
+          currentIndex = i;
+        }
+      }
+      // TODO: generate exception if not found!
+      // Is current index not the first?
+      // found previous sister
+      if(currentIndex > 0) {
+        if(go) {this.fetchFile(physicalStructure[currentIndex - 1].url, fileRecord);}
+        return YES;
+      }
+      //previous is me!
+      if(go) {this.fetchFile(fileRecord.get('url'));}
+      return YES;
     }
-    // TODO: generate exception if not found!
-    // Is current index not the last?
-    if(currentIndex < (physicalStructure.length - 1)) {
-        return this.fetchFile(physicalStructure[currentIndex + 1].url, parent);
-    }
-    this._findNextFile(parent);
   },
 
   nextFile: function() {
-    this._findNextFile(Multivio.fileController);
-  },
-
-  _hasNextFile: function(fileRecord) {
-    var currentUrl = fileRecord.get('url');
-    var parent = fileRecord.get('parent');
-    if(SC.none(parent)) {
-      return NO;
-    }
-    SC.Logger.debug('_hasNext: ' + currentUrl + " : " + parent.get('url'));
-    var physicalStructure = parent.get('physicalStructure');
-    var currentIndex = -1;
-    for(var i=0; i<physicalStructure.length;i++) {
-      if(currentUrl === physicalStructure[i].url) {
-        currentIndex = i;
-      }
-    }
-    SC.Logger.debug('_hasNextFile: ' + currentIndex + ' -> ' + physicalStructure.length);
-    // TODO: generate exception if not found!
-    // Is current index not the last?
-    if(currentIndex < (physicalStructure.length - 1)) {
-      SC.Logger.debug('return');
-      return YES;
-    }
-    return this._hasNextFile(parent);
+    SC.Logger.debug('get next to: ' + this._currentRecord.get('url'));
+    return this._nextFile(this._currentRecord, undefined, YES);
   },
 
   hasNextFile: function() {
-    return this._hasNextFile(Multivio.fileController);
-  },
+    SC.Logger.debug('hasNextFile?');
+    return this._nextFile(this._currentRecord, undefined, NO);
+  }.property('_currentRecord'),
 
-  _hasPreviousFile: function(fileRecord) {
-    var currentUrl = fileRecord.get('url');
-    var parent = fileRecord.get('parent');
-    SC.Logger.debug('documentController._hasPreviousFile: ' + currentUrl + ' -> ' + parent);
-    if(SC.none(parent)) {
-      return NO;
-    }
-    var physicalStructure = parent.get('physicalStructure');
-    var currentIndex = -1;
-    for(var i=0; i<physicalStructure.length;i++) {
-      if(currentUrl === physicalStructure[i].url) {
-        currentIndex = i;
-      }
-    }
-    SC.Logger.debug('documentController._hasNextFile: currentIndex ' + currentIndex);
-    // TODO: generate exception if not found!
-    // Is current index not the first?
-    if(currentIndex > 0) {
-      return YES;
-    }
-    return this._hasPreviousFile(parent);
+
+  previousFile: function() {
+    this._previousFile(this._currentRecord, undefined, YES);
   },
 
   hasPreviousFile: function() {
-    return this._hasPreviousFile(Multivio.fileController);
-  },
+    return this._previousFile(this._currentRecord, undefined, NO);
+  }.property('_currentRecord'),
 
   find: function(url) {
     var records = this.get('content');
@@ -168,14 +168,14 @@ Multivio.documentController = SC.ArrayController.create(
       if(!SC.none(fetchedParentObject)){
         fetchedObject.set('parent', fetchedParentObject);
       }
-      this.selectObject(fetchedObject);
-      SC.Logger.debug("Add selection for " + url + " : " + fetchedObject.get('received') + " and isComplete:" + fetchedObject.get('isComplete'));
       //accept new fetch request
       if(fetchedObject.get('isComplete')) {
+        this.selectObject(fetchedObject);
+        SC.Logger.debug("Add selection for " + url + " : " + fetchedObject.get('received') + " and isComplete:" + fetchedObject.get('isComplete'));
         SC.Logger.debug('Accept new request!');
         this.set('currentUrl', undefined);
         this.set('currentParent', undefined);
-        Multivio.mainStatechart.sendEvent('contentReady');
+        Multivio.mainStatechart.sendEvent('currentFileDidChange');
       }
     }
   }.observes('[]')

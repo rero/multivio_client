@@ -50,7 +50,7 @@ test('check hasNext', function() {
   Multivio.documentController.fetchFile(newUrl, parent); 
   SC.RunLoop.end();
 
-  equals(Multivio.documentController.hasNextFile(), YES, newUrl + ': should have brothers');
+  equals(Multivio.documentController.get('hasNextFile'), YES, newUrl + ': should have brothers');
 });
 
 test('check do not hasNext', function() {
@@ -69,7 +69,7 @@ test('check do not hasNext', function() {
   SC.RunLoop.begin();
   Multivio.documentController.fetchFile(newUrl, parent); 
   SC.RunLoop.end();
-  equals(Multivio.documentController.hasNextFile(), NO, newUrl + ': should not have next as is last element');
+  equals(Multivio.documentController.get('hasNextFile'), NO, newUrl + ': should not have next as is last element');
 });
 
 test('check hasPrevious', function() {
@@ -88,7 +88,7 @@ test('check hasPrevious', function() {
   Multivio.documentController.fetchFile(newUrl, parent); 
   SC.RunLoop.end();
 
-  equals(Multivio.documentController.hasPreviousFile(), YES, newUrl + ': should have previous');
+  equals(Multivio.documentController.get('hasPreviousFile'), YES, newUrl + ': should have previous');
 });
 
 test('check do not have hasPrevious', function() {
@@ -99,15 +99,7 @@ test('check do not have hasPrevious', function() {
   Multivio.documentController.fetchFile(url); 
   SC.RunLoop.end();
   
-  var parent = Multivio.fileController.get('content');
-  var phys = parent.get('physicalStructure'); 
-  var newUrl = phys[0].url;
-
-  SC.RunLoop.begin();
-  Multivio.documentController.fetchFile(newUrl, parent); 
-  SC.RunLoop.end();
-
-  equals(Multivio.documentController.hasPreviousFile(), NO, newUrl + ': should not have previous');
+  equals(Multivio.documentController.get('hasPreviousFile'), NO, url + ': should not have previous');
 });
 
 test('check getNext', function() {

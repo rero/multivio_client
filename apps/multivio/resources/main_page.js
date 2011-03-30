@@ -22,20 +22,22 @@ Multivio.mainPage = SC.Page.design({
   // load.
   mainPane: SC.MainPane.design({
     childViews: 'workspaceView'.w(),
+    defaultResponder: 'Multivio.mainStatechart',
+
 
     workspaceView: SC.SplitView.design({
+      defaultThickness: 0.1,
       
       // the left view...
-      topLeftView: SC.SourceListView.design({
-        content: ["Menu"]
-      }),
+      topLeftView: SC.SourceListView.design({ }),
+      
       
       // the right view
       bottomRightView: SC.View.design({
-        childViews: 'pdfView'.w(),
+        childViews: ['pdfView', 'previousButton', 'nextButton'],
 
         pdfView: SC.View.design({
-          layout: { top: 50, left: 50, bottom: 50, right: 50 },
+          layout: { top: 50, left: 50, bottom: 100, right: 50 },
           childViews: 'welcomeLabel'.w(),
 
           welcomeLabel: SC.LabelView.design({
@@ -44,6 +46,20 @@ Multivio.mainPage = SC.Page.design({
             contentBinding: 'Multivio.fileController.metadata',
             contentValueKey: 'title'
           })
+        }),
+
+        previousButton: SC.ButtonView.design({
+          layout: {bottom: 50,  left: 50, width: 50, height: 30 },
+          action: 'previousFile',
+          title: '<',
+          isEnabledBinding: "Multivio.documentController.hasPreviousFile"
+        }),
+
+        nextButton: SC.ButtonView.design({
+          layout: {bottom: 50,  right: 50, width: 50,  height: 30 },
+          action: 'nextFile',
+          isEnabledBinding: "Multivio.documentController.hasNextFile",
+          title: '>'
         })
       })
     })
