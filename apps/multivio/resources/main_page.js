@@ -32,7 +32,7 @@ Multivio.unsupportedDocumentView =  SC.View.design({
   previousButton: SC.ButtonView.design({
     layout: {bottom: 10,  left: 10, width: 50, height: 30 },
     action: 'previousFile',
-    title: '<',
+    title: '<<',
     isEnabledBinding: "Multivio.documentController.hasPreviousFile"
   }),
 
@@ -40,12 +40,12 @@ Multivio.unsupportedDocumentView =  SC.View.design({
     layout: {bottom: 10,  right: 10, width: 50,  height: 30 },
     action: 'nextFile',
     isEnabledBinding: "Multivio.documentController.hasNextFile",
-    title: '>'
+    title: '>>'
   })
 });
 
 Multivio.mainPdfView =  SC.View.design({
-  childViews: ['waitingView', 'titleView', 'pdfScrollView', 'previousButton', 'nextButton'],
+  childViews: ['waitingView', 'titleView', 'pdfScrollView', 'previousButton', 'nextButton', 'rotateRightButton', 'rotateLeftButton', 'nextZoomButton', 'previousZoomButton'],
 
   waitingView: SC.ImageView.design({
     layout: { centerX: 0, centerY: 0, width: 36, height: 36 },
@@ -69,15 +69,50 @@ Multivio.mainPdfView =  SC.View.design({
   pdfScrollView: SC.ScrollView.design({
     layout: { top: 50, left: 10, bottom: 50, right: 10 },
     contentView: SC.ImageView.design({
-      layout: { centerX: 0, centerY: 0, width: 400, height: 600 },
-      valueBinding: 'Multivio.pdfViewController.pdfUrl'
+      layout: { centerX: 0, centerY: 0, width: 100, height: 100 },
+      valueBinding: 'Multivio.pdfViewController.pdfUrl',
+      imageDidChange: function() {
+        var img_height = this.get('image').height;
+        var img_width = this.get('image').width;
+        this.set('layout', {centerX: 0, centerY: 0, width: img_width, height: img_height});
+      }.observes('image')
     })
   }),
+  
+  previousZoomButton: SC.ButtonView.design({
+    layout: {bottom: 10,  left: 130, width: 50, height: 30 },
+    target: 'Multivio.pdfViewController',
+    action: 'previousZoom',
+    isEnabledBinding: 'Multivio.pdfViewController.hasPreviousZoom',
+    title: 'z-'
+  }),
+
+  nextZoomButton: SC.ButtonView.design({
+    layout: {bottom: 10,  right: 130, width: 50, height: 30 },
+    target: 'Multivio.pdfViewController',
+    action: 'nextZoom',
+    isEnabledBinding: 'Multivio.pdfViewController.hasNexZoom',
+    title: 'z+'
+  }),
+  
+  rotateLeftButton: SC.ButtonView.design({
+    layout: {bottom: 10,  left: 70, width: 50, height: 30 },
+    target: 'Multivio.pdfViewController',
+    action: 'rotateLeft',
+    title: '-'
+  }),
+  rotateRightButton: SC.ButtonView.design({
+    layout: {bottom: 10,  right: 70, width: 50, height: 30 },
+    target: 'Multivio.pdfViewController',
+    action: 'rotateRight',
+    title: '+'
+  }),
+
 
   previousButton: SC.ButtonView.design({
     layout: {bottom: 10,  left: 10, width: 50, height: 30 },
     action: 'previousFile',
-    title: '<',
+    title: '<<',
     isEnabledBinding: "Multivio.documentController.hasPreviousFile"
   }),
 
@@ -85,7 +120,7 @@ Multivio.mainPdfView =  SC.View.design({
     layout: {bottom: 10,  right: 10, width: 50,  height: 30 },
     action: 'nextFile',
     isEnabledBinding: "Multivio.documentController.hasNextFile",
-    title: '>'
+    title: '>>'
   })
 });
 
