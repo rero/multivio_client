@@ -19,7 +19,7 @@ Multivio.unsupportedDocumentView =  SC.View.design({
   childViews: ['titleView', 'previousButton', 'nextButton'],
 
   titleView: SC.View.design({
-    layout: { top: 10, left: 10, bottom: 10 , right: 10 },
+    layout: { top: 0, left: 0, bottom: 0 , right: 0 },
     childViews: 'titleLabel'.w(),
 
     titleLabel: SC.LabelView.design({
@@ -43,7 +43,7 @@ Multivio.unsupportedDocumentView =  SC.View.design({
 });
 
 Multivio.mainPdfView =  SC.View.design({
-  childViews: ['waitingView', 'titleView', 'pdfScrollView', 'previousButton', 'nextButton', 'rotateRightButton', 'rotateLeftButton', 'nextZoomButton', 'previousZoomButton'],
+  childViews: ['waitingView', 'titleView', 'pdfScrollView', 'previousButton', 'nextButton', 'rotateRightButton', 'rotateLeftButton', 'nextZoomButton', 'previousZoomButton', 'nextPageButton', 'previousPageButton'],
 
   waitingView: SC.ImageView.design({
     layout: { centerX: 0, centerY: 0, width: 36, height: 36 },
@@ -65,18 +65,40 @@ Multivio.mainPdfView =  SC.View.design({
   }),
 
   pdfScrollView: SC.ScrollView.design({
-    layout: { top: 50, left: 10, bottom: 50, right: 10 },
+		classNames: "mvo-center".w(),
+		layout: { top: 50, left: 0, bottom: 50, right: 0},
     contentView: SC.ImageView.design({
       layout: { centerX: 0, centerY: 0, width: 100, height: 100 },
       valueBinding: 'Multivio.pdfViewController.pdfUrl',
       imageDidChange: function() {
         var img_height = this.get('image').height;
         var img_width = this.get('image').width;
-        this.set('layout', {centerX: 0, centerY: 0, width: img_width, height: img_height});
+				this.adjust('width', img_width);
+				this.adjust('height', img_height);
+			/*
+				SC.Logger.debug('ImageView: width ' + img_width + ' height ' + img_height);
+        //this.set('layout', {centerX: 0, centerY: 0, width: img_width, height: img_height});
+        //this.set('layout', {centerX: 0, centerY: 0, width: img_width, height: img_height});
+				*/
       }.observes('image')
     })
   }),
   
+  previousPageButton: SC.ButtonView.design({
+    layout: {bottom: 10,  left: 190, width: 50, height: 30 },
+    target: 'Multivio.pdfViewController',
+    action: 'previousPage',
+    isEnabledBinding: 'Multivio.pdfViewController.hasPreviousPage',
+    title: '<'
+  }),
+
+  nextPageButton: SC.ButtonView.design({
+    layout: {bottom: 10,  right: 190, width: 50, height: 30 },
+    target: 'Multivio.pdfViewController',
+    action: 'nextPage',
+    isEnabledBinding: 'Multivio.pdfViewController.hasNextPage',
+    title: '>'
+  }),
   previousZoomButton: SC.ButtonView.design({
     layout: {bottom: 10,  left: 130, width: 50, height: 30 },
     target: 'Multivio.pdfViewController',

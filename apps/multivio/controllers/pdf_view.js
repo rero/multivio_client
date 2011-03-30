@@ -16,6 +16,7 @@ Multivio.pdfViewController = SC.ObjectController.create(
   contentBinding: 'Multivio.documentController.currentSelection',
   _renderPrefix: 'server/document/render?',
   rotationAngle: 0,
+	_currentPage: 1,
   _defaultWidth: 400,
   _defaultHeight: 600,
   _zoomScale: [0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.75, 1.0, 1.5,
@@ -29,14 +30,48 @@ Multivio.pdfViewController = SC.ObjectController.create(
         var scaleFactor = this.get('_zoomScale')[this.get('_currentZoomIndex')];
         var newWidth = this.get('_defaultWidth') * scaleFactor;
         var newHeight = this.get('_defaultHeight') * scaleFactor;
-        var newUrl = this.get('_renderPrefix') + "max_width=" + newWidth  + "&max_height=" + newHeight + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
+        var newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('_currentPage') + "&max_width=" + newWidth  + "&max_height=" + newHeight + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
         SC.Logger.debug('pdfViewController: new url: ' + newUrl );
         return newUrl;
       }
     }else{
       return undefined;
     }
-  }.property('url','rotationAngle', '_currentZoomIndex').cacheable(),
+  }.property('url','rotationAngle', '_currentZoomIndex', '_currentPage').cacheable(),
+
+	_nPages:function() {
+			if(!SC.none(this.get('metadata'))) {
+					SC.Logger.debug('_nPages: ' + this.get('metadata'));
+			return this.get('metadata').nPages;
+			}
+			return 0;
+	}.property('metadata'),
+  
+  nextPage: function() {
+		if(this.get('hasNextPage')) {
+			this.set('_currentPage', this.get('_currentPage') + 1);
+		}
+	},
+  
+	previousPage: function() {
+		if(this.get('hasPreviousPage')) {
+			this.set('_currentPage', this.get('_currentPage') - 1);
+		}
+	},
+
+  hasNextPage: function() {
+    if(this.get('_currentPage') <= this.get('_nPages')) {
+      return YES;
+    }
+    return NO;
+  }.property('_nPages'),
+
+  hasPreviousPage: function() {
+    if(this.get('_currentPage') > 1) {
+      return YES;
+    }
+    return NO;
+  }.property('_nPages'),
 
   rotateLeft: function() {
     var currentAngle = this.get('rotationAngle');
