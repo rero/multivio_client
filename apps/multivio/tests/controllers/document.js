@@ -30,7 +30,7 @@ test('check Metadata', function() {
   Multivio.documentController.fetchFile(url); 
   SC.RunLoop.end();
   // Give our store 1 second to commit records to the remote server
-  var title = Multivio.fileController.get('metadata').title;
+  var title = Multivio.documentController.get('currentSelection').metadata.title;
   equals(title, '"Ho rifatto la mia vita due volte"', 'serverVersion should not be defined');
 });
 
@@ -42,7 +42,7 @@ test('check hasNext', function() {
   Multivio.documentController.fetchFile(url); 
   SC.RunLoop.end();
   
-  var parent = Multivio.fileController.get('content');
+  var parent = Multivio.documentController.get('currentSelection');
   var phys = parent.get('physicalStructure'); 
   var newUrl = phys[0].url;
 
@@ -61,7 +61,7 @@ test('check do not hasNext', function() {
   Multivio.documentController.fetchFile(url); 
   SC.RunLoop.end();
   
-  var parent = Multivio.fileController.get('content');
+  var parent = Multivio.documentController.get('currentSelection');
   var phys = parent.get('physicalStructure'); 
   var newUrl = phys[phys.length - 1].url;
   //var newUrl = phys[phys.length - 1].url;
@@ -80,7 +80,7 @@ test('check hasPrevious', function() {
   Multivio.documentController.fetchFile(url); 
   SC.RunLoop.end();
   
-  var parent = Multivio.fileController.get('content');
+  var parent = Multivio.documentController.get('currentSelection');
   var phys = parent.get('physicalStructure'); 
   var newUrl = phys[1].url;
 
@@ -109,7 +109,7 @@ test('check getNext', function() {
   Multivio.documentController.fetchFile(url); 
   SC.RunLoop.end();
 
-  var parent = Multivio.fileController.get('content');
+  var parent = Multivio.documentController.get('currentSelection');
   var phys = parent.get('physicalStructure'); 
   var refUrl = phys[1].url;
 
@@ -127,7 +127,7 @@ test('check getNext', function() {
   Multivio.documentController.nextFile();
   SC.RunLoop.end();
 
-  equals(Multivio.fileController.get('url'), refUrl, refUrl + ': should next to ' + newUrl);
+  equals(Multivio.documentController.get('currentSelection').url, refUrl, refUrl + ': should next to ' + newUrl);
 });
 
 test('check getPrevious', function() {
@@ -137,7 +137,7 @@ test('check getPrevious', function() {
   Multivio.documentController.fetchFile(url); 
   SC.RunLoop.end();
 
-  var parent = Multivio.fileController.get('content');
+  var parent = Multivio.documentController.get('currentSelection');
   var phys = parent.get('physicalStructure'); 
   var refUrl = phys[0].url;
 
@@ -155,5 +155,5 @@ test('check getPrevious', function() {
   Multivio.documentController.previousFile();
   SC.RunLoop.end();
 
-  equals(Multivio.fileController.get('url'), refUrl, refUrl + ': should next to ' + newUrl);
+  equals(Multivio.documentController.get('currentSelection').url, refUrl, refUrl + ': should next to ' + newUrl);
 });

@@ -50,6 +50,15 @@ Multivio.ApplicationReadyState = Ki.State.extend({
     },
 
     loadingFile: Ki.State.design({
+    enterState: function() {
+      var pdfView = Multivio.getPath('mainPage.mainPdfView.waitingView');
+      pdfView.set('isVisible', YES);
+
+    },
+    exitState: function() {
+      var pdfView = Multivio.getPath('mainPage.mainPdfView.waitingView');
+      pdfView.set('isVisible', NO);
+    },
       currentFileDidChange:function() {
         this.gotoState('contentReady');
       }
@@ -68,6 +77,19 @@ Multivio.ApplicationReadyState = Ki.State.extend({
   }),
 
   contentReady: Ki.State.design({
+
+    enterState: function() {
+      var currentFile = Multivio.documentController.get('currentSelection');
+      var viewToChange = Multivio.getPath('mainPage.mainPane.workspaceView.bottomRightView');
+      SC.Logger.debug('------> ' + viewToChange);
+      if(!SC.none(currentFile) && 
+        !SC.none(currentFile.metadata) &&
+             currentFile.metadata.mime === 'application/pdf') {
+        viewToChange.set('nowShowing', 'mainPdfView');
+      }else{
+        viewToChange.set('nowShowing', 'unsupportedDocumentView');
+      }
+    },
 
     nextFile: function(){
       SC.Logger.debug("Run nextFile.");

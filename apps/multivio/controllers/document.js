@@ -19,8 +19,6 @@ sc_require('models/cdm.js');
 Multivio.documentController = SC.ArrayController.create(
   /** @scope Multivio.documentController.prototype */ {
 
-  _currentRecord: undefined,
-  _currentRecordBinding: 'Multivio.fileController.content',
   allowsMultipleSelection: NO,
   refererBinding: 'Multivio.inputParameters.url',
   currentUrl: undefined,
@@ -35,7 +33,9 @@ Multivio.documentController = SC.ArrayController.create(
     }
     var alreadyLoaded = this.find(url);
     if(alreadyLoaded && alreadyLoaded.get('isComplete')) {
+      Multivio.mainStatechart.sendEvent('changeCurrentFile');
       this.selectObject(alreadyLoaded);
+      Multivio.mainStatechart.sendEvent('currentFileDidChange');
     }else{
       Multivio.mainStatechart.sendEvent('changeCurrentFile');
       this.set('currentUrl', url);
@@ -93,6 +93,12 @@ Multivio.documentController = SC.ArrayController.create(
     return this._nextFile(fileRecord.get('parent'), fileRecord, go);
   },
   
+  currentSelection: function() {
+    var current = this.get('selection');
+    if(SC.none(current) || current.length() === 0) {return undefined;}
+    return current.firstObject(); 
+  }.property('selection'),
+
   _previousFile: function(fileRecord, childRecord, go) {
     if(SC.none(fileRecord) || SC.none(fileRecord.get('url'))) {
       return NO;
@@ -131,23 +137,23 @@ Multivio.documentController = SC.ArrayController.create(
   },
 
   nextFile: function() {
-    SC.Logger.debug('get next to: ' + this._currentRecord.get('url'));
-    return this._nextFile(this._currentRecord, undefined, YES);
+    SC.Logger.debug('get next to: ' + this.get('currentSelection'));
+    return this._nextFile(this.get('currentSelection'), undefined, YES);
   },
 
   hasNextFile: function() {
     SC.Logger.debug('hasNextFile?');
-    return this._nextFile(this._currentRecord, undefined, NO);
-  }.property('_currentRecord'),
+    return this._nextFile(this.get('currentSelection'), undefined, NO);
+  }.property('currentSelection'),
 
 
   previousFile: function() {
-    this._previousFile(this._currentRecord, undefined, YES);
+    this._previousFile(this.get('currentSelection'), undefined, YES);
   },
 
   hasPreviousFile: function() {
-    return this._previousFile(this._currentRecord, undefined, NO);
-  }.property('_currentRecord'),
+    return this._previousFile(this.get('currentSelection'), undefined, NO);
+  }.property('currentSelection'),
 
   find: function(url) {
     var records = this.get('content');

@@ -16,10 +16,87 @@ sc_require('controllers/file.js');
   
   @since 0.1.0
 */
+
+Multivio.unsupportedDocumentView =  SC.View.design({
+  childViews: ['titleView', 'previousButton', 'nextButton'],
+
+  titleView: SC.View.design({
+    layout: { top: 10, left: 10, bottom: 10 , right: 10 },
+    childViews: 'titleLabel'.w(),
+
+    titleLabel: SC.LabelView.design({
+      layout: { width: 500, height: 18 },
+      value: "Unsupported document!"
+    })
+  }),
+  previousButton: SC.ButtonView.design({
+    layout: {bottom: 10,  left: 10, width: 50, height: 30 },
+    action: 'previousFile',
+    title: '<',
+    isEnabledBinding: "Multivio.documentController.hasPreviousFile"
+  }),
+
+  nextButton: SC.ButtonView.design({
+    layout: {bottom: 10,  right: 10, width: 50,  height: 30 },
+    action: 'nextFile',
+    isEnabledBinding: "Multivio.documentController.hasNextFile",
+    title: '>'
+  })
+});
+
+Multivio.mainPdfView =  SC.View.design({
+  childViews: ['waitingView', 'titleView', 'pdfScrollView', 'previousButton', 'nextButton'],
+
+  waitingView: SC.ImageView.design({
+    layout: { centerX: 0, centerY: 0, width: 36, height: 36 },
+    isVisible: YES,
+    value: static_url('images/progress_wheel_medium.gif'),
+    classNames: "mvo-waiting".w()
+  }),
+
+  titleView: SC.View.design({
+    layout: { top: 10, left: 10, height: 30 , right: 10 },
+    childViews: 'titleLabel'.w(),
+
+    titleLabel: SC.LabelView.design({
+      layout: { width: 500, height: 18 },
+      value: "Welcome on pdfView",
+      contentBinding: 'Multivio.fileController.metadata',
+      contentValueKey: 'title'
+    })
+  }),
+
+  pdfScrollView: SC.ScrollView.design({
+    layout: { top: 50, left: 10, bottom: 50, right: 10 },
+    contentView: SC.ImageView.design({
+      layout: { centerX: 0, centerY: 0, width: 400, height: 600 },
+      valueBinding: 'Multivio.pdfViewController.pdfUrl'
+    })
+  }),
+
+  previousButton: SC.ButtonView.design({
+    layout: {bottom: 10,  left: 10, width: 50, height: 30 },
+    action: 'previousFile',
+    title: '<',
+    isEnabledBinding: "Multivio.documentController.hasPreviousFile"
+  }),
+
+  nextButton: SC.ButtonView.design({
+    layout: {bottom: 10,  right: 10, width: 50,  height: 30 },
+    action: 'nextFile',
+    isEnabledBinding: "Multivio.documentController.hasNextFile",
+    title: '>'
+  })
+});
+
 Multivio.mainPage = SC.Page.design({
   // The main pane is made visible on screen as soon as your app is loaded.
   // Add childViews to this pane for views to display immediately on page 
+  // see: http://groups.google.com/group/sproutcore/msg/9f59c491b9c27464
+  //  and http://groups.google.com/group/sproutcore/browse_thread/thread/914c2c6c0558fcbc/9cc1bb65f0adcd0d
+  // for more details
   // load.
+  
   mainPane: SC.MainPane.design({
     childViews: 'workspaceView'.w(),
     defaultResponder: 'Multivio.mainStatechart',
@@ -30,39 +107,12 @@ Multivio.mainPage = SC.Page.design({
       
       // the left view...
       topLeftView: SC.SourceListView.design({ }),
-      
-      
-      // the right view
-      bottomRightView: SC.View.design({
-        childViews: ['pdfView', 'previousButton', 'nextButton'],
-
-        pdfView: SC.View.design({
-          layout: { top: 50, left: 50, bottom: 100, right: 50 },
-          childViews: 'welcomeLabel'.w(),
-
-          welcomeLabel: SC.LabelView.design({
-            layout: { width: 500, height: 18 },
-            value: "Welcome on pdfView",
-            contentBinding: 'Multivio.fileController.metadata',
-            contentValueKey: 'title'
-          })
-        }),
-
-        previousButton: SC.ButtonView.design({
-          layout: {bottom: 50,  left: 50, width: 50, height: 30 },
-          action: 'previousFile',
-          title: '<',
-          isEnabledBinding: "Multivio.documentController.hasPreviousFile"
-        }),
-
-        nextButton: SC.ButtonView.design({
-          layout: {bottom: 50,  right: 50, width: 50,  height: 30 },
-          action: 'nextFile',
-          isEnabledBinding: "Multivio.documentController.hasNextFile",
-          title: '>'
-        })
+      bottomRightView: SC.WellView.design({
+        layout: { top: 0, left: 0, bottom: 0 , right: 0 }
       })
     })
-  })
+  }),
+  mainPdfView: Multivio.mainPdfView,
+  unsupportedDocumentView: Multivio.unsupportedDocumentView
 });
 
