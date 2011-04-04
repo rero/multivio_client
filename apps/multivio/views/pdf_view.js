@@ -21,22 +21,50 @@ Multivio.mainPdfView =  SC.View.design({
   }),
 
   pdfScrollView: SC.ScrollView.design({
-		classNames: "mvo-center".w(),
-		layout: { top: 50, left: 0, bottom: 50, right: 0},
+    classNames: "mvo-center".w(),
+    canLoadInBackground: NO,
+    layout: { top: 50, left: 0, bottom: 50, right: 0},
     contentView: SC.ImageView.design({
-      layout: { top: 10, bottom: 10, left: 10, right: 10 },
+      layout: { centerX: 0, centerY: 0 },
       valueBinding: 'Multivio.pdfViewController.pdfUrl',
-      imageDidChange: function() {
+      imageDidLoad: function (url, imageOrError) {
+        /*
+        var jquery = this.$();
+        var img_height = jquery.find('img').height();
+        var img_width = jquery.find('img').width();
+        */
         var img_height = this.get('image').height;
         var img_width = this.get('image').width;
-				/*this.adjust('width', img_width);
-				this.adjust('height', img_height);*/
-				SC.Logger.debug('ImageView: width ' + img_width + ' height ' + img_height);
-        this.set('layout', {centerX: 0, centerY: 0, width: img_width, height: img_height});
-      }.observes('image')
+        if(img_height > 1 && img_width > 1) {
+        this.adjust('width', img_width);
+        this.adjust('height', img_height);
+        }
+      }.observes('image'),
+
+        //redifined this default method in order remove the defaultBlankImage
+      _image_valueDidChange: function() {
+        var value = this.get('imageValue'),
+        type = this.get('type');
+
+        // check to see if our value has changed
+        if (value !== this._iv_value) {
+          this._iv_value = value;
+
+          // While the new image is loading use SC.BLANK_IMAGE as a placeholder
+          //this.set('image', SC.BLANK_IMAGE);
+          this.set('status', SC.IMAGE_STATE_LOADING);
+
+          // order: image cache, normal load
+          if (!this._loadImageUsingCache()) {
+            if (!this._loadImage()) {
+              // CSS class? this will be handled automatically
+            }
+          }
+        }
+      }.observes('imageValue')
     })
   }),
-  
+
   previousPageButton: SC.ButtonView.design({
     layout: {bottom: 10,  left: 190, width: 50, height: 30 },
     target: 'Multivio.pdfViewController',
@@ -67,7 +95,7 @@ Multivio.mainPdfView =  SC.View.design({
     isEnabledBinding: 'Multivio.pdfViewController.hasNexZoom',
     title: 'z+'
   }),
-  
+
   rotateLeftButton: SC.ButtonView.design({
     layout: {bottom: 10,  left: 70, width: 50, height: 30 },
     target: 'Multivio.pdfViewController',

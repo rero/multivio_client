@@ -10,7 +10,7 @@
 
   @extends SC.Object
 */
-Multivio.thumnailController = SC.ObjectController.create(
+Multivio.thumbnailController = SC.ObjectController.create(
 /** @scope Multivio.thumnailController.prototype */ {
 
    contentBinding: SC.Binding.from('Multivio.thumbnailsController.selection').single() // TODO: Add your own code here.

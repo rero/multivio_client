@@ -15,9 +15,11 @@
   @since 0.1.0
 */
 
-sc_require('resources/unsupported_view.js');
-sc_require('resources/thumbnails.js');
-sc_require('resources/pdf_view.js');
+sc_require('views/unsupported_view.js');
+sc_require('views/thumbnails.js');
+sc_require('views/pdf_view.js');
+sc_require('views/navigation_bar.js');
+sc_require('views/help.js');
 
 Multivio.mainPage = SC.Page.design({
   // The main pane is made visible on screen as soon as your app is loaded.
@@ -36,7 +38,8 @@ Multivio.mainPage = SC.Page.design({
       defaultThickness: 0.1,
       
       // the left view...
-      topLeftView: Multivio.thumbnailsView,
+      topLeftView: Multivio.NavigationBar,
+      //topLeftView: Multivio.thumbnailsView,
 
       //topLeftView: Multivio.navigationBar,
       bottomRightView: SC.WellView.design({
@@ -46,6 +49,8 @@ Multivio.mainPage = SC.Page.design({
   }),
   mainPdfView: Multivio.mainPdfView,
   unsupportedDocumentView: Multivio.unsupportedDocumentView,
-  thumbnailsView: Multivio.thumbnailsView
+  thumbnailsView: Multivio.thumbnailsView,
+  navigationBar: Multivio.NavigationBar,
+  helpPane: Multivio.HelpPane
 });
 
