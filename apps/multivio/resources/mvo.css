@@ -1,4 +1,27 @@
+/* thumbnails */
 
+#mvo-thumbnails .sc-collection-item.sel {
+	background: none repeat scroll 0 0 #608AB9;
+}
+.sc-list-item-view img{
+  display: block;
+  margin: auto;
+  position: static;
+  line-height: 100px;
+  vertical-align: middle;
+}
+
+.sc-list-item-view p{
+  line-height: 30px;
+  vertical-align: middle;
+  text-align: center;
+  display: block;
+  margin: auto;
+  position: static;
+}
+
+
+/* others */
 .mvo-waiting {
 	background: none;
 	z-index: 1000;

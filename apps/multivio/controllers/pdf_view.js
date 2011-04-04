@@ -16,7 +16,7 @@ Multivio.pdfViewController = SC.ObjectController.create(
   contentBinding: 'Multivio.documentController.currentSelection',
   _renderPrefix: 'server/document/render?',
   rotationAngle: 0,
-	_currentPage: 1,
+  currentPage: 1,
   _defaultWidth: 400,
   _defaultHeight: 600,
   _zoomScale: [0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.75, 1.0, 1.5,
@@ -24,7 +24,7 @@ Multivio.pdfViewController = SC.ObjectController.create(
   _currentZoomIndex: 7,
   
 	_resetCurrentPage: function() {
-		this.set('_currentPage', 1);
+		this.set('currentPage', 1);
 	}.observes('url'),
 
   pdfUrl: function() {
@@ -34,18 +34,18 @@ Multivio.pdfViewController = SC.ObjectController.create(
         var scaleFactor = this.get('_zoomScale')[this.get('_currentZoomIndex')];
         var newWidth = this.get('_defaultWidth') * scaleFactor;
         var newHeight = this.get('_defaultHeight') * scaleFactor;
-        var newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('_currentPage') + "&max_width=" + newWidth  + "&max_height=" + newHeight + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
+        var newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&max_height=" + newHeight + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
         SC.Logger.debug('pdfViewController: new url: ' + newUrl );
         return newUrl;
       }
     }else{
       return undefined;
     }
-  }.property('url','rotationAngle', '_currentZoomIndex', '_currentPage').cacheable(),
+  }.property('url','rotationAngle', '_currentZoomIndex', 'currentPage').cacheable(),
 
-	_nPages:function() {
+	nPages:function() {
 			if(!SC.none(this.get('metadata'))) {
-					SC.Logger.debug('_nPages: ' + this.get('metadata'));
+					SC.Logger.debug('nPages: ' + this.get('metadata'));
 			return this.get('metadata').nPages;
 			}
 			return 0;
@@ -53,29 +53,29 @@ Multivio.pdfViewController = SC.ObjectController.create(
   
   nextPage: function() {
 		if(this.get('hasNextPage')) {
-			this.set('_currentPage', this.get('_currentPage') + 1);
+			this.set('currentPage', this.get('currentPage') + 1);
 		}
 	},
   
 	previousPage: function() {
 		if(this.get('hasPreviousPage')) {
-			this.set('_currentPage', this.get('_currentPage') - 1);
+			this.set('currentPage', this.get('currentPage') - 1);
 		}
 	},
 
   hasNextPage: function() {
-    if(this.get('_currentPage') <= this.get('_nPages')) {
+    if(this.get('currentPage') < this.get('nPages')) {
       return YES;
     }
     return NO;
-  }.property('_nPages', '_currentPage'),
+  }.property('nPages', 'currentPage'),
 
   hasPreviousPage: function() {
-    if(this.get('_currentPage') > 1) {
+    if(this.get('currentPage') > 1) {
       return YES;
     }
     return NO;
-  }.property('_nPages', '_currentPage'),
+  }.property('nPages', 'currentPage'),
 
   rotateLeft: function() {
     var currentAngle = this.get('rotationAngle');
