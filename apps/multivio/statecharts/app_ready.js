@@ -26,6 +26,7 @@ Multivio.ApplicationReadyState = Ki.State.extend({
 
   enterState: function() {
     Multivio.getPath('mainPage.mainPane').append();
+    //Multivio.getPath('mainPage.mainPane').becomeKeyPane();
   },
 
   exitState: function() {
@@ -86,6 +87,8 @@ Multivio.ApplicationReadyState = Ki.State.extend({
         !SC.none(currentFile.metadata) &&
              currentFile.metadata.mime === 'application/pdf') {
         viewToChange.set('nowShowing', 'mainPdfView');
+        //Multivio.getPath('mainPage.mainPane').set('keyView', Multivio.mainPdfView);
+        Multivio.getPath('mainPage.mainPdfView').becomeFirstResponder();
       }else{
         viewToChange.set('nowShowing', 'unsupportedDocumentView');
       }

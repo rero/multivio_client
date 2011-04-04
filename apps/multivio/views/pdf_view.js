@@ -1,6 +1,23 @@
 Multivio.mainPdfView =  SC.View.design({
   childViews: ['waitingView', 'titleView', 'pdfScrollView', 'previousButton', 'nextButton', 'rotateRightButton', 'rotateLeftButton', 'nextZoomButton', 'previousZoomButton', 'nextPageButton', 'previousPageButton'],
 
+acceptsFirstResponder: YES,
+keyDown: function(evt) {
+   SC.Logger.debug('KeyDown: ' + evt.keyCode );
+  if(evt.keyCode === 38) {
+       Multivio.pdfViewController.previousPage();
+  }
+  if(evt.keyCode === 40) {
+       Multivio.pdfViewController.nextPage();
+  }
+  if(evt.keyCode === 39) {
+       Multivio.documentController.nextFile();
+  }
+  if(evt.keyCode === 37) {
+       Multivio.documentController.previousFile();
+  }
+  return NO;
+}, 
   waitingView: SC.ImageView.design({
     layout: { centerX: 0, centerY: 0, width: 36, height: 36 },
     isVisible: YES,
@@ -84,6 +101,8 @@ Multivio.mainPdfView =  SC.View.design({
     layout: {bottom: 10,  left: 130, width: 50, height: 30 },
     target: 'Multivio.pdfViewController',
     action: 'previousZoom',
+    keyEquivalent: 'a',
+    isKeyResponder: YES,
     isEnabledBinding: 'Multivio.pdfViewController.hasPreviousZoom',
     title: 'z-'
   }),
@@ -92,6 +111,7 @@ Multivio.mainPdfView =  SC.View.design({
     layout: {bottom: 10,  right: 130, width: 50, height: 30 },
     target: 'Multivio.pdfViewController',
     action: 'nextZoom',
+    keyEquivalent: '+',
     isEnabledBinding: 'Multivio.pdfViewController.hasNexZoom',
     title: 'z+'
   }),

@@ -34,6 +34,7 @@ Multivio.mainPage = SC.Page.design({
     defaultResponder: 'Multivio.mainStatechart',
 
 
+
     workspaceView: SC.SplitView.design({
       defaultThickness: 0.1,
       
