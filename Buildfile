@@ -6,7 +6,7 @@
 
 # proxy server - production
 proxy '/server',
-   :url => '/server',
+   :url => '/server.test',
    :to => 'demo.multivio.org'
 
 # proxy server - test

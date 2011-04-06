@@ -17,8 +17,6 @@ Multivio.pdfViewController = SC.ObjectController.create(
   _renderPrefix: 'server/document/render?',
   rotationAngle: 0,
   currentPage: 1,
-  _defaultWidth: 400,
-  _defaultHeight: 600,
   _zoomScale: [0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.75, 1.0, 1.5,
             2.0, 3.0, 4.0],
   _currentZoomIndex: 7,
@@ -27,13 +25,33 @@ Multivio.pdfViewController = SC.ObjectController.create(
 		this.set('currentPage', 1);
 	}.observes('url'),
 
+  _defaultWidth: function() {
+    var nativeSizes = this.get('metadata').nativeSize;
+    var currentPage = this.get('currentPage');
+    if(!SC.none(nativeSizes[currentPage])) {
+      return nativeSizes[currentPage][0];
+    }else{
+      return this.get('metadata').defaultNativeSize[0];
+    }
+  }.property('currentPage', 'metadata').cacheable(),
+
+  _defaultHeight: function() {
+    var nativeSizes = this.get('metadata').nativeSize;
+    var currentPage = this.get('currentPage');
+    if(!SC.none(nativeSizes[currentPage])) {
+      return nativeSizes[currentPage][1];
+    }else{
+      return this.get('metadata').defaultNativeSize[1];
+    }
+  }.property('currentPage', 'metadata').cacheable(),
+
   pdfUrl: function() {
     SC.Logger.debug('pdfViewController: url changed: ');
     if(!SC.none(this.get('metadata'))){
       if(this.get('metadata').mime === 'application/pdf') {
         var scaleFactor = this.get('_zoomScale')[this.get('_currentZoomIndex')];
-        var newWidth = this.get('_defaultWidth') * scaleFactor;
-        var newHeight = this.get('_defaultHeight') * scaleFactor;
+        var newWidth = parseInt(this.get('_defaultWidth') * scaleFactor, 10);
+        var newHeight = parseInt(this.get('_defaultHeight') * scaleFactor, 10);
         var newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&max_height=" + newHeight + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
         SC.Logger.debug('pdfViewController: new url: ' + newUrl );
         return newUrl;

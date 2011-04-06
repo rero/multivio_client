@@ -23,11 +23,13 @@ Multivio.thumbnailsController = SC.ArrayController.create(
 
   _selectionDidChange: function() {
     var sel = this.get('selection');
-    var currentPage = this.get('currentPage');
-    if(!SC.none(sel))  {
-      var newPage  = sel.firstObject().get('pageNumber');
-      if(currentPage != newPage) {
-        this.set('currentPage', sel.firstObject().get('pageNumber'));
+    if(!SC.none(sel) && !SC.none(sel.firstObject())) {
+      var currentPage = this.get('currentPage');
+      if(!SC.none(sel))  {
+        var newPage  = sel.firstObject().get('pageNumber');
+        if(currentPage != newPage) {
+          this.set('currentPage', sel.firstObject().get('pageNumber'));
+        }
       }
     }
   }.observes('selection'),
@@ -35,7 +37,7 @@ Multivio.thumbnailsController = SC.ArrayController.create(
   _currentPageDidChange: function() {
     var currentPage = this.get('currentPage');
     if(!SC.none(currentPage) && currentPage > 1) {
-      this.selectObject(this.get('content')[currentPage - 1]);
+      this.selectObject(this.objectAt(currentPage - 1));
     }
   }.observes('currentPage'),
 

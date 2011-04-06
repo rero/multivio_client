@@ -18,12 +18,12 @@ Multivio.navigationController = SC.ArrayController.create(
   // TODO: Add your own code here.
   content: [
     SC.Object.create({
-      panel: Multivio.HelpPane.create({}),
+      panel: 'helpPane',
       icon: static_url("images/icons/24x24/help_dark_24x24.png")
     }),
 
     SC.Object.create({
-      panel: Multivio.thumbnailsView.create({}),
+      panel: 'thumbnailsView',
       icon: static_url("images/icons/24x24/thumbnails_dark_24x24.png")
     })
 
@@ -33,7 +33,10 @@ Multivio.navigationController = SC.ArrayController.create(
     var sel = this.get('selection');
       SC.Logger.debug('navigationBar: selection changed!');
       if(!SC.none(sel))  {
-        sel.firstObject().get('panel').popup(Multivio.getPath('mainPage.mainPane.workspaceView.bottomRightView'));
+        var panelName = sel.firstObject().get('panel');
+        SC.Logger.debug('Panel Name: ' + panelName);
+        //Multivio.getPath('mainPage.thumbnailsView').set('canBeClosed', NO);
+        Multivio.getPath('mainPage.'+panelName).popup(Multivio.getPath('mainPage.mainPane.workspaceView.bottomRightView'));
     }
   }.observes('selection')
 
