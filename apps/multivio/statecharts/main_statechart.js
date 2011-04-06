@@ -17,15 +17,21 @@
   @since 1.0
 */
 Multivio.mainStatechart = Ki.Statechart.create({
-  initialState: 'initializing',
+  initialState: 'starting',
   trace: YES,
 
+  starting: Ki.State.design({
+    loadApp: function() {
+      this.gotoState('initializing'); 
+    }
+  }),
   initializing: Ki.State.design({
     enterState: function() {
       SC.Logger.debug('Initializing...');
       var panel = Multivio.getPath('loadingPage.mainPane');
       panel.append();
       Multivio.inputParameters.read();
+      Multivio.CDM.removeAll();
       Multivio.CDM.getServerInfo();
       SC.Logger.debug('After');
     },

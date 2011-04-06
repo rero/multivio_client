@@ -28,6 +28,9 @@ Multivio.ApplicationReadyState = Ki.State.extend({
     Multivio.getPath('mainPage.mainPane').append();
     //Multivio.getPath('mainPage.mainPane').becomeKeyPane();
   },
+    loadApp: function() {
+      this.gotoState('initializing'); 
+    },
 
   exitState: function() {
     Multivio.getPath('mainPage.mainPane').remove();

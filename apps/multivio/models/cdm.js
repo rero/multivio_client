@@ -53,6 +53,13 @@ Multivio.CDM = SC.Object.create(SC.Enumerable, SC.Array,{
     this._array = [];
   },
 
+  removeAll: function() {
+    if(this.get('length') > 0) {
+      this.removeAt(0, this.get('length')); 
+      this.get('requestHandler').set('listOfRequest', undefined);
+    }
+  },
+
   length: function() {
     return this._array ? this._array.length : 0;
   }.property().cacheable(),

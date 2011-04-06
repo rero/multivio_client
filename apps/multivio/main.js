@@ -14,6 +14,10 @@
 // As you develop your application you will probably want to override this.
 // See comments for some pointers on what to do next.
 //
+Multivio.reload = function() {
+    SC.Logger.debug("Reload");
+    Multivio.mainStatechart.sendEvent('loadApp');
+};
 Multivio.main = function main() {
 
   // Step 1: Instantiate Your Views
@@ -28,6 +32,7 @@ Multivio.main = function main() {
 
   // TODO: Set the content property on your primary controller
   // ex: Multivio.contactsController.set('content',Multivio.contacts);
+  SC.routes.add('*', Multivio, 'reload');
 
 };
 
