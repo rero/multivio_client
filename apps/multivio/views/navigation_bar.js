@@ -12,11 +12,22 @@
 */
 sc_require('views/navigation_item.js');
 sc_require('controllers/navigation.js');
-
+/*
+var menuItems = [ 
+	{ icon:static_url("images/icons/24x24/help_dark_24x24.png"), keyEquivalent: 'ctrlh' }, 
+	{ icon:static_url("images/icons/24x24/thumbnails_dark_24x24.png"), keyEquivalent: 'ctrlt', itemTargetKey: Multivio.pdfViewController, itemActionKey: 'showHideThumbnailsPanel' }
+	];
+Multivio.NavigationBar = SC.MenuPane.create({ 
+items: menuItems,
+itemHeight: 35
+});
+Multivio.NavigationBar.becomeMenuPane();
+//Multivio.NavigationBar.becomesFirstResponder();
+//*/
 Multivio.NavigationBar = SC.SourceListView.design({
   selectOnMouseDown: YES,
   actOnSelect: YES,
-  layout: { top: 0, left: 0, bottom: 0, right: 0},
+  layout: { top: 10, left: 0, bottom: 40, width: 50},
     layerId: 'mvo-navigation-bar',
     contentValueKey: 'panel',
     contentIconKey: 'icon',

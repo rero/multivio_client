@@ -84,7 +84,7 @@ Multivio.ApplicationReadyState = Ki.State.extend({
 
     enterState: function() {
       var currentFile = Multivio.documentController.get('currentSelection');
-      var viewToChange = Multivio.getPath('mainPage.mainPane.workspaceView.bottomRightView');
+      var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
       SC.Logger.debug('------> ' + viewToChange);
       if(!SC.none(currentFile) && 
         !SC.none(currentFile.metadata) &&

@@ -1,5 +1,5 @@
 Multivio.mainPdfView =  SC.View.design({
-  childViews: ['waitingView', 'titleView', 'pdfScrollView', 'previousButton', 'nextButton', 'rotateRightButton', 'rotateLeftButton', 'nextZoomButton', 'previousZoomButton', 'nextPageButton', 'previousPageButton'],
+  childViews: ['waitingView', 'pdfScrollView', 'previousButton', 'nextButton', 'rotateRightButton', 'rotateLeftButton', 'nextZoomButton', 'previousZoomButton', 'nextPageButton', 'previousPageButton'],
 
 acceptsFirstResponder: YES,
 keyDown: function(evt) {
@@ -25,22 +25,10 @@ keyDown: function(evt) {
     classNames: "mvo-waiting".w()
   }),
 
-  titleView: SC.View.design({
-    layout: { top: 10, left: 10, height: 30 , right: 10 },
-    childViews: 'titleLabel'.w(),
-
-    titleLabel: SC.LabelView.design({
-      layout: { width: 500, height: 18 },
-      value: "Welcome on pdfView",
-      contentBinding: 'Multivio.fileController.metadata',
-      contentValueKey: 'title'
-    })
-  }),
 
   pdfScrollView: SC.ScrollView.design({
     classNames: "mvo-center".w(),
-    canLoadInBackground: NO,
-    layout: { top: 50, left: 0, bottom: 50, right: 0},
+    layout: { top: 0, left: 0, bottom: 0, right: 0},
     contentView: SC.ImageView.design({
       layout: { centerX: 0, centerY: 0 },
       valueBinding: 'Multivio.pdfViewController.pdfUrl',

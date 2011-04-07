@@ -36,7 +36,7 @@ Multivio.navigationController = SC.ArrayController.create(
         var panelName = sel.firstObject().get('panel');
         SC.Logger.debug('Panel Name: ' + panelName);
         //Multivio.getPath('mainPage.thumbnailsView').set('canBeClosed', NO);
-        Multivio.getPath('mainPage.'+panelName).popup(Multivio.getPath('mainPage.mainPane.workspaceView.bottomRightView'));
+        Multivio.getPath('mainPage.'+panelName).popup(Multivio.getPath('mainPage.mainPane.centerView'));
     }
   }.observes('selection')
 

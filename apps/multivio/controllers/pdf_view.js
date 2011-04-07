@@ -80,6 +80,10 @@ Multivio.pdfViewController = SC.ObjectController.create(
 			this.set('currentPage', this.get('currentPage') - 1);
 		}
 	},
+	showHideThumbnailsPanel: function() {
+		SC.Logger.debug('Hide/show thumbnails');
+		Multivio.thumbnailsView.popup();		
+	},
 
   hasNextPage: function() {
     if(this.get('currentPage') < this.get('nPages')) {
