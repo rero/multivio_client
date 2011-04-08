@@ -17,8 +17,8 @@ sc_require('models/cdm.js');
 
 @extends SC.Object
 */
-Multivio.documentController = SC.ArrayController.create(
-  /** @scope Multivio.documentController.prototype */ {
+Multivio.filesController = SC.ArrayController.create(
+  /** @scope Multivio.filesController.prototype */ {
 
   allowsMultipleSelection: NO,
   referer: undefined,
@@ -31,7 +31,7 @@ Multivio.documentController = SC.ArrayController.create(
 
   fetchFile: function(url, parent) {
     if(!SC.none(this.get('currentUrl'))) {
-      throw	new Error('documentController: concurrent file fetch');
+      throw	new Error('filesController: concurrent file fetch');
     }
     var alreadyLoaded = this.find(url);
     if(alreadyLoaded && alreadyLoaded.get('isComplete')) {
@@ -124,7 +124,6 @@ Multivio.documentController = SC.ArrayController.create(
 
 
   hasNextFile: function() {
-    SC.Logger.debug('hasNextFile?');
 
     var currentFile = this.get('currentSelection');
     if(SC.none(currentFile)) {
@@ -144,7 +143,6 @@ Multivio.documentController = SC.ArrayController.create(
 
 
   hasPreviousFile: function() {
-    SC.Logger.debug('hasPreviousFile?');
 
     var currentFile = this.get('currentSelection');
     if(SC.none(currentFile)) {
@@ -184,8 +182,6 @@ Multivio.documentController = SC.ArrayController.create(
           fetchedObject.set('parent', fetchedParentObject);
         }
         //this.selectObject(fetchedObject);
-        SC.Logger.debug("Add selection for " + url + " : " + fetchedObject.get('received') + " and isComplete:" + fetchedObject.get('isComplete'));
-          SC.Logger.debug('Accept new request!');
         this.set('currentUrl', undefined);
         this.set('currentParent', undefined);
         Multivio.mainStatechart.sendEvent('fileLoaded');

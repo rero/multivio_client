@@ -26,7 +26,7 @@ Multivio.ApplicationReadyState = Ki.State.extend({
 
   enterState: function() {
     Multivio.getPath('mainPage.mainPane').append();
-    //Multivio.documentController.fetchFile(Multivio.inputParameters.get('url'));
+    //Multivio.filesController.fetchFile(Multivio.inputParameters.get('url'));
     //Multivio.getPath('mainPage.mainPane').becomeKeyPane();
   },
   loadApp: function() {
@@ -73,15 +73,15 @@ Multivio.ApplicationReadyState = Ki.State.extend({
       enterState: function() {
         var currentRootNode = this.get('parentState').get('rootNode');
         SC.Logger.debug("Enter received with: " + currentRootNode.url);
-        var currentNode = Multivio.documentController.find(currentRootNode.url);
+        var currentNode = Multivio.filesController.find(currentRootNode.url);
         //rootNode not loaded
         if(SC.none(currentNode)) {
           this.gotoState('loadingFile');
-          Multivio.documentController.fetchFile(currentRootNode.url, currentRootNode.parent);
+          Multivio.filesController.fetchFile(currentRootNode.url, currentRootNode.parent);
           return;
         }
         if(currentNode.get('isContentFile')) {
-          Multivio.documentController.selectObject(currentNode);
+          Multivio.filesController.selectObject(currentNode);
           this.gotoState('contentReady');
           return;
         }
@@ -94,7 +94,7 @@ Multivio.ApplicationReadyState = Ki.State.extend({
         }
         this.get('parentState').set('rootNode', {'url': nextNodeUrl, 'parent':currentNode});
         this.gotoState('loadingFile');
-        Multivio.documentController.fetchFile(nextNodeUrl, currentNode);
+        Multivio.filesController.fetchFile(nextNodeUrl, currentNode);
       }
     })
 
@@ -105,8 +105,8 @@ Multivio.ApplicationReadyState = Ki.State.extend({
 
     enterState: function() {
       //loading root
-      if(Multivio.documentController.length() < 1) {
-        var rootUrl = Multivio.documentController.get('referer');
+      if(Multivio.filesController.length() < 1) {
+        var rootUrl = Multivio.filesController.get('referer');
         var loadingState = this.get('parentState').get('loadingContentFile');
         loadingState.set('rootNode', {'url':rootUrl, 'parent':undefined});
         loadingState.set('first', YES);
@@ -114,7 +114,7 @@ Multivio.ApplicationReadyState = Ki.State.extend({
         return;
       }
 
-      var currentFile = Multivio.documentController.get('currentSelection');
+      var currentFile = Multivio.filesController.get('currentSelection');
       var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
       SC.Logger.debug('------> ' + viewToChange);
       if(!SC.none(currentFile) && 
@@ -131,7 +131,7 @@ Multivio.ApplicationReadyState = Ki.State.extend({
 
     nextFile: function(){
       SC.Logger.debug("Run nextFile.");
-      var predecessorNode = Multivio.documentController.get('hasNextFile');
+      var predecessorNode = Multivio.filesController.get('hasNextFile');
       if(!SC.none(predecessorNode)) {
         var loadingState = this.get('parentState').get('loadingContentFile');
         loadingState.set('rootNode', predecessorNode);
@@ -142,7 +142,7 @@ Multivio.ApplicationReadyState = Ki.State.extend({
 
     previousFile: function(){
       SC.Logger.debug("Run previousFile.");
-      var predecessorNode = Multivio.documentController.get('hasPreviousFile');
+      var predecessorNode = Multivio.filesController.get('hasPreviousFile');
       if(!SC.none(predecessorNode)) {
         var loadingState = this.get('parentState').get('loadingContentFile');
         loadingState.set('rootNode', predecessorNode);

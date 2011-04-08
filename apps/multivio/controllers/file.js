@@ -18,7 +18,7 @@ sc_require('controllers/document.js');
 Multivio.fileController = SC.ObjectController.create(
 /** @scope Multivio.fileController.prototype */ {
 
-	contentBinding: SC.Binding.from('Multivio.documentController.selection').single(),
+	contentBinding: SC.Binding.from('Multivio.filesController.selection').single(),
 
     _contentDidChanged: function() {
       SC.Logger.debug('New selection');

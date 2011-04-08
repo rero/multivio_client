@@ -14,13 +14,13 @@ Multivio.unsupportedDocumentView =  SC.View.design({
     layout: {bottom: 10,  left: 10, width: 50, height: 30 },
     action: 'previousFile',
     title: '<<',
-    isEnabledBinding: "Multivio.documentController.hasPreviousFile"
+    isEnabledBinding: "Multivio.filesController.hasPreviousFile"
   }),
 
   nextButton: SC.ButtonView.design({
     layout: {bottom: 10,  right: 10, width: 50,  height: 30 },
     action: 'nextFile',
-    isEnabledBinding: "Multivio.documentController.hasNextFile",
+    isEnabledBinding: "Multivio.filesController.hasNextFile",
     title: '>>'
   })
 });

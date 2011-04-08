@@ -13,7 +13,7 @@ sc_require('controllers/pdf_view.js');
 */
 Multivio.pdfViewController = SC.ObjectController.create(
 /** @scope Multivio.pdfViewController.prototype */ {
-  contentBinding: 'Multivio.documentController.currentSelection',
+  contentBinding: 'Multivio.filesController.currentSelection',
   _renderPrefix: 'server/document/render?',
   rotationAngle: 0,
   currentPage: 1,
