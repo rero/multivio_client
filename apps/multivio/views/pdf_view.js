@@ -11,10 +11,10 @@ keyDown: function(evt) {
        Multivio.pdfViewController.nextPage();
   }
   if(evt.keyCode === 39) {
-       Multivio.documentController.nextFile();
+    Multivio.mainStatechart.sendEvent('nextFile');
   }
   if(evt.keyCode === 37) {
-       Multivio.documentController.previousFile();
+    Multivio.mainStatechart.sendEvent('previousFile');
   }
   return NO;
 }, 

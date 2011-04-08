@@ -1,4 +1,5 @@
 /**
+      SC.Logger.debug("Run nextFile.");
 ==============================================================================
   Project:    Multivio - https://www.multivio.org/
   Copyright:  (c) 2009-2011 RERO
@@ -20,12 +21,13 @@ Multivio.documentController = SC.ArrayController.create(
   /** @scope Multivio.documentController.prototype */ {
 
   allowsMultipleSelection: NO,
+  referer: undefined,
   refererBinding: 'Multivio.inputParameters.url',
   currentUrl: undefined,
   currentParent: undefined,
 
   // TODO: Add your own code here.
-  content: Multivio.CDM.get('fileRecordsReady'),
+  content: Multivio.CDM,
 
   fetchFile: function(url, parent) {
     if(!SC.none(this.get('currentUrl'))) {
@@ -33,11 +35,8 @@ Multivio.documentController = SC.ArrayController.create(
     }
     var alreadyLoaded = this.find(url);
     if(alreadyLoaded && alreadyLoaded.get('isComplete')) {
-      Multivio.mainStatechart.sendEvent('changeCurrentFile');
-      this.selectObject(alreadyLoaded);
-      Multivio.mainStatechart.sendEvent('currentFileDidChange');
+      Multivio.mainStatechart.sendEvent('fileLoaded');
     }else{
-      Multivio.mainStatechart.sendEvent('changeCurrentFile');
       this.set('currentUrl', url);
       this.set('currentParent', parent);
       Multivio.CDM.getMetadata(url);
@@ -47,50 +46,39 @@ Multivio.documentController = SC.ArrayController.create(
   },
 
 
-
-  _nextFile: function(fileRecord, childRecord, go) {
+  _nextFile: function(fileRecord, childRecord) {
     if(SC.none(fileRecord) || SC.none(fileRecord.get('url'))) {
       return NO;
     }
-    SC.Logger.debug('Next to :' + fileRecord.get('url'));
-    SC.Logger.debug('Phys :' + fileRecord.get('isComplete'));
-    var currentUrl = fileRecord.get('url');
+
     var physicalStructure = fileRecord.get('physicalStructure');
-
-    //deep first
-    if(SC.none(childRecord)) {
-      //has childs?
-      if(physicalStructure[0].url !== currentUrl) {
-        if(go) {
-          this.fetchFile(physicalStructure[0].url, fileRecord);
-        }
-        return YES;
-      }
-    }else{
-
-      //brothers and sisters
-      //get index of the currentChild
+    
+    //get last url in child
+    var lastChildUrl = physicalStructure[physicalStructure.length - 1].url;
+    var childUrl = childRecord.get('url');
+    
+    //is the child the last?
+    if(childUrl !== lastChildUrl) {
+      //getSuccessor
       var currentIndex = -1;
       for(var i=0; i<physicalStructure.length; i++) {
-        if(childRecord.get('url') === physicalStructure[i].url) {
+        if(childUrl === physicalStructure[i].url) {
           currentIndex = i;
         }
       }
-      // TODO: generate exception if not found!
-      // Is current index not the last?
-      // found sister
-      if(currentIndex < (physicalStructure.length - 1)) {
-        if(go) {this.fetchFile(physicalStructure[currentIndex + 1].url, fileRecord);}
-        return YES;
+      if(currentIndex < 0) {
+        throw "Multivio.filesController._nextFile: Child not found in physical structure";
       }
+      return {'url' :physicalStructure[currentIndex + 1].url, 'parent': fileRecord};
     }
 
+    //root Node
     if(SC.none(fileRecord.get('parent'))) {
       return NO;
     }
 
-    //find in parents
-    return this._nextFile(fileRecord.get('parent'), fileRecord, go);
+    //the same in parents
+    return this._nextFile(fileRecord.get('parent'), fileRecord);
   },
   
   currentSelection: function() {
@@ -99,60 +87,79 @@ Multivio.documentController = SC.ArrayController.create(
     return current.firstObject(); 
   }.property('selection'),
 
-  _previousFile: function(fileRecord, childRecord, go) {
+  _previousFile: function(fileRecord, childRecord) {
     if(SC.none(fileRecord) || SC.none(fileRecord.get('url'))) {
       return NO;
     }
-    var currentUrl = fileRecord.get('url');
+
     var physicalStructure = fileRecord.get('physicalStructure');
-
-    if(SC.none(childRecord)){
-      //root node?
-      if(SC.none(fileRecord.get('parent'))) {
-        return NO;
-      }else {
-        return this._previousFile(fileRecord.get('parent'), fileRecord, go);
-      }
-    }else{
-
-      //brothers and sisters
-      //get index of the currentChild
+    
+    //get last url in child
+    var firstChildUrl = physicalStructure[0].url;
+    var childUrl = childRecord.get('url');
+    
+    //is the child the last?
+    if(childUrl !== firstChildUrl) {
+      //getSuccessor
       var currentIndex = -1;
       for(var i=0; i<physicalStructure.length; i++) {
-        if(childRecord.get('url') === physicalStructure[i].url) {
+        if(childUrl === physicalStructure[i].url) {
           currentIndex = i;
         }
       }
-      // TODO: generate exception if not found!
-      // Is current index not the first?
-      // found previous sister
-      if(currentIndex > 0) {
-        if(go) {this.fetchFile(physicalStructure[currentIndex - 1].url, fileRecord);}
-        return YES;
+      if(currentIndex < 0) {
+        throw "Multivio.filesController._nextFile: Child not found in physical structure";
       }
-      //previous is me!
-      if(go) {this.fetchFile(fileRecord.get('url'));}
-      return YES;
+      return {'url' :physicalStructure[currentIndex - 1].url, 'parent': fileRecord};
     }
+
+    //root Node
+    if(SC.none(fileRecord.get('parent'))) {
+      return NO;
+    }
+
+    //the same in parents
+    return this._previousFile(fileRecord.get('parent'), fileRecord);
   },
 
-  nextFile: function() {
-    SC.Logger.debug('get next to: ' + this.get('currentSelection'));
-    return this._nextFile(this.get('currentSelection'), undefined, YES);
-  },
 
   hasNextFile: function() {
     SC.Logger.debug('hasNextFile?');
-    return this._nextFile(this.get('currentSelection'), undefined, NO);
+
+    var currentFile = this.get('currentSelection');
+    if(SC.none(currentFile)) {
+      return NO;
+    }
+    
+    if(!currentFile.get('isContentFile')) {
+      throw "Multivio.filesController: hasNextFile should be called on content file only."; 
+    }
+
+    var parent = currentFile.get('parent');
+    if(SC.none(parent)) {
+      return NO;
+    }
+    return this._nextFile(parent, currentFile);
   }.property('currentSelection'),
 
 
-  previousFile: function() {
-    this._previousFile(this.get('currentSelection'), undefined, YES);
-  },
-
   hasPreviousFile: function() {
-    return this._previousFile(this.get('currentSelection'), undefined, NO);
+    SC.Logger.debug('hasPreviousFile?');
+
+    var currentFile = this.get('currentSelection');
+    if(SC.none(currentFile)) {
+      return NO;
+    }
+    
+    if(!currentFile.get('isContentFile')) {
+      throw "Multivio.filesController: hasNextFile should be called on content file only."; 
+    }
+
+    var parent = currentFile.get('parent');
+    if(SC.none(parent)) {
+      return NO;
+    }
+    return this._previousFile(parent, currentFile);
   }.property('currentSelection'),
 
   find: function(url) {
@@ -170,18 +177,18 @@ Multivio.documentController = SC.ArrayController.create(
     var fetchedObject = this.find(this.get('currentUrl'));
     var fetchedParentObject = this.get('currentParent');
     if(!SC.none(fetchedObject)){
-      //set parent
-      if(!SC.none(fetchedParentObject)){
-        fetchedObject.set('parent', fetchedParentObject);
-      }
       //accept new fetch request
       if(fetchedObject.get('isComplete')) {
-        this.selectObject(fetchedObject);
+        //set parent
+        if(!SC.none(fetchedParentObject)){
+          fetchedObject.set('parent', fetchedParentObject);
+        }
+        //this.selectObject(fetchedObject);
         SC.Logger.debug("Add selection for " + url + " : " + fetchedObject.get('received') + " and isComplete:" + fetchedObject.get('isComplete'));
-        SC.Logger.debug('Accept new request!');
+          SC.Logger.debug('Accept new request!');
         this.set('currentUrl', undefined);
         this.set('currentParent', undefined);
-        Multivio.mainStatechart.sendEvent('currentFileDidChange');
+        Multivio.mainStatechart.sendEvent('fileLoaded');
       }
     }
   }.observes('[]')

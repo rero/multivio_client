@@ -27,7 +27,14 @@ Multivio.FileRecord = SC.Object.extend({
       return YES;
     }
     return NO;
-  }.property('received')//.cacheable()
+  }.property('received'), //.cacheable()
+
+  isContentFile: function(){
+    if(this.get('metadata').mime.match(/xml$/)){
+      return NO;
+    }
+    return YES;
+  }.property('metadata')//.cacheable()
 
 });
 

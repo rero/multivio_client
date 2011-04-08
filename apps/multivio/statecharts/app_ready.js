@@ -11,13 +11,13 @@ sc_require('resources/main_page.js');
 sc_require('controllers/document.js');
 
 /**
-  @class
+@class
 
   One of the application states: becomes active when the application is ready
   for user interaction
-  
-  @author maj
-  @extends Ki.State
+
+@author maj
+@extends Ki.State
   @since 1.0
 */
 Multivio.ApplicationReadyState = Ki.State.extend({
@@ -26,11 +26,12 @@ Multivio.ApplicationReadyState = Ki.State.extend({
 
   enterState: function() {
     Multivio.getPath('mainPage.mainPane').append();
+    //Multivio.documentController.fetchFile(Multivio.inputParameters.get('url'));
     //Multivio.getPath('mainPage.mainPane').becomeKeyPane();
   },
-    loadApp: function() {
-      this.gotoState('initializing'); 
-    },
+  loadApp: function() {
+    this.gotoState('initializing'); 
+  },
 
   exitState: function() {
     Multivio.getPath('mainPage.mainPane').remove();
@@ -39,42 +40,61 @@ Multivio.ApplicationReadyState = Ki.State.extend({
   applicationError: function(){
     this.gotoState('error');
   },
+  
 
-  loading: Ki.State.design({
+  loadingContentFile: Ki.State.design({
 
-    initialSubstate: 'loadingFile',
+    initialSubstate: 'receivedFile',
+    //for substate
+    rootNode: undefined,
+    first: YES,
 
-    currentFileDidChange: function(){
-      this.gotoState('contentReady');
-    },
-
-    currentPositionDidChange: function(){
-      this.gotoState('contentReady');
-
-    },
-
-    loadingFile: Ki.State.design({
     enterState: function() {
+      if(SC.none(this.get('rootNode'))) {
+        this.gotoState('contentReady');
+        return;
+      }
       var pdfView = Multivio.getPath('mainPage.mainPdfView.waitingView');
       pdfView.set('isVisible', YES);
-
     },
+
     exitState: function() {
       var pdfView = Multivio.getPath('mainPage.mainPdfView.waitingView');
       pdfView.set('isVisible', NO);
     },
-      currentFileDidChange:function() {
-        this.gotoState('contentReady');
+
+    loadingFile: Ki.State.design({
+      fileLoaded:function() {
+        this.gotoState('receivedFile');
       }
-      /*
-      enterState: function() {
-      }
-      */
     }),
 
-    loadingPosition: Ki.State.design({
+    receivedFile: Ki.State.design({
       enterState: function() {
-        this.gotoState('contentReady');
+        var currentRootNode = this.get('parentState').get('rootNode');
+        SC.Logger.debug("Enter received with: " + currentRootNode.url);
+        var currentNode = Multivio.documentController.find(currentRootNode.url);
+        //rootNode not loaded
+        if(SC.none(currentNode)) {
+          this.gotoState('loadingFile');
+          Multivio.documentController.fetchFile(currentRootNode.url, currentRootNode.parent);
+          return;
+        }
+        if(currentNode.get('isContentFile')) {
+          Multivio.documentController.selectObject(currentNode);
+          this.gotoState('contentReady');
+          return;
+        }
+        var currentPhys = currentNode.get('physicalStructure');
+        var nextNodeUrl;
+        if (this.get('parentState').get('first')) {
+          nextNodeUrl = currentPhys[0].url;
+        }else{
+          nextNodeUrl = currentPhys[currentPhys.length - 1].url;
+        }
+        this.get('parentState').set('rootNode', {'url': nextNodeUrl, 'parent':currentNode});
+        this.gotoState('loadingFile');
+        Multivio.documentController.fetchFile(nextNodeUrl, currentNode);
       }
     })
 
@@ -82,35 +102,54 @@ Multivio.ApplicationReadyState = Ki.State.extend({
 
   contentReady: Ki.State.design({
 
+
     enterState: function() {
+      //loading root
+      if(Multivio.documentController.length() < 1) {
+        var rootUrl = Multivio.documentController.get('referer');
+        var loadingState = this.get('parentState').get('loadingContentFile');
+        loadingState.set('rootNode', {'url':rootUrl, 'parent':undefined});
+        loadingState.set('first', YES);
+        this.gotoState('loadingContentFile'); 
+        return;
+      }
+
       var currentFile = Multivio.documentController.get('currentSelection');
       var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
       SC.Logger.debug('------> ' + viewToChange);
       if(!SC.none(currentFile) && 
-        !SC.none(currentFile.metadata) &&
+         !SC.none(currentFile.metadata) &&
              currentFile.metadata.mime === 'application/pdf') {
         viewToChange.set('nowShowing', 'mainPdfView');
-        //Multivio.getPath('mainPage.mainPane').set('keyView', Multivio.mainPdfView);
-        Multivio.getPath('mainPage.mainPdfView').becomeFirstResponder();
+      //Multivio.getPath('mainPage.mainPane').set('keyView', Multivio.mainPdfView);
+      Multivio.getPath('mainPage.mainPdfView').becomeFirstResponder();
+      this.set('searchInNext', YES);
       }else{
-        viewToChange.set('nowShowing', 'unsupportedDocumentView');
+          viewToChange.set('nowShowing', 'unsupportedDocumentView');
       }
     },
 
     nextFile: function(){
       SC.Logger.debug("Run nextFile.");
-      Multivio.documentController.nextFile();
+      var predecessorNode = Multivio.documentController.get('hasNextFile');
+      if(!SC.none(predecessorNode)) {
+        var loadingState = this.get('parentState').get('loadingContentFile');
+        loadingState.set('rootNode', predecessorNode);
+        loadingState.set('first', YES);
+        this.gotoState('loadingContentFile'); 
+      }
     },
 
     previousFile: function(){
-        Multivio.documentController.previousFile();
-    },
-
-    changeCurrentFile: function(){
-      this.gotoState('loadingFile');
-    },
-    changeCurrentPosition: function(){
-      this.gotoState('loadingPosition');
+      SC.Logger.debug("Run previousFile.");
+      var predecessorNode = Multivio.documentController.get('hasPreviousFile');
+      if(!SC.none(predecessorNode)) {
+        var loadingState = this.get('parentState').get('loadingContentFile');
+        loadingState.set('rootNode', predecessorNode);
+        loadingState.set('first', NO);
+        this.gotoState('loadingContentFile'); 
+      }
     }
+
   })
 });

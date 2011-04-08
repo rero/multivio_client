@@ -42,8 +42,6 @@ Multivio.mainStatechart = Ki.Statechart.create({
 
     initializationOk: function() {
       SC.Logger.debug('Go to ready');
-      Multivio.documentController.set('content', Multivio.CDM);
-      Multivio.documentController.fetchFile(Multivio.inputParameters.get('url'));
       this.gotoState('applicationReady'); 
     },
 
