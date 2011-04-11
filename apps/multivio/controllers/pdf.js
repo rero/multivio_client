@@ -21,10 +21,6 @@ Multivio.pdfFileController = SC.ObjectController.create(
     2.0, 3.0, 4.0],
     _currentZoomIndex: 7,
 
-    _resetCurrentPage: function() {
-      this.set('currentPage', 1);
-    }.observes('url'),
-
     _defaultWidth: function() {
       var nativeSizes = this.get('metadata').nativeSize;
       var currentPage = this.get('currentPage');

@@ -10,6 +10,7 @@
 
   @extends SC.Object
 */
+sc_require('controllers/pdf.js');
 Multivio.thumbnailsController = SC.ArrayController.create(
   /** @scope Multivio.thumnailsController.prototype */ {
   content: [],
@@ -37,25 +38,36 @@ Multivio.thumbnailsController = SC.ArrayController.create(
   _currentPageDidChange: function() {
     var currentPage = this.get('currentPage');
     if(!SC.none(currentPage) && currentPage > 0) {
+    SC.Logger.debug('Select current page: ' + currentPage + ' and ' + this.objectAt(currentPage - 1));
       this.selectObject(this.objectAt(currentPage - 1));
     }
   }.observes('currentPage'),
+  
+ _removeAll: function() {
+    if(this.get('length') > 0) {
+      this.removeAt(0, this.get('length')); 
+    }
+  },
 
   _nPagesDidChange: function() {
+    this._removeAll();
     var nP = this.get('nPages');
-    var newContent  = [];
     if(!SC.none(nP) && nP >= 0){
       SC.Logger.debug('New number of pages: ' + nP);
       var pageNr = 1;
       for(var i=0; i<nP; i++) {
-        newContent[i] = SC.Object.create( 
-                                         {
+        this.pushObject(SC.Object.create({
           url: this.get('_thumbnailPrefix') + "&page_nr=" + pageNr + "&url=" + Multivio.pdfFileController.get('url'),
           pageNumber: pageNr
-        });
+        }));
         pageNr += 1;
       }
-      this.set('content', newContent);
+    }
+    //select current page
+    var currentPage = this.get('currentPage');
+    if(!SC.none(currentPage) && currentPage > 0) {
+    SC.Logger.debug('------------> Select current page: ' + currentPage + ' and ' + this.objectAt(currentPage ));
+      this.selectObject(this.objectAt(currentPage - 1));
     }
   }.observes('nPages')
 
