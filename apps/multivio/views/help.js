@@ -2,6 +2,7 @@
   // help
 Multivio.HelpPane = SC.PickerPane.design({
   isAnchored: YES,
+  isModal: NO,
     layout: { width: 320, bottom: 100 },
     contentView: SC.ScrollView.design({
       layout: { top: 2, bottom: 2, left: 2, right: 2 },

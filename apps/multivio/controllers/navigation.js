@@ -15,6 +15,7 @@ sc_require('views/thumbnails.js');
 Multivio.navigationController = SC.ArrayController.create(
 /** @scope Multivio.navigationController.prototype */ {
   // TODO: Add your own code here.
+  currentOpenedPanel: undefined,
   content: [
     SC.Object.create({
       panel: 'helpPane',
@@ -29,13 +30,27 @@ Multivio.navigationController = SC.ArrayController.create(
   ],
 
   _selectionDidChange: function() {
+    var panelName;
     var sel = this.get('selection');
-      SC.Logger.debug('navigationBar: selection changed!');
-      if(!SC.none(sel))  {
-        var panelName = sel.firstObject().get('panel');
-        SC.Logger.debug('Panel Name: ' + panelName);
-        //Multivio.getPath('mainPage.thumbnailsView').set('canBeClosed', NO);
-        Multivio.getPath('mainPage.'+panelName).popup(Multivio.getPath('mainPage.mainPane.centerView'));
+    SC.Logger.debug('navigationBar: selection changed! ' + sel.length());
+    if(!SC.none(sel) && sel.length() > 0)  {
+      panelName = sel.firstObject().get('panel');
+      oldPanelName = this.get('currentOpenedPanel');
+      if(!SC.none(oldPanelName) && panelName !== oldPanelName) {
+        Multivio.getPath('mainPage.'+oldPanelName).remove();
+      }
+
+      this.set('currentOpenedPanel', panelName);
+      SC.Logger.debug('Panel Name: ' + panelName);
+      //Multivio.getPath('mainPage.thumbnailsView').set('canBeClosed', NO);
+      Multivio.getPath('mainPage.'+panelName).popup(Multivio.getPath('mainPage.mainPane.centerView'));
+    }
+    if(sel.length() === 0) {
+      panelName = this.get('currentOpenedPanel');
+      if(!SC.none(panelName)) {
+        Multivio.getPath('mainPage.'+panelName).remove();
+      }
+      this.set('currentOpenedPanel', undefined);
     }
   }.observes('selection')
 
