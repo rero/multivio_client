@@ -8,7 +8,7 @@
 /*globals Multivio */
 
 sc_require('resources/main_page.js');
-sc_require('controllers/document.js');
+sc_require('controllers/files.js');
 
 /**
 @class

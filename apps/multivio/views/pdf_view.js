@@ -5,10 +5,10 @@ acceptsFirstResponder: YES,
 keyDown: function(evt) {
    SC.Logger.debug('KeyDown: ' + evt.keyCode );
   if(evt.keyCode === 38) {
-       Multivio.pdfViewController.previousPage();
+       Multivio.pdfFileController.previousPage();
   }
   if(evt.keyCode === 40) {
-       Multivio.pdfViewController.nextPage();
+       Multivio.pdfFileController.nextPage();
   }
   if(evt.keyCode === 39) {
     Multivio.mainStatechart.sendEvent('nextFile');
@@ -31,7 +31,7 @@ keyDown: function(evt) {
     layout: { top: 0, left: 0, bottom: 0, right: 0},
     contentView: SC.ImageView.design({
       layout: { centerX: 0, centerY: 0 },
-      valueBinding: 'Multivio.pdfViewController.pdfUrl',
+      valueBinding: 'Multivio.pdfFileController.pdfUrl',
       imageDidLoad: function (url, imageOrError) {
         /*
         var jquery = this.$();
@@ -72,47 +72,47 @@ keyDown: function(evt) {
 
   previousPageButton: SC.ButtonView.design({
     layout: {bottom: 10,  left: 190, width: 50, height: 30 },
-    target: 'Multivio.pdfViewController',
+    target: 'Multivio.pdfFileController',
     action: 'previousPage',
-    isEnabledBinding: 'Multivio.pdfViewController.hasPreviousPage',
+    isEnabledBinding: 'Multivio.pdfFileController.hasPreviousPage',
     title: '<'
   }),
 
   nextPageButton: SC.ButtonView.design({
     layout: {bottom: 10,  right: 190, width: 50, height: 30 },
-    target: 'Multivio.pdfViewController',
+    target: 'Multivio.pdfFileController',
     action: 'nextPage',
-    isEnabledBinding: 'Multivio.pdfViewController.hasNextPage',
+    isEnabledBinding: 'Multivio.pdfFileController.hasNextPage',
     title: '>'
   }),
   previousZoomButton: SC.ButtonView.design({
     layout: {bottom: 10,  left: 130, width: 50, height: 30 },
-    target: 'Multivio.pdfViewController',
+    target: 'Multivio.pdfFileController',
     action: 'previousZoom',
     keyEquivalent: 'a',
     isKeyResponder: YES,
-    isEnabledBinding: 'Multivio.pdfViewController.hasPreviousZoom',
+    isEnabledBinding: 'Multivio.pdfFileController.hasPreviousZoom',
     title: 'z-'
   }),
 
   nextZoomButton: SC.ButtonView.design({
     layout: {bottom: 10,  right: 130, width: 50, height: 30 },
-    target: 'Multivio.pdfViewController',
+    target: 'Multivio.pdfFileController',
     action: 'nextZoom',
     keyEquivalent: '+',
-    isEnabledBinding: 'Multivio.pdfViewController.hasNexZoom',
+    isEnabledBinding: 'Multivio.pdfFileController.hasNexZoom',
     title: 'z+'
   }),
 
   rotateLeftButton: SC.ButtonView.design({
     layout: {bottom: 10,  left: 70, width: 50, height: 30 },
-    target: 'Multivio.pdfViewController',
+    target: 'Multivio.pdfFileController',
     action: 'rotateLeft',
     title: '-'
   }),
   rotateRightButton: SC.ButtonView.design({
     layout: {bottom: 10,  right: 70, width: 50, height: 30 },
-    target: 'Multivio.pdfViewController',
+    target: 'Multivio.pdfFileController',
     action: 'rotateRight',
     title: '+'
   }),

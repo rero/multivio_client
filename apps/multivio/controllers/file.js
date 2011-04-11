@@ -13,7 +13,7 @@
 
   @extends SC.Object
 */
-sc_require('controllers/document.js');
+sc_require('controllers/files.js');
 
 Multivio.fileController = SC.ObjectController.create(
 /** @scope Multivio.fileController.prototype */ {

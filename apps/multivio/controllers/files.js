@@ -181,7 +181,6 @@ Multivio.filesController = SC.ArrayController.create(
         if(!SC.none(fetchedParentObject)){
           fetchedObject.set('parent', fetchedParentObject);
         }
-        //this.selectObject(fetchedObject);
         this.set('currentUrl', undefined);
         this.set('currentParent', undefined);
         Multivio.mainStatechart.sendEvent('fileLoaded');

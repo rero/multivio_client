@@ -16,9 +16,9 @@ Multivio.thumbnailsController = SC.ArrayController.create(
   nPages: undefined,
   currentPage: undefined,
   url: undefined,
-  nPagesBinding: 'Multivio.pdfViewController.nPages',
-  currentPageBinding: 'Multivio.pdfViewController.currentPage',
-  //urlBinding: 'Multivio.pdfViewController.url',
+  nPagesBinding: 'Multivio.pdfFileController.nPages',
+  currentPageBinding: 'Multivio.pdfFileController.currentPage',
+  //urlBinding: 'Multivio.pdfFileController.url',
   _thumbnailPrefix: '/server/document/render?max_width=100&max_height=100',
 
   _selectionDidChange: function() {
@@ -36,7 +36,7 @@ Multivio.thumbnailsController = SC.ArrayController.create(
   
   _currentPageDidChange: function() {
     var currentPage = this.get('currentPage');
-    if(!SC.none(currentPage) && currentPage > 1) {
+    if(!SC.none(currentPage) && currentPage > 0) {
       this.selectObject(this.objectAt(currentPage - 1));
     }
   }.observes('currentPage'),
@@ -46,16 +46,16 @@ Multivio.thumbnailsController = SC.ArrayController.create(
     var newContent  = [];
     if(!SC.none(nP) && nP >= 0){
       SC.Logger.debug('New number of pages: ' + nP);
-    var pageNr = 1;
-    for(var i=0; i<nP; i++) {
-      newContent[i] = SC.Object.create( 
-        {
-        url: this.get('_thumbnailPrefix') + "&page_nr=" + pageNr + "&url=" + Multivio.pdfViewController.get('url'),
-        pageNumber: pageNr
-      });
-      pageNr += 1;
-    }
-    this.set('content', newContent);
+      var pageNr = 1;
+      for(var i=0; i<nP; i++) {
+        newContent[i] = SC.Object.create( 
+                                         {
+          url: this.get('_thumbnailPrefix') + "&page_nr=" + pageNr + "&url=" + Multivio.pdfFileController.get('url'),
+          pageNumber: pageNr
+        });
+        pageNr += 1;
+      }
+      this.set('content', newContent);
     }
   }.observes('nPages')
 

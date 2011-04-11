@@ -14,7 +14,6 @@ sc_require('views/help.js');
 sc_require('views/thumbnails.js');
 Multivio.navigationController = SC.ArrayController.create(
 /** @scope Multivio.navigationController.prototype */ {
-
   // TODO: Add your own code here.
   content: [
     SC.Object.create({
