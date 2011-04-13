@@ -43,7 +43,7 @@ Multivio.mainPage = SC.Page.design({
 
     //topLeftView: Multivio.navigationBar,
     centerView: SC.WellView.design({
-      layout: { top: 10, left: 50, bottom: 40 , right: 10 }
+      layout: { top: 10, left: 40, bottom: 40 , right: 10 }
     })
   }),
   mainPdfView: Multivio.mainPdfView,

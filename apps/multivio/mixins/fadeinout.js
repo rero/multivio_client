@@ -35,7 +35,9 @@ Multivio.FadeInOut = {
 
   hide: function() {
     SC.Logger.debug('hide');
+    if(!this.get('permanent')) {
       this.adjust("opacity", 0.0);
+    }
   },
 
   mouseEntered: function (evt) {

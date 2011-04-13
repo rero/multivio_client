@@ -17,15 +17,15 @@ Multivio.NavigationBar = SC.SourceListView.design({
   useToggleSelection: YES,
   acceptsFirstResponder: NO,
   selectOnMouseDown: YES,
-  layout: { top: 10, left: 0, bottom: 40, width: 50},
+  layout: { top: 10, left: 0, bottom: 40, width: 40},
     layerId: 'mvo-navigation-bar',
     contentValueKey: 'panel',
     contentIconKey: 'icon',
     selectionBinding: 'Multivio.navigationController.selection',
     contentBinding: 'Multivio.navigationController.content',
     exampleView: Multivio.NavigationItem,
-    rowHeight: 35,
-    rowSpacing: 10,
+    rowHeight: 40,
+    rowSpacing: 0,
 
     _hello: function() {
       SC.Logger.debug('hello');

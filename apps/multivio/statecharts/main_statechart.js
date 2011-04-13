@@ -32,6 +32,7 @@ Multivio.mainStatechart = Ki.Statechart.create({
       panel.append();
       Multivio.inputParameters.read();
       Multivio.CDM.removeAll();
+      Multivio.filesController.set('content', Multivio.CDM);
       Multivio.ServerVersion.getServerInfo();
       SC.Logger.debug('After');
     },

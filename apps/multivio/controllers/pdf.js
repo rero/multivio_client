@@ -11,11 +11,20 @@ sc_require('views/pdf_view.js');
 
 @extends SC.Object
 */
+Multivio.ZOOM_MODE = 'zoom';
+Multivio.FIT_WIDTH_MODE = 'fit-width';
+Multivio.FIT_ALL_MODE = 'fit-all';
+
 Multivio.pdfFileController = SC.ObjectController.create(
   /** @scope Multivio.pdfFileController.prototype */ {
   contentBinding: 'Multivio.filesController.currentSelection',
   _renderPrefix: 'server/document/render?',
+  _centerViewWidth: 0,
+  _centerViewHeight: 0,
+  _centerViewWidthBinding: 'Multivio.mainPage.mainPdfView.pdfScrollView.contentView.visibleWidth',
+  _centerViewHeightBinding: 'Multivio.mainPage.mainPdfView.pdfScrollView.contentView.visibleHeight',
   rotationAngle: 0,
+  mode: Multivio.FIT_WIDTH_MODE, //fitWidth, zoom, fit, native
   currentPage: 1,
   _zoomScale: [0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.75, 1.0, 1.5,
     2.0, 3.0, 4.0],
@@ -40,20 +49,67 @@ Multivio.pdfFileController = SC.ObjectController.create(
         return this.get('metadata').defaultNativeSize[1];
       }
     }.property('currentPage', 'metadata').cacheable(),
+    
+    fitWidth: function(key, value) {
+      SC.Logger.debug('fitWidth: ' + value);
+      if(SC.none(value)) {
+        if (this.get('mode') === Multivio.FIT_WIDTH_MODE) {
+          return YES;
+        } else {
+          return NO;
+        }
+      }else {
+        if(value) {
+          this.set('mode', Multivio.FIT_WIDTH_MODE);
+        } else {
+          this.set('mode', Multivio.ZOOM_MODE);
+        }
+      }
+    }.property('mode').cacheable(),
+
+    fitAll: function(key, value) {
+      SC.Logger.debug('fitAll: ' + value);
+      if(SC.none(value)) {
+        if (this.get('mode') === Multivio.FIT_ALL_MODE) {
+          return YES;
+        } else {
+          return NO;
+        }
+      }else {
+        if(value) {
+          this.set('mode', Multivio.FIT_ALL_MODE);
+        } else {
+          this.set('mode', Multivio.ZOOM_MODE);
+        }
+      }
+    }.property('mode').cacheable(),
 
     pdfUrl: function() {
       if(!SC.none(this.get('metadata'))){
         if(this.get('metadata').mime === 'application/pdf') {
           var scaleFactor = this.get('_zoomScale')[this.get('_currentZoomIndex')];
-          var newWidth = parseInt(this.get('_defaultWidth') * scaleFactor, 10);
-          var newHeight = parseInt(this.get('_defaultHeight') * scaleFactor, 10);
-          var newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&max_height=" + newHeight + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
+          var newUrl, newWidth, newHeight;
+          switch(this.get('mode')) {
+            case Multivio.FIT_WIDTH_MODE:
+              newWidth = parseInt(this.get('_centerViewWidth'), 10);
+              newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
+            break;
+            case Multivio.FIT_ALL_MODE:
+              newWidth = parseInt(this.get('_centerViewWidth'), 10);
+              newHeight = parseInt(this.get('_centerViewHeight'), 10);
+              newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&max_height=" + newHeight + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
+            break;
+            default:
+              newWidth = parseInt(this.get('_defaultWidth') * scaleFactor, 10);
+              newHeight = parseInt(this.get('_defaultHeight') * scaleFactor, 10);
+              newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&max_height=" + newHeight + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
+          }
           return newUrl;
         }
       }else{
         return undefined;
       }
-    }.property('url','rotationAngle', '_currentZoomIndex', 'currentPage').cacheable(),
+    }.property('url','rotationAngle', '_currentZoomIndex', 'currentPage', '_centerViewWidth', 'mode').cacheable(),
 
     nPages:function() {
       if(!SC.none(this.get('metadata'))) {

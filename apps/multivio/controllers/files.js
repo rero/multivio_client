@@ -170,7 +170,8 @@ Multivio.filesController = SC.ArrayController.create(
     return null;
   },
 
-  _contentDidChange: function(){
+  _mvo_contentDidChange: function(){
+    SC.Logger.debug('file received!!!!!');
     var url = this.get('currentUrl');
     var fetchedObject = this.find(this.get('currentUrl'));
     var fetchedParentObject = this.get('currentParent');
@@ -183,6 +184,7 @@ Multivio.filesController = SC.ArrayController.create(
         }
         this.set('currentUrl', undefined);
         this.set('currentParent', undefined);
+        SC.Logger.debug('fileLoaded');
         Multivio.mainStatechart.sendEvent('fileLoaded');
       }
     }
