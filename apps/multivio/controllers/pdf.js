@@ -4,7 +4,7 @@
 // ==========================================================================
 /*globals Multivio */
 
-sc_require('controllers/pdf_view.js');
+sc_require('views/pdf_view.js');
 /** @class
 
 (Document Your Controller Here)

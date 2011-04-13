@@ -29,29 +29,28 @@ Multivio.mainPage = SC.Page.design({
   //  and http://groups.google.com/group/sproutcore/browse_thread/thread/914c2c6c0558fcbc/9cc1bb65f0adcd0d
   // for more details
   // load.
- 			rightView: undefined,
+  rightView: undefined,
 
   mainPane: SC.MainPane.design({
     childViews: 'bottomView centerView leftView'.w(),
     defaultResponder: 'Multivio.mainStatechart',
+    
 
+    bottomView: Multivio.TitleView,
+    // the left view...
+    leftView: Multivio.NavigationBar,
+    //topLeftView: Multivio.thumbnailsView,
 
-
-			bottomView: Multivio.TitleView,
-      // the left view...
-      leftView: Multivio.NavigationBar,
-      //topLeftView: Multivio.thumbnailsView,
-
-      //topLeftView: Multivio.navigationBar,
-      centerView: SC.WellView.design({
-        layout: { top: 10, left: 50, bottom: 40 , right: 10 }
-      })
+    //topLeftView: Multivio.navigationBar,
+    centerView: SC.WellView.design({
+      layout: { top: 10, left: 50, bottom: 40 , right: 10 }
+    })
   }),
   mainPdfView: Multivio.mainPdfView,
   unsupportedDocumentView: Multivio.unsupportedDocumentView,
   thumbnailsView: Multivio.thumbnailsView,
   navigationBar: Multivio.NavigationBar,
   helpPane: Multivio.HelpPane,
-	titleView: Multivio.TitleView
+  titleView: Multivio.TitleView
 });
 

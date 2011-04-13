@@ -1,5 +1,12 @@
 /* thumbnails */
 
+/*
+body, .sc-view, .sc-pane, .sc-main, .ace, .ace.source-list.collection {
+	background-color: #444; 
+	color: #fff;
+}
+	*/
+
 #mvo-thumbnails .sc-collection-item.sel {
 	background: none repeat scroll 0 0 #608AB9;
 }
@@ -31,10 +38,69 @@
 	background-color: #eee;
 	padding: 20px;
 }
-.mvo-center .sc-image-view {
+
+
+.mvo-page {
+	/*
 	-moz-border-radius: 1px 1px 1px 1px;
 	-moz-box-shadow: 2px 2px 4px #CCCCCC;
 	-webkit-border-radius: 1px 1px 1px 1px;
 	-webkit-box-shadow: 2px 2px 4px #CCCCCC;
 	border: 1px solid #CCCCCC;
+	*/
+	position: static;
+	margin: auto auto;
+	display: block;
+}
+
+.ace.toolbar, .mvo-front-view-transparent {
+  background: sc_static("images/transparency_ddd_90.png") repeat scroll 0 0 transparent;
+  border: none;
+  /*z-index: -10000;*/
+}
+
+.sc-image-button-view {
+  background: none;
+}
+
+.sc-image-button-view .img{
+  width: 24px;
+  height: 24px;
+  margin: 4px;
+  cursor: pointer;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+.sc-image-button-view.active .img{
+   background-color: #444;
+}
+.sc-image-button-view.disabled .img{
+  opacity: 0.3;
+  moz-opacity : 0.3;
+  ms-filter: "alpha(opacity=3)"; /* IE 8 */
+  filter : alpha(opacity=3);
+}
+.sc-image-button-view .image-button-previous-doc {
+   background-image: sc_static("images/icons/24x24/jump_backwards_dark_24x24.png");
+}
+.sc-image-button-view .image-button-next-doc {
+   background-image: sc_static("images/icons/24x24/jump_forward_dark_24x24.png");
+}
+.sc-image-button-view .image-button-previous-page {
+   background-image: sc_static("images/icons/24x24/go_backwards_dark_24x24.png");
+}
+.sc-image-button-view .image-button-next-page {
+   background-image: sc_static("images/icons/24x24/go_forward_dark_24x24.png");
+}
+.sc-image-button-view .image-button-zoom-minus {
+   background-image: sc_static("images/icons/24x24/zoom_minus_dark_24x24.png");
+}
+.sc-image-button-view .image-button-zoom-plus {
+   background-image: sc_static("images/icons/24x24/zoom_plus_dark_24x24.png");
+}
+.sc-image-button-view .image-button-rotate-left {
+   background-image: sc_static("images/icons/24x24/rotate_left_dark_24x24.png");
+}
+.sc-image-button-view .image-button-rotate-right {
+   background-image: sc_static("images/icons/24x24/rotate_right_dark_24x24.png");
 }
