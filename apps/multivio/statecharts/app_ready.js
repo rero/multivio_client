@@ -121,8 +121,8 @@ Multivio.ApplicationReadyState = Ki.State.extend({
          !SC.none(currentFile.metadata) &&
              currentFile.metadata.mime === 'application/pdf') {
         viewToChange.set('nowShowing', 'mainPdfView');
-      //Multivio.getPath('mainPage.mainPane').set('keyView', Multivio.mainPdfView);
       Multivio.getPath('mainPage.mainPdfView').becomeFirstResponder();
+      Multivio.getPath('mainPage.mainPdfView.bottomToolbar').displayBar();
       this.set('searchInNext', YES);
       }else{
           viewToChange.set('nowShowing', 'unsupportedDocumentView');

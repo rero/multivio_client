@@ -85,6 +85,7 @@ this.updateLayerIfNeeded();
     childViews: ['previousButton', 'nextButton', 'rotateRightButton', 'rotateLeftButton', 'nextZoomButton', 'previousZoomButton', 'nextPageButton', 'previousPageButton'],
     classNames: "mvo-front-view-transparent".w(),
     layout: { centerX: 0, width: 728, height: 48, bottom: 20 },
+    acceptsFirstResponder: NO,
 
     previousPageButton: SC.ImageButtonView.design({
       layout: {centerY: 0,  left: 0, width: 30, height: 30 },

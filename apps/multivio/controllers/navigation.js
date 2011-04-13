@@ -25,6 +25,11 @@ Multivio.navigationController = SC.ArrayController.create(
     SC.Object.create({
       panel: 'thumbnailsView',
       icon: static_url("images/icons/24x24/thumbnails_light_24x24.png")
+    }),
+    
+    SC.Object.create({
+      panel: 'mainPdfView.bottomToolbar',
+      icon: static_url("images/icons/24x24/show_toolbar_light_24x24.png")
     })
 
   ],
