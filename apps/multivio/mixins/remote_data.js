@@ -46,7 +46,7 @@ Multivio.RemoteData = {
   _requestError: function () {
     SC.Logger.debug('http error');
     Multivio.setPath("errorController.errorMessage", "Server is not responding");
-    Multivio.mainStatechart.sendEvent('initializationError');
+    Multivio.mainStatechart.sendEvent('serverError');
   },
 
 

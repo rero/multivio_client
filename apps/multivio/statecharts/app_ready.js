@@ -62,6 +62,11 @@ Multivio.ApplicationReadyState = Ki.State.extend({
       var pdfView = Multivio.getPath('mainPage.mainPdfView.waitingView');
       pdfView.set('isVisible', NO);
     },
+    
+    serverError: function() {
+      SC.Logger.debug("InitializationError called");
+      this.gotoState('error');  
+    },
 
     loadingFile: Ki.State.design({
       fileLoaded:function() {
@@ -130,9 +135,9 @@ Multivio.ApplicationReadyState = Ki.State.extend({
     },
 
     nextFile: function(){
-      SC.Logger.debug("Run nextFile.");
       var predecessorNode = Multivio.filesController.get('hasNextFile');
-      if(!SC.none(predecessorNode)) {
+
+      if(predecessorNode) {
         var loadingState = this.get('parentState').get('loadingContentFile');
         loadingState.set('rootNode', predecessorNode);
         loadingState.set('first', YES);
@@ -141,9 +146,8 @@ Multivio.ApplicationReadyState = Ki.State.extend({
     },
 
     previousFile: function(){
-      SC.Logger.debug("Run previousFile.");
       var predecessorNode = Multivio.filesController.get('hasPreviousFile');
-      if(!SC.none(predecessorNode)) {
+      if(predecessorNode) {
         var loadingState = this.get('parentState').get('loadingContentFile');
         loadingState.set('rootNode', predecessorNode);
         loadingState.set('first', NO);

@@ -25,6 +25,7 @@ Multivio.mainStatechart = Ki.Statechart.create({
       this.gotoState('initializing'); 
     }
   }),
+  
   initializing: Ki.State.design({
     enterState: function() {
       SC.Logger.debug('Initializing...');
