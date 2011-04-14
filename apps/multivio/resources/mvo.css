@@ -20,7 +20,7 @@ body, .sc-view, .sc-pane, .sc-main, .ace, .ace.source-list.collection {
 }
 
 #mvo-navigation-bar .sc-list-item-view img{
-	margin: 4px;
+/*	margin: 4px;*/
 	padding: 4px;
 }
 
@@ -79,15 +79,13 @@ body, .sc-view, .sc-pane, .sc-main, .ace, .ace.source-list.collection {
 }
 
 .sc-image-button-view .img{
-  width: 24px;
-  height: 24px;
-  margin: 4px;
+  padding: 4px;
   cursor: pointer;
   background-position: center center;
   background-repeat: no-repeat;
 }
-.sc-image-button-view.active .img{
-   background-color: #ccc;
+.sc-image-button-view.active .img, .sc-image-button-view.sel .img {
+   background-color: lightSteelBlue;
 }
 .sc-image-button-view.disabled .img{
   opacity: 0.3;

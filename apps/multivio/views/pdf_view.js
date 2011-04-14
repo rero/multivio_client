@@ -98,7 +98,7 @@ this.updateLayerIfNeeded();
     acceptsFirstResponder: NO,
 
     previousPageButton: SC.ImageButtonView.design({
-      layout: {centerY: 0,  left: 0, width: 30, height: 30 },
+      layout: {centerY: 0,  left: 0, width: 32, height: 32 },
       image: 'image-button-previous-page',
       target: 'Multivio.pdfFileController',
       action: 'previousPage',
@@ -107,7 +107,7 @@ this.updateLayerIfNeeded();
     }),
 
     nextPageButton: SC.ImageButtonView.design({
-      layout: {centerY: 0,  right: 0, width: 30, height: 30 },
+      layout: {centerY: 0,  right: 0, width: 32, height: 32 },
       image: 'image-button-next-page',
       target: 'Multivio.pdfFileController',
       action: 'nextPage',
@@ -115,7 +115,7 @@ this.updateLayerIfNeeded();
       title: '>'
     }),
     previousZoomButton: SC.ImageButtonView.design({
-      layout: {centerY: 0,  left: 40, width: 30, height: 30 },
+      layout: {centerY: 0,  left: 40, width: 32, height: 32 },
       image: 'image-button-zoom-minus',
       target: 'Multivio.pdfFileController',
       action: 'previousZoom',
@@ -127,7 +127,7 @@ this.updateLayerIfNeeded();
     
 
     nextZoomButton: SC.ImageButtonView.design({
-      layout: {centerY: 0,  right: 40, width: 30, height: 30 },
+      layout: {centerY: 0,  right: 40, width: 32, height: 32 },
       image: 'image-button-zoom-plus',
       target: 'Multivio.pdfFileController',
       action: 'nextZoom',
@@ -137,7 +137,7 @@ this.updateLayerIfNeeded();
     }),
 
     rotateLeftButton: SC.ImageButtonView.design({
-      layout: {centerY: 0,  left: 80, width: 30, height: 30 },
+      layout: {centerY: 0,  left: 80, width: 32, height: 32 },
       image: 'image-button-rotate-left',
       target: 'Multivio.pdfFileController',
       action: 'rotateLeft',
@@ -145,7 +145,7 @@ this.updateLayerIfNeeded();
     }),
     rotateRightButton: SC.ImageButtonView.design({
       image: 'image-button-rotate-right',
-      layout: {centerY: 0,  right: 80, width: 30, height: 30 },
+      layout: {centerY: 0,  right: 80, width: 32, height: 32 },
       target: 'Multivio.pdfFileController',
       action: 'rotateRight',
       title: '+'
@@ -154,14 +154,14 @@ this.updateLayerIfNeeded();
 
     previousButton: SC.ImageButtonView.design({
       image: 'image-button-previous-doc',
-      layout: {centerY: 0,  left: 120, width: 30, height: 30 },
+      layout: {centerY: 0,  left: 120, width: 32, height: 32 },
       action: 'previousFile',
       title: '<<',
       isEnabledBinding: "Multivio.filesController.hasPreviousFile"
     }),
 
     nextButton: SC.ImageButtonView.design({
-      layout: {centerY: 0,  right: 120, width: 30,  height: 30 },
+      layout: {centerY: 0,  right: 120, width: 32,  height: 32 },
       image: 'image-button-next-doc',
       action: 'nextFile',
       isEnabledBinding: "Multivio.filesController.hasNextFile",
@@ -169,7 +169,7 @@ this.updateLayerIfNeeded();
     }),
 
     fitWidthButton: SC.ImageButtonView.design({
-      layout: {centerY: 0,  left: 160, width: 30, height: 30 },
+      layout: {centerY: 0,  left: 160, width: 32, height: 32 },
       image: 'image-button-fit-width',
       buttonBehavior: SC.TOGGLE_BEHAVIOR,
       toggleOffValue: NO,
@@ -178,7 +178,7 @@ this.updateLayerIfNeeded();
       title: 'width'
     }),
     fitAllButton: SC.ImageButtonView.design({
-      layout: {centerY: 0,  left: 200, width: 30, height: 30 },
+      layout: {centerY: 0,  left: 200, width: 32, height: 32 },
       image: 'image-button-fit-all',
       buttonBehavior: SC.TOGGLE_BEHAVIOR,
       toggleOffValue: NO,
