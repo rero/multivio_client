@@ -14,11 +14,14 @@ sc_require('controllers/pdf.js');
 Multivio.thumbnailsController = SC.ArrayController.create(
   /** @scope Multivio.thumnailsController.prototype */ {
   content: [],
-  nPages: undefined,
-  currentPage: undefined,
-  url: undefined,
+
+  nPages: null,
   nPagesBinding: 'Multivio.pdfFileController.nPages',
+
+  currentPage: null,
   currentPageBinding: 'Multivio.pdfFileController.currentPage',
+
+  url: null,
   //urlBinding: 'Multivio.pdfFileController.url',
   _thumbnailPrefix: '/server/document/render?max_width=100&max_height=100',
 

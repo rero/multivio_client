@@ -17,12 +17,18 @@ Multivio.FIT_ALL_MODE = 'fit-all';
 
 Multivio.pdfFileController = SC.ObjectController.create(
   /** @scope Multivio.pdfFileController.prototype */ {
+  
+  //Bindings 
   contentBinding: 'Multivio.filesController.currentSelection',
-  _renderPrefix: 'server/document/render?',
   _centerViewWidth: 0,
   _centerViewHeight: 0,
   _centerViewWidthBinding: 'Multivio.mainPage.mainPdfView.pdfScrollView.contentView.visibleWidth',
   _centerViewHeightBinding: 'Multivio.mainPage.mainPdfView.pdfScrollView.contentView.visibleHeight',
+  
+  _centerImageStatus: null,
+  _centerImageStatusBinding: 'Multivio.mainPage.mainPdfView.pdfScrollView.contentView.status',
+  
+  _renderPrefix: 'server/document/render?',
   rotationAngle: 0,
   mode: Multivio.FIT_ALL_MODE, //fitWidth, zoom, fit, native
   currentPage: 1,
@@ -30,6 +36,89 @@ Multivio.pdfFileController = SC.ObjectController.create(
     2.0, 3.0, 4.0],
     _currentZoomIndex: 7,
 
+
+    pdfUrl: function() {
+      if(!SC.none(this.get('metadata'))){
+        if(this.get('metadata').mime === 'application/pdf') {
+          var scaleFactor = this.get('_zoomScale')[this.get('_currentZoomIndex')];
+          var newUrl, newWidth, newHeight;
+          switch(this.get('mode')) {
+            case Multivio.FIT_WIDTH_MODE:
+              newWidth = parseInt(this.get('_centerViewWidth'), 10);
+            newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
+            break;
+            case Multivio.FIT_ALL_MODE:
+              newWidth = parseInt(this.get('_centerViewWidth'), 10);
+            newHeight = parseInt(this.get('_centerViewHeight'), 10);
+            newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&max_height=" + newHeight + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
+            break;
+            default:
+              newWidth = parseInt(this.get('_defaultWidth') * scaleFactor, 10);
+            newHeight = parseInt(this.get('_defaultHeight') * scaleFactor, 10);
+            newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&max_height=" + newHeight + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
+          }
+          return newUrl;
+        }
+      }else{
+        return undefined;
+      }
+    }.property('url','rotationAngle', '_currentZoomIndex', 'currentPage', '_centerViewWidth', '_centerViewHeight','mode').cacheable(),
+
+    showHideThumbnailsPanel: function() {
+      Multivio.thumbnailsView.popup();		
+    },
+
+    loadingPage: function() {
+      var status = this.get('_centerImageStatus');
+      SC.Logger.debug('------> loadingPage ' + status);
+      if(status === SC.IMAGE_STATE_LOADING) {
+        return YES;
+      }else{
+        return NO;
+      }
+    }.property('_centerImageStatus'),
+
+    //********************// 
+    //        PAGES       //
+    //********************// 
+    hasNextPage: function() {
+      if(this.get('currentPage') < this.get('nPages')) {
+        return YES;
+      }
+      return NO;
+    }.property('nPages', 'currentPage'),
+
+    hasPreviousPage: function() {
+      if(this.get('currentPage') > 1) {
+        return YES;
+      }
+      return NO;
+    }.property('nPages', 'currentPage'),
+
+    nextPage: function() {
+      if(this.get('hasNextPage')) {
+        this.set('currentPage', this.get('currentPage') + 1);
+      }
+    },
+
+    previousPage: function() {
+      if(this.get('hasPreviousPage')) {
+        this.set('currentPage', this.get('currentPage') - 1);
+      }
+    },
+    
+    nPages:function() {
+      if(!SC.none(this.get('metadata'))) {
+        return this.get('metadata').nPages;
+      }
+      return 0;
+    }.property('metadata'),
+
+
+    //********************// 
+    //        ZOOM        //
+    //********************// 
+    
     _defaultWidth: function() {
       var nativeSizes = this.get('metadata').nativeSize;
       var currentPage = this.get('currentPage');
@@ -83,74 +172,6 @@ Multivio.pdfFileController = SC.ObjectController.create(
         }
       }
     }.property('mode').cacheable(),
-
-    pdfUrl: function() {
-      if(!SC.none(this.get('metadata'))){
-        if(this.get('metadata').mime === 'application/pdf') {
-          var scaleFactor = this.get('_zoomScale')[this.get('_currentZoomIndex')];
-          var newUrl, newWidth, newHeight;
-          switch(this.get('mode')) {
-            case Multivio.FIT_WIDTH_MODE:
-              newWidth = parseInt(this.get('_centerViewWidth'), 10);
-            newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
-            break;
-            case Multivio.FIT_ALL_MODE:
-              newWidth = parseInt(this.get('_centerViewWidth'), 10);
-            newHeight = parseInt(this.get('_centerViewHeight'), 10);
-            newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&max_height=" + newHeight + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
-            break;
-            default:
-              newWidth = parseInt(this.get('_defaultWidth') * scaleFactor, 10);
-            newHeight = parseInt(this.get('_defaultHeight') * scaleFactor, 10);
-            newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&max_height=" + newHeight + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
-          }
-          return newUrl;
-        }
-      }else{
-        return undefined;
-      }
-    }.property('url','rotationAngle', '_currentZoomIndex', 'currentPage', '_centerViewWidth', '_centerViewHeight','mode').cacheable(),
-
-    nPages:function() {
-      if(!SC.none(this.get('metadata'))) {
-        return this.get('metadata').nPages;
-      }
-      return 0;
-    }.property('metadata'),
-
-    nextPage: function() {
-      if(this.get('hasNextPage')) {
-        this.set('currentPage', this.get('currentPage') + 1);
-      }
-    },
-
-    previousPage: function() {
-      if(this.get('hasPreviousPage')) {
-        this.set('currentPage', this.get('currentPage') - 1);
-      }
-    },
-    showHideThumbnailsPanel: function() {
-      Multivio.thumbnailsView.popup();		
-    },
-
-    hasNextPage: function() {
-      if(this.get('currentPage') < this.get('nPages')) {
-        return YES;
-      }
-      return NO;
-    }.property('nPages', 'currentPage'),
-
-    hasPreviousPage: function() {
-      if(this.get('currentPage') > 1) {
-        return YES;
-      }
-      return NO;
-    }.property('nPages', 'currentPage'),
-
-    rotateLeft: function() {
-      var currentAngle = this.get('rotationAngle');
-      this.set('rotationAngle', (currentAngle % 360) - 90);
-    },
 
     nextZoom: function() {
       if(this.get('mode') !== Multivio.ZOOM_MODE) {
@@ -233,6 +254,14 @@ Multivio.pdfFileController = SC.ObjectController.create(
       }
       return NO;
     }.property('_currentZoomIndex'),
+
+    //********************// 
+    //        ROTATION   //
+    //********************// 
+    rotateLeft: function() {
+      var currentAngle = this.get('rotationAngle');
+      this.set('rotationAngle', (currentAngle % 360) - 90);
+    },
 
     rotateRight: function() {
       var currentAngle = this.get('rotationAngle');

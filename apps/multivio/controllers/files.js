@@ -21,7 +21,7 @@ Multivio.filesController = SC.ArrayController.create(
   /** @scope Multivio.filesController.prototype */ {
 
   allowsMultipleSelection: NO,
-  referer: undefined,
+  referer: null,
   refererBinding: 'Multivio.inputParameters.url',
   currentUrl: undefined,
   currentParent: undefined,

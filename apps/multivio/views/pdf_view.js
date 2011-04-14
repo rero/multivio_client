@@ -22,6 +22,7 @@ Multivio.mainPdfView =  SC.View.design({
   waitingView: SC.ImageView.design({
     layout: { centerX: 0, centerY: 0, width: 36, height: 36 },
     isVisible: YES,
+    isVisibleBinding: 'Multivio.pdfFileController.loadingPage',
     value: static_url('images/progress_wheel_medium.gif'),
     classNames: "mvo-waiting".w()
   }),
