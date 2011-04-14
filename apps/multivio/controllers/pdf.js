@@ -17,18 +17,19 @@ Multivio.FIT_ALL_MODE = 'fit-all';
 
 Multivio.pdfFileController = SC.ObjectController.create(
   /** @scope Multivio.pdfFileController.prototype */ {
-  
+
   //Bindings 
   contentBinding: 'Multivio.filesController.currentSelection',
   _centerViewWidth: 0,
   _centerViewHeight: 0,
   _centerViewWidthBinding: 'Multivio.mainPage.mainPdfView.pdfScrollView.contentView.visibleWidth',
   _centerViewHeightBinding: 'Multivio.mainPage.mainPdfView.pdfScrollView.contentView.visibleHeight',
-  
+
   _centerImageStatus: null,
   _centerImageStatusBinding: 'Multivio.mainPage.mainPdfView.pdfScrollView.contentView.status',
-  
-  _renderPrefix: 'server/document/render?',
+
+  _appOptions: null,
+  _appOptionsBinding: 'Multivio.inputParameters.options',
   rotationAngle: 0,
   mode: Multivio.FIT_ALL_MODE, //fitWidth, zoom, fit, native
   currentPage: 1,
@@ -63,6 +64,14 @@ Multivio.pdfFileController = SC.ObjectController.create(
         return undefined;
       }
     }.property('url','rotationAngle', '_currentZoomIndex', 'currentPage', '_centerViewWidth', '_centerViewHeight','mode').cacheable(),
+
+    _renderPrefix: function () {
+      var server = 'server';
+      if(!SC.none(this.get('_appOptions').server)) {
+        server = this.get('_appOptions').server; 
+      }
+      return server + "/document/render?";
+    }.property('_appOptions'),
 
     showHideThumbnailsPanel: function() {
       Multivio.thumbnailsView.popup();		
@@ -106,7 +115,7 @@ Multivio.pdfFileController = SC.ObjectController.create(
         this.set('currentPage', this.get('currentPage') - 1);
       }
     },
-    
+
     nPages:function() {
       if(!SC.none(this.get('metadata'))) {
         return this.get('metadata').nPages;
@@ -118,7 +127,7 @@ Multivio.pdfFileController = SC.ObjectController.create(
     //********************// 
     //        ZOOM        //
     //********************// 
-    
+
     _defaultWidth: function() {
       var nativeSizes = this.get('metadata').nativeSize;
       var currentPage = this.get('currentPage');

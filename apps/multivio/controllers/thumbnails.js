@@ -23,7 +23,16 @@ Multivio.thumbnailsController = SC.ArrayController.create(
 
   url: null,
   //urlBinding: 'Multivio.pdfFileController.url',
-  _thumbnailPrefix: '/server/document/render?max_width=100&max_height=100',
+  _appOptions: null,
+  _appOptionsBinding: 'Multivio.inputParameters.options',
+    
+  _thumbnailPrefix: function () {
+      var server = 'server';
+      if(!SC.none(this.get('_appOptions').server)) {
+        server = this.get('_appOptions').server; 
+      }
+      return '/' + server + "/document/render?max_width=100&max_height=100";
+    }.property('_appOptions'),
 
   _selectionDidChange: function() {
     var sel = this.get('selection');

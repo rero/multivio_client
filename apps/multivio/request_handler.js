@@ -16,6 +16,7 @@
   @since 0.2.0
 */
 
+sc_require('input_parameters.js');
 
 Multivio.requestHandler = SC.Object.create(
 /** @scope Multivio.requestHandler.prototype */ {
@@ -24,6 +25,7 @@ Multivio.requestHandler = SC.Object.create(
     A set that contains all request send to the server
   */
   listOfRequest: undefined,
+  _serverName: '/server',
   
   /**
     Return Yes if the request has not been yet asked and No if the request 
@@ -32,6 +34,14 @@ Multivio.requestHandler = SC.Object.create(
     @param String request the request to ask
     @returns Boolean
   */
+    _serverNameDidChanged: function () {
+      var server = 'server';
+      if(!SC.none(Multivio.getPath('inputParameters.options').server)) {
+        server = Multivio.getPath('inputParameters.options').server; 
+      }
+      this.set('_serverName','/' + server);
+    }.observes('Multivio.inputParameters.options'),
+
   notAsked: function (request) {
     if (SC.none(this.listOfRequest)) {
       this.listOfRequest = SC.Set.create();
@@ -59,7 +69,7 @@ Multivio.requestHandler = SC.Object.create(
   */
   sendGetRequest: function (uri, callbackTarget, callbackMethod, param1, param2) {
     if (this.notAsked(uri)) {
-      var serverName = Multivio.configurator.get('serverName');
+      var serverName = this.get('_serverName');
       var req = SC.Request.getUrl(serverName + uri)
           .json().notify(callbackTarget, callbackMethod, param1, param2);
       SC.Logger.debug('Send get request');

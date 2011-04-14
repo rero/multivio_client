@@ -23,8 +23,7 @@
 
 Multivio.inputParameters = SC.Object.create({
 
-  url: undefined,
-
+  url: null,
   options: {},
 
   read: function(){
@@ -46,14 +45,11 @@ Multivio.inputParameters = SC.Object.create({
       var options = {};
       
       var optionsParts = inputParts.pop().slice(0,-1).split('&');
-      for(var val in optionsParts){
-        if(optionsParts.hasOwnProperty(val)){  
-          var res = val.split('='); 
-          options[res[0]] = options[res[1]];
-        }
+      for(var i=0;i<optionsParts.length;i++) {
+          var res = optionsParts[i].split('='); 
+          options[res[0]] = res[1];
       }
       this.set('options', options);
-      SC.Logger.debug("Options: " + options);
     }
   }
 });

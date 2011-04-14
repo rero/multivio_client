@@ -46,6 +46,12 @@ Multivio.mainStatechart = Ki.Statechart.create({
       SC.Logger.debug('Go to ready');
       this.gotoState('applicationReady'); 
     },
+    
+    serverError: function() {
+      SC.Logger.debug("InitializationError called");
+      this.gotoState('error');  
+    },
+
 
     initializationError: function() {
       SC.Logger.debug("InitializationError called");
