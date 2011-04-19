@@ -22,7 +22,7 @@ proxy '/local',
 # required libraries
 mode :all do
  config :all,
-   :required => [:sproutcore, 'sproutcore/animation', :ki, "sproutcore/ace"],
+   :required => [:sproutcore, 'sproutcore/animation', :ki],
    :theme_name => 'sc-theme mvo-dark-gray-theme',
 	 :load_fixtures => true
 end
@@ -37,4 +37,9 @@ end
 mode :test do
  config :all,
    :url_prefix => 'multivio/client_test'
+end
+
+mode :experimental do
+ config :all,
+   :url_prefix => 'multivio/client_experimental'
 end

@@ -66,11 +66,11 @@ Multivio.pdfFileController = SC.ObjectController.create(
     }.property('url','rotationAngle', '_currentZoomIndex', 'currentPage', '_centerViewWidth', '_centerViewHeight','mode').cacheable(),
 
     _renderPrefix: function () {
-      var server = 'server';
+      var server = 'server.test';
       if(!SC.none(this.get('_appOptions').server)) {
         server = this.get('_appOptions').server; 
       }
-      return server + "/document/render?";
+      return '/' + server + "/document/render?";
     }.property('_appOptions'),
 
     showHideThumbnailsPanel: function() {

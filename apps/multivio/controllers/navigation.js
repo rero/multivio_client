@@ -12,6 +12,7 @@
 */
 sc_require('views/help.js');
 sc_require('views/thumbnails.js');
+sc_require('views/tree.js');
 Multivio.navigationController = SC.ArrayController.create(
 /** @scope Multivio.navigationController.prototype */ {
   // TODO: Add your own code here.
@@ -30,6 +31,11 @@ Multivio.navigationController = SC.ArrayController.create(
     SC.Object.create({
       panel: 'mainPdfView.bottomToolbar',
       icon: static_url("images/icons/24x24/show_toolbar_dark_24x24.png")
+    }),
+    
+    SC.Object.create({
+      panel: 'treeView',
+      icon: static_url("images/icons/24x24/tree_dark_24x24.png")
     })
 
   ],

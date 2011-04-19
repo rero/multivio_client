@@ -86,6 +86,17 @@ Multivio.filesController = SC.ArrayController.create(
     if(SC.none(current) || current.length() === 0) {return undefined;}
     return current.firstObject(); 
   }.property('selection'),
+  currentPhysicalStructure: function() {
+    var current = this.get('selection');
+    if(SC.none(current) || current.length() === 0) {return undefined;}
+    return current.firstObject().get('physicalStructure'); 
+  }.property('selection'),
+  currentLogicalStructure: function() {
+    var current = this.get('selection');
+    if(SC.none(current) || current.length() === 0) {return undefined;}
+    return current.firstObject().get('logicalStructure'); 
+  }.property('selection'),
+
 
   _previousFile: function(fileRecord, childRecord) {
     if(SC.none(fileRecord) || SC.none(fileRecord.get('url'))) {
