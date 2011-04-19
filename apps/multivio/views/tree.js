@@ -60,6 +60,9 @@ Multivio.TreeView = SC.PickerPane.design({
       exampleView: Multivio.TreeViewItem
     })
   }),
+    _layerDidChange: function () {
+          SC.Logger.debug('Update layer of the list view');
+            }.observes('layer'),
   modalPaneDidClick: function(evt) {
     if(this.get('canBeClosed'))
       {

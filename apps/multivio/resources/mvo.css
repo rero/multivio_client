@@ -56,20 +56,6 @@ body, .sc-view, .sc-pane, .sc-main, .ace, .ace.source-list.collection {
 	padding: 20px;
 }
 
-
-.mvo-page {
-	/*
-	-moz-border-radius: 1px 1px 1px 1px;
-	-moz-box-shadow: 2px 2px 4px #CCCCCC;
-	-webkit-border-radius: 1px 1px 1px 1px;
-	-webkit-box-shadow: 2px 2px 4px #CCCCCC;
-	border: 1px solid #CCCCCC;
-	*/
-	position: static;
-	margin: auto auto;
-	display: block;
-}
-
 .ace.toolbar, .mvo-front-view-transparent {
   background: sc_static("images/transparency_ddd_90.png") repeat scroll 0 0 transparent;
   border: none;

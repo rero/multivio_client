@@ -36,7 +36,7 @@ Multivio.mainPdfView =  SC.View.design({
     //verticalAlign: SC.ALIGN_MIDDLE,
     layout: { top: 0, left: 0, bottom: 0, right: 0},
     contentView: SC.ImageView.design({
-      //layout: { centerX: 0, bottom: 0 },
+      layout: { centerX: 0, centerY: 0 },
       classNames: "mvo-page".w(),
       visibleWidth: 0,
       visibleHeight: 0,
@@ -49,17 +49,24 @@ var img_width = jquery.find('img').width();
 */
         var img_height = this.get('image').height;
         var img_width = this.get('image').width;
+        var parent_width = this.get('visibleWidth');
+        var parent_height = this.get('visibleHeight');
+        var _layout = {};
         if(img_height > 1 && img_width > 1) {
-          this.adjust('width', img_width);
-          this.adjust('height', img_height);
-          //this.set('layout', {centerX: 0, bottom: 0 , width: img_width, height: img_height});
+          _layout.width = img_width;
+          _layout.height = img_height;
+          if(parent_width > img_width) {
+            _layout.centerX = 0;
+          }else{
+            _layout.left = 0;
+          }
+          if(parent_height > img_height) {
+            _layout.centerY = 0;
+          }else{
+            _layout.top = 0;
+          }
+          this.set('layout', _layout);
         }
-/*
-Multivio.getPath('mainPage.mainPdfView.pdfScrollView').set('layerNeedsUpdate', YES);
-Multivio.getPath('mainPage.mainPdfView.pdfScrollView').updateLayerIfNeeded();
-this.set('layerNeedsUpdate', YES);
-this.updateLayerIfNeeded();
-*/
       }.observes('image'),
 
       parentViewDidResize: function() {

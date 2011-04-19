@@ -25,7 +25,7 @@ Multivio.Outline = SC.Object.extend(
       var expanded = YES;
       for(var i=0;i<children.length;i++) {
         ret.push(Multivio.Outline.create({treeItemIsExpanded:expanded}, children[i]));
-        expanded = NO;
+        //expanded = NO;
       }
       return ret ; 
     }.property('childs').cacheable(),

@@ -43,20 +43,30 @@ Multivio.pdfFileController = SC.ObjectController.create(
         if(this.get('metadata').mime === 'application/pdf') {
           var scaleFactor = this.get('_zoomScale')[this.get('_currentZoomIndex')];
           var newUrl, newWidth, newHeight;
+          var angle = this.get('rotationAngle');
           switch(this.get('mode')) {
             case Multivio.FIT_WIDTH_MODE:
               newWidth = parseInt(this.get('_centerViewWidth'), 10);
-            newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
+              if(angle % 180) {
+                newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_height=" + newWidth  + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
+              } else {
+                newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
+              }
             break;
             case Multivio.FIT_ALL_MODE:
-              newWidth = parseInt(this.get('_centerViewWidth'), 10);
-            newHeight = parseInt(this.get('_centerViewHeight'), 10);
-            newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&max_height=" + newHeight + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
+              if(angle % 180) {
+                newHeight = parseInt(this.get('_centerViewWidth'), 10);
+                newWidth = parseInt(this.get('_centerViewHeight'), 10);
+              }else {
+                newWidth = parseInt(this.get('_centerViewWidth'), 10);
+                newHeight = parseInt(this.get('_centerViewHeight'), 10);
+              }
+              newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&max_height=" + newHeight + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
             break;
             default:
               newWidth = parseInt(this.get('_defaultWidth') * scaleFactor, 10);
-            newHeight = parseInt(this.get('_defaultHeight') * scaleFactor, 10);
-            newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&max_height=" + newHeight + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
+              newHeight = parseInt(this.get('_defaultHeight') * scaleFactor, 10);
+              newUrl = this.get('_renderPrefix') + "page_nr="  + this.get('currentPage') + "&max_width=" + newWidth  + "&max_height=" + newHeight + "&angle=" + this.get("rotationAngle")+ "&url=" +  this.get('url') ;
           }
           return newUrl;
         }
@@ -274,11 +284,11 @@ Multivio.pdfFileController = SC.ObjectController.create(
     //********************// 
     rotateLeft: function() {
       var currentAngle = this.get('rotationAngle');
-      this.set('rotationAngle', (currentAngle % 360) - 90);
+      this.set('rotationAngle', (currentAngle - 90) % 360);
     },
 
     rotateRight: function() {
       var currentAngle = this.get('rotationAngle');
-      this.set('rotationAngle', (currentAngle % 360) + 90);
+      this.set('rotationAngle', (currentAngle + 90) % 360);
     }
 });
