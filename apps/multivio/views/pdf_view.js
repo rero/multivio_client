@@ -95,11 +95,42 @@ this.updateLayerIfNeeded();
   bottomToolbar: SC.NavigationBarView.design(SC.Animatable, Multivio.FadeInOut, {
     childViews: ['previousButton', 'nextButton', 'rotateRightButton', 'rotateLeftButton', 'nextZoomButton', 'previousZoomButton', 'nextPageButton', 'previousPageButton', 'fitWidthButton', 'fitAllButton'],
     classNames: "mvo-front-view-transparent".w(),
-    layout: { centerX: 0, width: 728, height: 48, bottom: 20 },
+    layout: { centerX: 0, width: 410, height: 48, bottom: 20 },
     acceptsFirstResponder: NO,
+    
+    previousButton: SC.ImageButtonView.design({
+      image: 'image-button-previous-doc',
+      layout: {centerY: 0,  left: 10, width: 32, height: 32 },
+      action: 'previousFile',
+      title: '<<',
+      isEnabledBinding: "Multivio.filesController.hasPreviousFile"
+    }),
+
+    nextButton: SC.ImageButtonView.design({
+      layout: {centerY: 0,  left: 40, width: 32,  height: 32 },
+      image: 'image-button-next-doc',
+      action: 'nextFile',
+      isEnabledBinding: "Multivio.filesController.hasNextFile",
+      title: '>>'
+    }),
+    
+    rotateLeftButton: SC.ImageButtonView.design({
+      layout: {centerY: 0,  left: 100, width: 32, height: 32 },
+      image: 'image-button-rotate-left',
+      target: 'Multivio.pdfFileController',
+      action: 'rotateLeft',
+      title: '-'
+    }),
+    rotateRightButton: SC.ImageButtonView.design({
+      image: 'image-button-rotate-right',
+      layout: {centerY: 0,  left: 130, width: 32, height: 32 },
+      target: 'Multivio.pdfFileController',
+      action: 'rotateRight',
+      title: '+'
+    }),
 
     previousPageButton: SC.ImageButtonView.design({
-      layout: {centerY: 0,  left: 0, width: 32, height: 32 },
+      layout: {centerY: 0,  left: 180, width: 32, height: 32 },
       image: 'image-button-previous-page',
       target: 'Multivio.pdfFileController',
       action: 'previousPage',
@@ -108,15 +139,16 @@ this.updateLayerIfNeeded();
     }),
 
     nextPageButton: SC.ImageButtonView.design({
-      layout: {centerY: 0,  right: 0, width: 32, height: 32 },
+      layout: {centerY: 0,  left: 210, width: 32, height: 32 },
       image: 'image-button-next-page',
       target: 'Multivio.pdfFileController',
       action: 'nextPage',
       isEnabledBinding: 'Multivio.pdfFileController.hasNextPage',
       title: '>'
     }),
+
     previousZoomButton: SC.ImageButtonView.design({
-      layout: {centerY: 0,  left: 40, width: 32, height: 32 },
+      layout: {centerY: 0,  left: 260, width: 32, height: 32 },
       image: 'image-button-zoom-minus',
       target: 'Multivio.pdfFileController',
       action: 'previousZoom',
@@ -128,7 +160,7 @@ this.updateLayerIfNeeded();
     
 
     nextZoomButton: SC.ImageButtonView.design({
-      layout: {centerY: 0,  right: 40, width: 32, height: 32 },
+      layout: {centerY: 0,  left: 290, width: 32, height: 32 },
       image: 'image-button-zoom-plus',
       target: 'Multivio.pdfFileController',
       action: 'nextZoom',
@@ -137,55 +169,23 @@ this.updateLayerIfNeeded();
       title: 'z+'
     }),
 
-    rotateLeftButton: SC.ImageButtonView.design({
-      layout: {centerY: 0,  left: 80, width: 32, height: 32 },
-      image: 'image-button-rotate-left',
-      target: 'Multivio.pdfFileController',
-      action: 'rotateLeft',
-      title: '-'
-    }),
-    rotateRightButton: SC.ImageButtonView.design({
-      image: 'image-button-rotate-right',
-      layout: {centerY: 0,  right: 80, width: 32, height: 32 },
-      target: 'Multivio.pdfFileController',
-      action: 'rotateRight',
-      title: '+'
-    }),
-
-
-    previousButton: SC.ImageButtonView.design({
-      image: 'image-button-previous-doc',
-      layout: {centerY: 0,  left: 120, width: 32, height: 32 },
-      action: 'previousFile',
-      title: '<<',
-      isEnabledBinding: "Multivio.filesController.hasPreviousFile"
-    }),
-
-    nextButton: SC.ImageButtonView.design({
-      layout: {centerY: 0,  right: 120, width: 32,  height: 32 },
-      image: 'image-button-next-doc',
-      action: 'nextFile',
-      isEnabledBinding: "Multivio.filesController.hasNextFile",
-      title: '>>'
-    }),
-
-    fitWidthButton: SC.ImageButtonView.design({
-      layout: {centerY: 0,  left: 160, width: 32, height: 32 },
-      image: 'image-button-fit-width',
-      buttonBehavior: SC.TOGGLE_BEHAVIOR,
-      toggleOffValue: NO,
-      toggleOnValue: YES,
-      valueBinding: 'Multivio.pdfFileController.fitWidth',
-      title: 'width'
-    }),
     fitAllButton: SC.ImageButtonView.design({
-      layout: {centerY: 0,  left: 200, width: 32, height: 32 },
+      layout: {centerY: 0,  left: 340, width: 32, height: 32 },
       image: 'image-button-fit-all',
       buttonBehavior: SC.TOGGLE_BEHAVIOR,
       toggleOffValue: NO,
       toggleOnValue: YES,
       valueBinding: 'Multivio.pdfFileController.fitAll',
       title: 'all'
+    }),
+    fitWidthButton: SC.ImageButtonView.design({
+      layout: {centerY: 0,  left: 370, width: 32, height: 32 },
+      image: 'image-button-fit-width',
+      buttonBehavior: SC.TOGGLE_BEHAVIOR,
+      toggleOffValue: NO,
+      toggleOnValue: YES,
+      valueBinding: 'Multivio.pdfFileController.fitWidth',
+      title: 'width'
     })
   })
 });
