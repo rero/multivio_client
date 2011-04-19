@@ -30,7 +30,7 @@ Multivio.Outline = SC.Object.extend(
       return ret ; 
     }.property('childs').cacheable(),
     labelPage: function() {
-      return "%@ (%@)".fmt(this.get('label'), this.get('file_position').index);
+      return "%@ (p. %@)".fmt(this.get('label'), this.get('file_position').index);
     }.property('label', 'file_position').cacheable()
 }) ;
 
@@ -79,6 +79,7 @@ Multivio.treeController = SC.TreeController.create(
      if(!SC.none(nodeToSelect)) {
      SC.Logger.debug('Node: %@'.fmt(nodeToSelect.label));
      nodeToSelect.set('treeItemIsExpanded', YES);
+     nodeToSelect.set('dontChangeIndex', YES);
        this.selectObject(nodeToSelect);
      }
   }.observes('currentIndex'),
@@ -109,27 +110,22 @@ Multivio.treeController = SC.TreeController.create(
   },
 
   _selectionDidChange: function () {
-
     if (!this.get('allowsSelection')) {
       Multivio.logger.debug('tree selectionDidChange, selection not allowed, exit');
       return;
     }
-
     var sel = this.get('selection');
-
     if (SC.none(sel)) {
       return;
     }
-
     var so = sel.firstObject();
-
-
     if (SC.none(so)) {
       return;
     }
+    if(so.get('dontChangeIndex')) {
+      return;
+    }
     this.set('currentIndex', so.file_position.index);
-    
-
   }.observes('selection')
 
 }) ;

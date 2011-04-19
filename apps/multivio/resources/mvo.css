@@ -6,7 +6,9 @@ body, .sc-view, .sc-pane, .sc-main, .ace, .ace.source-list.collection {
 	color: #fff;
 }
 	*/
-
+#mvo-tree-view .mvo-toc-entry label {
+	font-size: 11px;
+}
 #mvo-thumbnails .sc-collection-item.sel {
 	background: none repeat scroll 0 0 #608AB9;
 }

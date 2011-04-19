@@ -63,7 +63,7 @@ Multivio.pdfFileController = SC.ObjectController.create(
       }else{
         return undefined;
       }
-    }.property('url','rotationAngle', '_currentZoomIndex', 'currentPage', '_centerViewWidth', '_centerViewHeight','mode').cacheable(),
+    }.property('url', 'rotationAngle', '_currentZoomIndex', 'currentPage', '_centerViewWidth', '_centerViewHeight','mode').cacheable(),
 
     _renderPrefix: function () {
       var server = 'server.test';
@@ -122,6 +122,11 @@ Multivio.pdfFileController = SC.ObjectController.create(
       }
       return 0;
     }.property('metadata'),
+
+    _urlDidChange: function() { 
+      SC.Logger.debug('url changed');
+      this.set('currentPage', 1);
+    }.observes('url'),
 
 
     //********************// 
