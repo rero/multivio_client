@@ -85,18 +85,27 @@ Multivio.ApplicationReadyState = Ki.State.extend({
           Multivio.filesController.fetchFile(currentRootNode.url, currentRootNode.parent);
           return;
         }
+        Multivio.treeController.updateContent();
+
+        //isContent file: display it!
         if(currentNode.get('isContentFile')) {
           Multivio.filesController.selectObject(currentNode);
           this.gotoState('contentReady');
           return;
         }
+
+        //logical Node
         var currentPhys = currentNode.get('physicalStructure');
         var nextNodeUrl;
+        //expand first child
         if (this.get('parentState').get('first')) {
           nextNodeUrl = currentPhys[0].url;
         }else{
+          //expand last child
           nextNodeUrl = currentPhys[currentPhys.length - 1].url;
         }
+
+        //store current as parent and call child
         this.get('parentState').set('rootNode', {'url': nextNodeUrl, 'parent':currentNode});
         this.gotoState('loadingFile');
         Multivio.filesController.fetchFile(nextNodeUrl, currentNode);
@@ -125,9 +134,11 @@ Multivio.ApplicationReadyState = Ki.State.extend({
       if(!SC.none(currentFile) && 
          !SC.none(currentFile.metadata) &&
              currentFile.metadata.mime === 'application/pdf') {
+        if(viewToChange.get('nowShowing') !== 'mainPdfView') {
         viewToChange.set('nowShowing', 'mainPdfView');
       Multivio.getPath('mainPage.mainPdfView').becomeFirstResponder();
       Multivio.getPath('mainPage.mainPdfView.bottomToolbar').displayBar();
+        }
       this.set('searchInNext', YES);
       }else{
           viewToChange.set('nowShowing', 'unsupportedDocumentView');
@@ -153,7 +164,17 @@ Multivio.ApplicationReadyState = Ki.State.extend({
         loadingState.set('first', NO);
         this.gotoState('loadingContentFile'); 
       }
+    },
+
+    fetchFile: function(){
+        var loadingState = this.get('parentState').get('loadingContentFile');
+        var currentUrl = Multivio.filesController.get('currentUrl');
+        var currentParent = Multivio.filesController.get('currentParent');
+        loadingState.set('rootNode', {'url': currentUrl, 'parent': currentParent});
+        loadingState.set('first', NO);
+        this.gotoState('loadingContentFile'); 
     }
+
 
   })
 });

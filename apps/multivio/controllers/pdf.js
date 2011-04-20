@@ -24,6 +24,9 @@ Multivio.pdfFileController = SC.ObjectController.create(
   _centerViewHeight: 0,
   _centerViewWidthBinding: 'Multivio.mainPage.mainPdfView.pdfScrollView.contentView.visibleWidth',
   _centerViewHeightBinding: 'Multivio.mainPage.mainPdfView.pdfScrollView.contentView.visibleHeight',
+  
+  currentPage: null,
+  //currentPageBinding: 'Multivio.filesController.currentIndex',
 
   _centerImageStatus: null,
   _centerImageStatusBinding: 'Multivio.mainPage.mainPdfView.pdfScrollView.contentView.status',
@@ -32,7 +35,6 @@ Multivio.pdfFileController = SC.ObjectController.create(
   _appOptionsBinding: 'Multivio.inputParameters.options',
   rotationAngle: 0,
   mode: Multivio.FIT_ALL_MODE, //fitWidth, zoom, fit, native
-  currentPage: 1,
   _zoomScale: [0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.75, 1.0, 1.5,
     2.0, 3.0, 4.0],
     _currentZoomIndex: 7,

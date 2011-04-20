@@ -10,6 +10,9 @@
 
 sc_require('models/cdm.js');
 
+Multivio.LOADING_DONE = 'done';
+Multivio.LOADING_ERROR = 'error';
+Multivio.LOADING_LOADING = 'loading';
 /**
 @namespace
 
@@ -25,18 +28,22 @@ Multivio.filesController = SC.ArrayController.create(
   refererBinding: 'Multivio.inputParameters.url',
   currentUrl: undefined,
   currentParent: undefined,
+  currentIndex: undefined,
+  loadingStatus: undefined,
 
   // TODO: Add your own code here.
   content: Multivio.CDM,
 
   fetchFile: function(url, parent) {
-    if(!SC.none(this.get('currentUrl'))) {
+    if(this.get('loadingStatus') === Multivio.LOADING_LOADING) {
       throw	new Error('filesController: concurrent file fetch');
     }
     var alreadyLoaded = this.find(url);
     if(alreadyLoaded && alreadyLoaded.get('isComplete')) {
+      //this.set('currentFile', url);
       Multivio.mainStatechart.sendEvent('fileLoaded');
     }else{
+      this.set('loadingStatus', Multivio.LOADING_LOADING);
       this.set('currentUrl', url);
       this.set('currentParent', parent);
       Multivio.CDM.getMetadata(url);
@@ -181,6 +188,16 @@ Multivio.filesController = SC.ArrayController.create(
     return null;
   },
 
+  selectNewFile: function(url, parentUrl) {
+    //SC.Logger.debug('%@');
+    if(!SC.none(this.get('currentSelection')) &&
+      this.get('currentSelection').url !== url) {
+    this.set('currentUrl', url);
+    this.set('currentParent', this.find(parentUrl));
+    Multivio.mainStatechart.sendEvent('fetchFile');
+    }
+  },
+
   _mvo_contentDidChange: function(){
     SC.Logger.debug('file received!!!!!');
     var url = this.get('currentUrl');
@@ -196,6 +213,8 @@ Multivio.filesController = SC.ArrayController.create(
         this.set('currentUrl', undefined);
         this.set('currentParent', undefined);
         SC.Logger.debug('fileLoaded');
+        //this.set('currentFile', url);
+        this.set('loadingStatus', Multivio.LOADING_DONE);
         Multivio.mainStatechart.sendEvent('fileLoaded');
       }
     }

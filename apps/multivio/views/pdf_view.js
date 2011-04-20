@@ -42,11 +42,6 @@ Multivio.mainPdfView =  SC.View.design({
       visibleHeight: 0,
       valueBinding: 'Multivio.pdfFileController.pdfUrl',
       imageDidLoad: function (url, imageOrError) {
-/*
-var jquery = this.$();
-var img_height = jquery.find('img').height();
-var img_width = jquery.find('img').width();
-*/
         var img_height = this.get('image').height;
         var img_width = this.get('image').width;
         var parent_width = this.get('visibleWidth');
