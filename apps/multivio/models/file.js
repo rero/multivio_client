@@ -31,6 +31,13 @@ Multivio.FileRecord = SC.Object.extend({
       return NO;
     }
     return YES;
+  }.property('metadata'),//.cacheable()
+  
+  isPdfFile: function(){
+    if(this.get('metadata').mime.match(/pdf$/)){
+      return NO;
+    }
+    return YES;
   }.property('metadata')//.cacheable()
 
 });

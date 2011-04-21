@@ -85,9 +85,10 @@ Multivio.ApplicationReadyState = Ki.State.extend({
           Multivio.filesController.fetchFile(currentRootNode.url, currentRootNode.parent);
           return;
         }
-        Multivio.treeController.updateContent();
+        //Multivio.treeController.updateContent();
 
         //isContent file: display it!
+        Multivio.filesController.selectObject(currentNode);
         if(currentNode.get('isContentFile')) {
           Multivio.filesController.selectObject(currentNode);
           this.gotoState('contentReady');
@@ -171,7 +172,7 @@ Multivio.ApplicationReadyState = Ki.State.extend({
         var currentUrl = Multivio.filesController.get('currentUrl');
         var currentParent = Multivio.filesController.get('currentParent');
         loadingState.set('rootNode', {'url': currentUrl, 'parent': currentParent});
-        loadingState.set('first', NO);
+        loadingState.set('first', YES);
         this.gotoState('loadingContentFile'); 
     }
 

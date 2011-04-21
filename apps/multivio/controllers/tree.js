@@ -6,109 +6,112 @@
 
 /** @class
 
-  (Document Your Controller Here)
+(Document Your Controller Here)
 
-  @extends SC.Object
+@extends SC.Object
 */
-Multivio.Outline = SC.Object.extend(SC.TreeItemContent,
-  /** @scope Outline.prototype */ {
+sc_require('controllers/files.js');
+Multivio.Outline = SC.Object.extend(SC.TreeItemContent, {
 
-    treeItemIsExpanded: YES,
+  treeItemIsExpanded: YES,
 
-    treeItemChildren: function() {
-      var ret = [];
+  treeItemChildren: function() {
+    var ret = [];
 
-      var children = this.get('childs');
-      if(SC.none(children)) {
-        return null;
-      }
-      var expanded = YES;
-      for(var i=0;i<children.length;i++) {
-        ret.push(Multivio.Outline.create({parentNode: this, treeItemIsExpanded:expanded}, children[i]));
-        //expanded = NO;
-      }
-      return ret ; 
-    }.property('childs').cacheable(),
-    labelPage: function() {
+    var children = this.get('childs');
+    if(SC.none(children)) {
+      return null;
+    }
+    var expanded = YES;
+    for(var i=0;i<children.length;i++) {
+      ret.push(Multivio.Outline.create({parentNode: this, treeItemIsExpanded:expanded}, children[i]));
+      //expanded = NO;
+    }
+    return ret ; 
+  }.property('childs').cacheable(),
+  labelPage: function() {
+    var index = this.get('file_position').index;
+    if(index > 0) {
       return "%@ (p. %@)".fmt(this.get('label'), this.get('file_position').index);
-    }.property('label', 'file_position').cacheable()
+    }
+      return "%@".fmt(this.get('label'));
+  }.property('label', 'file_position').cacheable()
 }) ;
 
-Multivio.treeController = SC.TreeController.create(
-/** @scope Multivio.treeController.prototype */ {
+Multivio.treeController = SC.TreeController.create({
 
   // TODO: Add your own code here.
-  rawContent: null,
-  rawContentBinding: SC.Binding.oneWay('Multivio.filesController'),
-  
+  allowsMultipleSelection: NO,
+
   currentFile: null,
-  currentFileBinding: 'Multivio.filesController.currentFile',
-  
+  currentFileBinding: 'Multivio.fileController.content',
+
   currentIndex: null,
-  //currentIndexBinding: 'Multivio.filesController.currentIndex',
-  
+  currentIndexBinding: 'Multivio.filesController.currentIndex',
+
   _urlCache: null,
-    
+
   init:function() {
-    var currentNode = Multivio.Outline.create({label : 'root', 'childs' : null, file_position: {url:'' , index:1}});
+    var currentNode = Multivio.Outline.create({label : 'root', 'childs' : null, file_position: {url:'' , index: -1}});
     this.set('content', currentNode);
     this.set('currentNode', currentNode);
     this.set('_urlCache', {});
   },
 
-  updateContent: function() {
-    var rawContent = this.get('rawContent');
-    if(!SC.none(rawContent)) {
-    SC.Logger.debug("###################### hello ###################: %@".fmt(rawContent.length()));
-    rawContent.forEach( function (object, index, source, indexSet) { 
-      SC.Logger.debug("%@, %@, %@, %@".fmt(object, index, source, indexSet)); 
-      var url = object.url;
+  _currentFileDidChanged: function() {
+    var currentFile = this.get('currentFile');
+    var contentUpdated = NO;
+
+    if(!SC.none(currentFile)) {
+      SC.Logger.debug("###################### hello ###################");
+      var url = currentFile.url;
+
       if(SC.none(this.get('_urlCache')[url])) {
         var toAppend = this.get('content');
-        if(!SC.none(object.parent)) {
-          var newUrl = object.parent.url;
+        if(!SC.none(currentFile.parent)) {
+          var newUrl = currentFile.parent.url;
           toAppend = this._findLeaf(this.get('_urlCache')[newUrl], url, newUrl);
           if(SC.none(toAppend)) {
             throw "Child (%@) not found in parent (%@)".fmt(childUrl, parentUrl);
           }
         } else{
-        this.get('content').url = url;
-      }
-        this._appendChild(object, toAppend);
+          this.get('content').file_position.url = url;
+        }
+        this._appendChild(currentFile, toAppend);
+        contentUpdated = YES;
         this.get('_urlCache')[url] = toAppend;
       }
-    } , this);
-
-/*
-var parent = this.get('content');
-var child = rawContent;
-SC.Logger.debug("URL: %@".fmt(rawContent.url));
-this._appendChild(child, parent);
-//this.propertyDidChange('content') ;
-*/
-this.propertyDidChange('content') ;
+      if(contentUpdated) {
+        this.propertyDidChange('content') ;
+      }
+      var nodeToSelect = this.get('_urlCache')[url];
+      if(!SC.none(nodeToSelect)) {
+        SC.Logger.debug('Select: %@'.fmt(nodeToSelect.file_position.url));
+        this.selectObject(nodeToSelect);
+      }
     }
-  },
-    
+  }.observes('currentFile'),
+
+
   _findLeaf: function(rootNode, childUrl, parentUrl) {
-      if(!SC.none(rootNode.file_position) && rootNode.file_position.url === childUrl) {
-        return rootNode;
-      }
-      if(!SC.none(rootNode.url) && rootNode.url !== parentUrl) {
-        return null;
-      }
-      var children = rootNode.get('treeItemChildren');
-      if(SC.none(children)) {
-        return null;
-      }
-      for(var i=0; i<children.length; i++) {
-        var foundedNode = this._findLeaf(children[i], childUrl, parentUrl);
-        if(foundedNode) {
-          return foundedNode;
-        }
-      }
+    if(!SC.none(rootNode.file_position) && rootNode.file_position.url === childUrl) {
+      return rootNode;
+    }
+    if(!SC.none(rootNode.url) && rootNode.url !== parentUrl) {
       return null;
-    },
+    }
+    var children = rootNode.get('treeItemChildren');
+    if(SC.none(children)) {
+      return null;
+    }
+    for(var i=0; i<children.length; i++) {
+      var foundedNode = this._findLeaf(children[i], childUrl, parentUrl);
+      if(foundedNode) {
+        return foundedNode;
+      }
+    }
+    return null;
+  },
 
 
   _appendChild: function(child, parent) {
@@ -127,15 +130,17 @@ this.propertyDidChange('content') ;
   },
 
   _currentIndexDidChange: function() {
-     var currentIndex = this.get('currentIndex'); 
-     var nodeToSelect = this._getNodeFromIndex(currentIndex, this.get('content'));
-     SC.Logger.debug('Node: %@'.fmt(nodeToSelect));
-     if(!SC.none(nodeToSelect)) {
-     SC.Logger.debug('Node: %@'.fmt(nodeToSelect.label));
-     nodeToSelect.set('treeItemIsExpanded', YES);
-     nodeToSelect.set('dontChangeIndex', YES);
-       this.selectObject(nodeToSelect);
-     }
+    var currentIndex = this.get('currentIndex'); 
+    var currentFile = this.get('currentFile');
+    if(!SC.none(currentFile)) {
+      var nodeToSelect = this._getNodeFromIndex(currentIndex, this.get('_urlCache')[currentFile.url]);
+      SC.Logger.debug('Node: %@'.fmt(nodeToSelect));
+      if(!SC.none(nodeToSelect)) {
+        SC.Logger.debug('Node: %@'.fmt(nodeToSelect.label));
+        nodeToSelect.set('dontChangeIndex', YES);
+        this.selectObject(nodeToSelect);
+      }
+    }
   }.observes('currentIndex'),
 
   _getNodeFromIndex: function(index, rootNode) {
@@ -163,13 +168,31 @@ this.propertyDidChange('content') ;
     }
   },
 
-_findParentFileNode: function(node) {
-  if(!SC.none(node.url)) {
-    return node;
-  }
-  return this._findParentFileNode(node.get('parentNode'));
-},
-  _selectionDidChange: function () {
+  _findChildFileNode: function(node) {
+    if(!SC.none(node.file_position.url)) {
+      return node;
+    }
+    var children = node.get('treeItemChildren');
+    if(SC.none(children)) {
+      throw "Children should have file_position or childs";
+      //return null;
+    }
+    return this._findChildFileNode(children[0]);
+  },
+
+  _findParentFileNode: function(node, childUrl) {
+    if(!SC.none(node.file_position.url) &&
+       node.file_position.url !== childUrl) {
+      return node;
+    }
+    var parent = node.get('parentNode');
+    if(SC.none(parent)) {
+      return node;
+    }
+    return this._findParentFileNode(parent, childUrl);
+  },
+
+  _selection1DidChange: function () {
     if (!this.get('allowsSelection')) {
       Multivio.logger.debug('tree selectionDidChange, selection not allowed, exit');
       return;
@@ -186,10 +209,15 @@ _findParentFileNode: function(node) {
       return;
     }
     //this.set('currentFile', so.file_position.url);
-    var newUrl = so.file_position.url;
-    Multivio.filesController.selectNewFile(so.file_position.url, this._findParentFileNode(so).url);
-    SC.Logger.debug('Loading file: %@'.fmt(so.file_position.url));
-    this.set('currentIndex', so.file_position.index);
+    var urlToFetch = this._findChildFileNode(so).file_position.url;
+    var parentUrl = this._findParentFileNode(so, urlToFetch).file_position.url;
+    Multivio.filesController.selectNewFile(urlToFetch, parentUrl);
+    SC.Logger.debug('Loading file: %@'.fmt(urlToFetch));
+    if(!SC.none(so.file_position) && so.file_position.index > -1 &&
+      this.get('currentIndex') !== so.file_position.index) {
+    SC.Logger.debug('currentIndex: %@'.fmt(so.file_position.index));
+      this.set('currentIndex', so.file_position.index);
+    }
     //Multivio.mainStatechart.sendEvent('fetchFile');
   }.observes('selection')
 

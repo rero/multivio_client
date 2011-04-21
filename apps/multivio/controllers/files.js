@@ -1,39 +1,67 @@
 /**
-      SC.Logger.debug("Run nextFile.");
 ==============================================================================
   Project:    Multivio - https://www.multivio.org/
   Copyright:  (c) 2009-2011 RERO
-  License:    See file COPYING
+  License:    See file license.js
 ==============================================================================
 */
-/*globals Multivio */
+
+/** @class
+
+  This is the controller of the files contained by a bibilographic record.
+
+  @author jma
+  @extends SC.ArrayController
+*/
 
 sc_require('models/cdm.js');
 
+//Loading status of the data received from the server
 Multivio.LOADING_DONE = 'done';
 Multivio.LOADING_ERROR = 'error';
 Multivio.LOADING_LOADING = 'loading';
-/**
-@namespace
 
-  (Document Your Controller Here)
+Multivio.filesController = SC.ArrayController.create({
 
-@extends SC.Object
-*/
-Multivio.filesController = SC.ArrayController.create(
-  /** @scope Multivio.filesController.prototype */ {
+  /**
+    Single selection
 
+    @type Boolean
+  */
   allowsMultipleSelection: NO,
+  
+  /**
+    Url of the bibliographic record
+
+    @type Boolean
+  */
   referer: null,
   refererBinding: 'Multivio.inputParameters.url',
+
+  /**
+    Url of the last fetched file.
+
+    @type String
+  */
   currentUrl: undefined,
+  
+  /** @private
+    Parent of the current loading file.
+
+    @type String
+  */
   currentParent: undefined,
   currentIndex: undefined,
   loadingStatus: undefined,
+  currentFile: undefined,
 
-  // TODO: Add your own code here.
   content: Multivio.CDM,
 
+  /**
+    Fetch a new file with a given url.
+
+    @param {url} url of the new file to get from the server
+  */
   fetchFile: function(url, parent) {
     if(this.get('loadingStatus') === Multivio.LOADING_LOADING) {
       throw	new Error('filesController: concurrent file fetch');
@@ -149,7 +177,8 @@ Multivio.filesController = SC.ArrayController.create(
     }
     
     if(!currentFile.get('isContentFile')) {
-      throw "Multivio.filesController: hasNextFile should be called on content file only."; 
+      //throw "Multivio.filesController: hasNextFile should be called on content file only."; 
+      return NO;
     }
 
     var parent = currentFile.get('parent');
@@ -168,7 +197,8 @@ Multivio.filesController = SC.ArrayController.create(
     }
     
     if(!currentFile.get('isContentFile')) {
-      throw "Multivio.filesController: hasNextFile should be called on content file only."; 
+      //throw "Multivio.filesController: hasNextFile should be called on content file only."; 
+      return NO;
     }
 
     var parent = currentFile.get('parent');
@@ -215,6 +245,7 @@ Multivio.filesController = SC.ArrayController.create(
         SC.Logger.debug('fileLoaded');
         //this.set('currentFile', url);
         this.set('loadingStatus', Multivio.LOADING_DONE);
+        this.set('currentFile', fetchedObject);
         Multivio.mainStatechart.sendEvent('fileLoaded');
       }
     }
