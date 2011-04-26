@@ -61,13 +61,16 @@ Multivio.mainPdfView =  SC.View.design({
             _layout.top = 0;
           }
           this.set('layout', _layout);
+          //this.get('parentView').contentViewFrameDidChange(YES);
+          this.notifyPropertyChange("layer");
+          SC.Logger.debug('ImageView updated');
         }
-      }.observes('image'),
+      }.observes('image').cacheable(),
 
       parentViewDidResize: function() {
-        sc_super();
         this.set('visibleHeight', this.get('parentView').get('frame').height);
         this.set('visibleWidth', this.get('parentView').get('frame').width);
+        sc_super();
       },
 
       //redifined this default method in order remove the defaultBlankImage
@@ -90,7 +93,7 @@ Multivio.mainPdfView =  SC.View.design({
             }
           }
         }
-      }.observes('imageValue')
+      }.observes('imageValue').cacheable()
     })
   }),
 
