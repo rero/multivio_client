@@ -9,6 +9,7 @@
 
 sc_require('resources/main_page.js');
 sc_require('controllers/files.js');
+sc_require('statecharts/loading.js');
 
 /**
 @class
@@ -40,80 +41,10 @@ Multivio.ApplicationReadyState = Ki.State.extend({
   applicationError: function(){
     this.gotoState('error');
   },
+
+  loadingNextContentFile: Ki.State.plugin('Multivio.LoadNextFile'),
   
-
-  loadingContentFile: Ki.State.design({
-
-    initialSubstate: 'receivedFile',
-    //for substate
-    rootNode: undefined,
-    first: YES,
-
-    enterState: function() {
-      if(SC.none(this.get('rootNode'))) {
-        this.gotoState('contentReady');
-        return;
-      }
-      var pdfView = Multivio.getPath('mainPage.mainPdfView.waitingView');
-      pdfView.set('isVisible', YES);
-    },
-
-    exitState: function() {
-      var pdfView = Multivio.getPath('mainPage.mainPdfView.waitingView');
-      pdfView.set('isVisible', NO);
-    },
-    
-    serverError: function() {
-      SC.Logger.debug("InitializationError called");
-      this.gotoState('error');  
-    },
-
-    loadingFile: Ki.State.design({
-      fileLoaded:function() {
-        this.gotoState('receivedFile');
-      }
-    }),
-
-    receivedFile: Ki.State.design({
-      enterState: function() {
-        var currentRootNode = this.get('parentState').get('rootNode');
-        SC.Logger.debug("Enter received with: " + currentRootNode.url);
-        var currentNode = Multivio.filesController.find(currentRootNode.url);
-        //rootNode not loaded
-        if(SC.none(currentNode)) {
-          this.gotoState('loadingFile');
-          Multivio.filesController.fetchFile(currentRootNode.url, currentRootNode.parent);
-          return;
-        }
-        //Multivio.treeController.updateContent();
-
-        //isContent file: display it!
-        Multivio.filesController.selectObject(currentNode);
-        if(currentNode.get('isContentFile')) {
-          Multivio.filesController.selectObject(currentNode);
-          this.gotoState('contentReady');
-          return;
-        }
-
-        //logical Node
-        var currentPhys = currentNode.get('physicalStructure');
-        var nextNodeUrl;
-        //expand first child
-        if (this.get('parentState').get('first')) {
-          nextNodeUrl = currentPhys[0].url;
-        }else{
-          //expand last child
-          nextNodeUrl = currentPhys[currentPhys.length - 1].url;
-        }
-
-        //store current as parent and call child
-        this.get('parentState').set('rootNode', {'url': nextNodeUrl, 'parent':currentNode});
-        this.gotoState('loadingFile');
-        Multivio.filesController.fetchFile(nextNodeUrl, currentNode);
-      }
-    })
-
-  }),
+  loadingPreviousContentFile: Ki.State.plugin('Multivio.LoadPreviousFile'),
 
   contentReady: Ki.State.design({
 
@@ -122,16 +53,12 @@ Multivio.ApplicationReadyState = Ki.State.extend({
       //loading root
       if(Multivio.filesController.length() < 1) {
         var rootUrl = Multivio.filesController.get('referer');
-        var loadingState = this.get('parentState').get('loadingContentFile');
-        loadingState.set('rootNode', {'url':rootUrl, 'parent':undefined});
-        loadingState.set('first', YES);
-        this.gotoState('loadingContentFile'); 
+        this.gotoState('loadingNextContentFile', {url: rootUrl, parent: undefined}); 
         return;
       }
 
       var currentFile = Multivio.filesController.get('currentSelection');
       var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
-      SC.Logger.debug('------> ' + viewToChange);
       if(!SC.none(currentFile) && 
          !SC.none(currentFile.metadata) &&
              currentFile.metadata.mime === 'application/pdf') {
@@ -148,34 +75,22 @@ Multivio.ApplicationReadyState = Ki.State.extend({
 
     nextFile: function(){
       var predecessorNode = Multivio.filesController.get('hasNextFile');
-
       if(predecessorNode) {
-        var loadingState = this.get('parentState').get('loadingContentFile');
-        loadingState.set('rootNode', predecessorNode);
-        loadingState.set('first', YES);
-        this.gotoState('loadingContentFile'); 
+        this.gotoState('loadingNextContentFile', predecessorNode); 
       }
     },
 
     previousFile: function(){
       var predecessorNode = Multivio.filesController.get('hasPreviousFile');
       if(predecessorNode) {
-        var loadingState = this.get('parentState').get('loadingContentFile');
-        loadingState.set('rootNode', predecessorNode);
-        loadingState.set('first', NO);
-        this.gotoState('loadingContentFile'); 
+        this.gotoState('loadingPreviousContentFile', predecessorNode); 
       }
     },
 
-    fetchFile: function(){
-        var loadingState = this.get('parentState').get('loadingContentFile');
+    fetchFile: function(context){
         var currentUrl = Multivio.filesController.get('currentUrl');
         var currentParent = Multivio.filesController.get('currentParent');
-        loadingState.set('rootNode', {'url': currentUrl, 'parent': currentParent});
-        loadingState.set('first', YES);
-        this.gotoState('loadingContentFile'); 
+        this.gotoState('loadingNextContentFile', context); 
     }
-
-
   })
 });

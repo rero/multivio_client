@@ -60,13 +60,14 @@ Multivio.TreeView = SC.PickerPane.design({
       exampleView: Multivio.TreeViewItem
     })
   }),
-  
+
   modalPaneDidClick: function(evt) {
     if(this.get('canBeClosed'))
       {
         return sc_super();
       } else {
-        return NO ;
+      return NO ;
       }
   }
+
 });

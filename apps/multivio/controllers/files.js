@@ -69,7 +69,7 @@ Multivio.filesController = SC.ArrayController.create({
     var alreadyLoaded = this.find(url);
     if(alreadyLoaded && alreadyLoaded.get('isComplete')) {
       //this.set('currentFile', url);
-      Multivio.mainStatechart.sendEvent('fileLoaded');
+      Multivio.mainStatechart.sendEvent('fileLoaded', alreadyLoaded);
     }else{
       this.set('loadingStatus', Multivio.LOADING_LOADING);
       this.set('currentUrl', url);
@@ -222,9 +222,7 @@ Multivio.filesController = SC.ArrayController.create({
     //SC.Logger.debug('%@');
     if(!SC.none(this.get('currentSelection')) &&
       this.get('currentSelection').url !== url) {
-    this.set('currentUrl', url);
-    this.set('currentParent', this.find(parentUrl));
-    Multivio.mainStatechart.sendEvent('fetchFile');
+      Multivio.mainStatechart.sendEvent('fetchFile', {url: url, parent: this.find(parentUrl)});
     }
   },
 
@@ -246,7 +244,7 @@ Multivio.filesController = SC.ArrayController.create({
         //this.set('currentFile', url);
         this.set('loadingStatus', Multivio.LOADING_DONE);
         this.set('currentFile', fetchedObject);
-        Multivio.mainStatechart.sendEvent('fileLoaded');
+        Multivio.mainStatechart.sendEvent('fileLoaded', fetchedObject);
       }
     }
   }.observes('[]')
