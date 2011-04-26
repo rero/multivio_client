@@ -170,7 +170,7 @@ Multivio.mainPdfView =  SC.View.design({
       target: 'Multivio.pdfFileController',
       action: 'nextZoom',
       keyEquivalent: '+',
-      isEnabledBinding: 'Multivio.pdfFileController.hasNexZoom',
+      isEnabledBinding: 'Multivio.pdfFileController.hasNextZoom',
       title: 'z+'
     }),
 

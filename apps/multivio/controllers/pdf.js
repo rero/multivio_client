@@ -158,6 +158,10 @@ Multivio.pdfFileController = SC.ObjectController.create({
   //********************// 
 
   _defaultWidth: function() {
+    if(SC.none(this.get('metadata')) ||
+      SC.none(this.getPath('metadata.nativeSize'))) {
+      return 0;
+    }
     var nativeSizes = this.get('metadata').nativeSize;
     var currentPage = this.get('currentPage');
     if(!SC.none(nativeSizes[currentPage])) {
@@ -168,6 +172,10 @@ Multivio.pdfFileController = SC.ObjectController.create({
   }.property('currentPage', 'metadata').cacheable(),
 
   _defaultHeight: function() {
+    if(SC.none(this.get('metadata')) ||
+      SC.none(this.getPath('metadata.nativeSize'))) {
+      return 0;
+    }
     var nativeSizes = this.get('metadata').nativeSize;
     var currentPage = this.get('currentPage');
     if(!SC.none(nativeSizes[currentPage])) {
@@ -210,6 +218,7 @@ Multivio.pdfFileController = SC.ObjectController.create({
       }
     }
   }.property('mode').cacheable(),
+  
 
   nextZoom: function() {
     if(this.get('mode') !== Multivio.ZOOM_MODE) {
@@ -280,18 +289,26 @@ Multivio.pdfFileController = SC.ObjectController.create({
   },
 
   hasNextZoom: function() {
-    if(this.get('_currentZoomIndex') < (this.get('_zoomScale').length - 2)) {
+    var currentZoomIndex = this.get('_currentZoomIndex');
+    if(this.get('mode') !== Multivio.ZOOM_MODE) {
+      currentZoomIndex = this._getNearestZoomIndex(YES);
+    }
+    if(currentZoomIndex < (this.get('_zoomScale').length - 2)) {
       return YES;
     }
     return NO;
-  }.property('_currentZoomIndex'),
+  }.property('_currentZoomIndex', '_centerImageStatus').cacheable(),
 
   hasPreviousZoom: function() {
+    var currentZoomIndex = this.get('_currentZoomIndex');
+    if(this.get('mode') !== Multivio.ZOOM_MODE) {
+      currentZoomIndex = this._getNearestZoomIndex(NO);
+    }
     if(this.get('_currentZoomIndex') > 0) {
       return YES;
     }
     return NO;
-  }.property('_currentZoomIndex').cacheable(),
+  }.property('_currentZoomIndex', '_centerImageStatus').cacheable(),
 
   //********************// 
   //        ROTATION   //
