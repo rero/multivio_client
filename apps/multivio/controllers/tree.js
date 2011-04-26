@@ -63,7 +63,6 @@ Multivio.treeController = SC.TreeController.create({
     var contentUpdated = NO;
 
     if(!SC.none(currentFile)) {
-      SC.Logger.debug("###################### hello ###################");
       var url = currentFile.url;
 
       if(SC.none(this.get('_urlCache')[url])) {
@@ -86,7 +85,6 @@ Multivio.treeController = SC.TreeController.create({
       }
       var nodeToSelect = this.get('_urlCache')[url];
       if(!SC.none(nodeToSelect)) {
-        SC.Logger.debug('Select: %@'.fmt(nodeToSelect.file_position.url));
         this.selectObject(nodeToSelect);
       }
     }
@@ -134,9 +132,7 @@ Multivio.treeController = SC.TreeController.create({
     var currentFile = this.get('currentFile');
     if(!SC.none(currentFile)) {
       var nodeToSelect = this._getNodeFromIndex(currentIndex, this.get('_urlCache')[currentFile.url]);
-      SC.Logger.debug('Node: %@'.fmt(nodeToSelect));
       if(!SC.none(nodeToSelect)) {
-        SC.Logger.debug('Node: %@'.fmt(nodeToSelect.label));
         nodeToSelect.set('dontChangeIndex', YES);
         this.selectObject(nodeToSelect);
       }
@@ -154,7 +150,6 @@ Multivio.treeController = SC.TreeController.create({
           best_index = i;
         }
       }
-      SC.Logger.debug('Best index %@'.fmt(best_index));
       if(best_index >=0) {
         var bestChild =  this._getNodeFromIndex(index, children[best_index]);
         if(!SC.none(bestChild)) {
@@ -192,9 +187,8 @@ Multivio.treeController = SC.TreeController.create({
     return this._findParentFileNode(parent, childUrl);
   },
 
-  _selection1DidChange: function () {
+  _selectionDidChange: function () {
     if (!this.get('allowsSelection')) {
-      Multivio.logger.debug('tree selectionDidChange, selection not allowed, exit');
       return;
     }
     var sel = this.get('selection');
@@ -206,16 +200,15 @@ Multivio.treeController = SC.TreeController.create({
       return;
     }
     if(so.get('dontChangeIndex')) {
+      this.set('dontChangeIndex', NO);
       return;
     }
     //this.set('currentFile', so.file_position.url);
     var urlToFetch = this._findChildFileNode(so).file_position.url;
     var parentUrl = this._findParentFileNode(so, urlToFetch).file_position.url;
     Multivio.filesController.selectNewFile(urlToFetch, parentUrl);
-    SC.Logger.debug('Loading file: %@'.fmt(urlToFetch));
     if(!SC.none(so.file_position) && so.file_position.index > -1 &&
       this.get('currentIndex') !== so.file_position.index) {
-    SC.Logger.debug('currentIndex: %@'.fmt(so.file_position.index));
       this.set('currentIndex', so.file_position.index);
     }
     //Multivio.mainStatechart.sendEvent('fetchFile');

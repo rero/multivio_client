@@ -1,0 +1,28 @@
+The Document Title
+==================
+Johnny Mariethoz <Johnny.Mariethoz@rero.ch>
+1.0, 2011/01/01
+
+Main Tasks
+----------
+- search
+- text selection
+- calendar
+- pre-indexing
+
+Minor Tasks
+-----------
+- overview
+- download
+- 100%
+- page number
+- go to page
+- finalize shortcut
+- grid thumbnails
+- themes + appearance
+- API
+
+DONE
+---
+- tree to finalize
+- image support

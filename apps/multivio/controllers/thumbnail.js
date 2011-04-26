@@ -10,7 +10,7 @@
 
   @extends SC.Object
 */
-Multivio.thumbnailController = SC.ObjectController.create(
+Multivio.pdfThumbnailController = SC.ObjectController.create(
 /** @scope Multivio.thumnailController.prototype */ {
-   contentBinding: SC.Binding.from('Multivio.thumbnailsController.selection').single() // TODO: Add your own code here.
+   contentBinding: SC.Binding.from('Multivio.pdfThumbnailsController.selection').single() // TODO: Add your own code here.
 }) ;

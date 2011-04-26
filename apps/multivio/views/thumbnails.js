@@ -11,32 +11,29 @@ Multivio.thumbnailsView = SC.PickerPane.design({
       layerId: 'mvo-thumbnails',
       contentValueKey: 'pageNumber',
       contentIconKey: 'url',
-      contentBinding: 'Multivio.thumbnailsController.content',
-      selectionBinding: 'Multivio.thumbnailsController.selection',
+      //contentBinding: 'Multivio.pdfThumbnailsController.arrangedObjects',
+      //selectionBinding: 'Multivio.pdfThumbnailsController.selection',
       exampleView: Multivio.thumbnailView,
       rowHeight: 130,
       rowSpacing: 10,
 
-      _didChange: function() {
-        SC.Logger.debug('thumbnailsView: changed'); 
-      }.observes('content'),
-
-      _pageDidChange: function() {
+      _selectionDidChanged: function() {
         SC.Logger.debug('selection: changed'); 
         var sel = this.get('selection').firstObject();
         if(!SC.none(sel) && sel.get('pageNumber') > 0) {
-        SC.Logger.debug('selection: changed ' + sel.get('pageNumber')); 
+          SC.Logger.debug('selection: changed ' + sel.get('pageNumber')); 
           this.scrollToContentIndex(sel.get('pageNumber') - 1);
         }
       }.observes('selection')
     })
   }),
+
   modalPaneDidClick: function(evt) {
     if(this.get('canBeClosed'))
       {
         return sc_super();
       } else {
-      return NO ;
+        return NO ;
       }
   }
 });

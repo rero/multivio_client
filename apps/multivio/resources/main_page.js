@@ -18,6 +18,7 @@
 sc_require('views/unsupported_view.js');
 sc_require('views/thumbnails.js');
 sc_require('views/pdf_view.js');
+sc_require('views/image.js');
 sc_require('views/navigation_bar.js');
 sc_require('views/title.js');
 sc_require('views/help.js');
@@ -48,6 +49,7 @@ Multivio.mainPage = SC.Page.design({
     })
   }),
   mainPdfView: Multivio.mainPdfView,
+  mainImageView: Multivio.mainImageView,
   unsupportedDocumentView: Multivio.unsupportedDocumentView,
   thumbnailsView: Multivio.thumbnailsView,
   navigationBar: Multivio.NavigationBar,

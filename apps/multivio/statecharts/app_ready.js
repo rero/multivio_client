@@ -43,7 +43,7 @@ Multivio.ApplicationReadyState = Ki.State.extend({
   },
 
   loadingNextContentFile: Ki.State.plugin('Multivio.LoadNextFile'),
-  
+
   loadingPreviousContentFile: Ki.State.plugin('Multivio.LoadPreviousFile'),
 
   contentReady: Ki.State.design({
@@ -60,16 +60,28 @@ Multivio.ApplicationReadyState = Ki.State.extend({
       var currentFile = Multivio.filesController.get('currentSelection');
       var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
       if(!SC.none(currentFile) && 
-         !SC.none(currentFile.metadata) &&
-             currentFile.metadata.mime === 'application/pdf') {
-        if(viewToChange.get('nowShowing') !== 'mainPdfView') {
-        viewToChange.set('nowShowing', 'mainPdfView');
-      Multivio.getPath('mainPage.mainPdfView').becomeFirstResponder();
-      Multivio.getPath('mainPage.mainPdfView.bottomToolbar').displayBar();
+         !SC.none(currentFile.metadata)){
+        if(currentFile.metadata.mime.match('.*?/pdf')) {
+          if(viewToChange.get('nowShowing') !== 'mainPdfView') {
+            viewToChange.set('nowShowing', 'mainPdfView');
+            Multivio.getPath('mainPage.mainPdfView').becomeFirstResponder();
+            Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('content', 'Multivio.pdfThumbnailsController.arrangedObjects');
+            Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('selection', 'Multivio.pdfThumbnailsController.selection');
+            Multivio.getPath('mainPage.mainPdfView.bottomToolbar').displayBar();
+          }
+        }else{
+          if(currentFile.metadata.mime.match('image/.*?')) {
+            if(viewToChange.get('nowShowing') !== 'mainImageView') {
+              viewToChange.set('nowShowing', 'mainImageView');
+              Multivio.getPath('mainPage.mainImageView').becomeFirstResponder();
+              Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('content', 'Multivio.imageThumbnailsController.arrangedObjects');
+              Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('selection', 'Multivio.imageThumbnailsController.selection');
+              Multivio.getPath('mainPage.mainImageView.bottomToolbar').displayBar();
+            }
+          }else{
+            viewToChange.set('nowShowing', 'unsupportedDocumentView');
+          }
         }
-      this.set('searchInNext', YES);
-      }else{
-          viewToChange.set('nowShowing', 'unsupportedDocumentView');
       }
     },
 
@@ -88,9 +100,9 @@ Multivio.ApplicationReadyState = Ki.State.extend({
     },
 
     fetchFile: function(context){
-        var currentUrl = Multivio.filesController.get('currentUrl');
-        var currentParent = Multivio.filesController.get('currentParent');
-        this.gotoState('loadingNextContentFile', context); 
+      var currentUrl = Multivio.filesController.get('currentUrl');
+      var currentParent = Multivio.filesController.get('currentParent');
+      this.gotoState('loadingNextContentFile', context); 
     }
   })
 });
