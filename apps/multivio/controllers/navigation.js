@@ -13,6 +13,7 @@
 sc_require('views/help.js');
 sc_require('views/thumbnails.js');
 sc_require('views/tree.js');
+sc_require('views/search.js');
 Multivio.navigationController = SC.ArrayController.create(
 /** @scope Multivio.navigationController.prototype */ {
   // TODO: Add your own code here.
@@ -31,6 +32,10 @@ Multivio.navigationController = SC.ArrayController.create(
     SC.Object.create({
       panel: 'thumbnailsView',
       icon: static_url("images/icons/24x24/thumbnails_dark_24x24.png")
+    }),
+    SC.Object.create({
+      panel: 'searchView',
+      icon: static_url("images/icons/24x24/search_dark_24x24.png")
     }),
     
     SC.Object.create({

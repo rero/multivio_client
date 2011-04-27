@@ -33,16 +33,13 @@ Multivio.RemoteData = {
   replace: function(start, amt, items) {
     var array = this._array;
     if (!array) { array = this._array = [];}
+    this.arrayContentWillChange();
     array.replace(start, amt, items);  // pass through
-
-    // compute the delta change...remember items may be null
-    var len = items ? items.length : 0 ;
-    var delta = len - amt;
-
-    // notify observers..
-    this.enumerableContentDidChange(start, amt, delta);
+    this.arrayContentDidChange();
+    this.enumerableContentDidChange();
     return this;
   },
+
   _requestError: function () {
     SC.Logger.debug('http error');
     Multivio.setPath("errorController.errorMessage", "Server is not responding");
@@ -62,14 +59,17 @@ Multivio.RemoteData = {
         this.pushObject(rec);
       }else{
         rec.get('received').push(field);
+        this.arrayContentWillChange();
         rec.set(field, result);
-        /* notify changes */
+        this.arrayContentDidChange();
         this.enumerableContentDidChange();
+        SC.Logger.debug('Received Data: notify!!!!!!!!!!!!!!!!!!');
       }
     }else{
       this._requestError();
     }
   },
+
   find: function(url) {
     var records = this.get('content');
     for(var i=0;i<this.length();i++) {
@@ -79,5 +79,4 @@ Multivio.RemoteData = {
     }
     return null;
   }
-
-}
+};

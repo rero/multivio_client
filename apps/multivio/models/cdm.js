@@ -10,7 +10,7 @@ sc_require('request_handler.js');
 sc_require('configurator.js');
 sc_require('mixins/remote_data.js');
 
-Multivio.CDM = SC.Object.create(SC.Enumerable, SC.Array, Multivio.RemoteData, {
+Multivio.CDM = SC.Object.create(SC.Array, Multivio.RemoteData, {
 
   getMetadata: function (url) {
     var serverAdress = Multivio.configurator.

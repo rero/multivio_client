@@ -216,7 +216,11 @@ Multivio.DisplayImage = {
     //image with at 100% zoom
     var nativeWidth = this.get('_defaultWidth');
     //current Image Width
-    var winWidth = this.get('centerImage').width;
+    var winWidth = 0;
+    if(this.get('centerImage')) {
+      winWidth = this.get('centerImage').width;
+    }
+
     var desiredNumber = winWidth/nativeWidth;
 
     var zooms = this.get('_zoomScale');
@@ -230,7 +234,7 @@ Multivio.DisplayImage = {
       } else {
         // else, we consider the difference between the desired number and the current number in the array.
         var d = Math.abs(desiredNumber - zooms[i]);
-        SC.Logger.debug('distance: ' + d + ' desi: ' + desiredNumber + ' actual ' + zooms[i] + " nearest " + nearest);
+        //SC.Logger.debug('distance: ' + d + ' desi: ' + desiredNumber + ' actual ' + zooms[i] + " nearest " + nearest);
         if (d < bestDistanceFoundYet) {
           // For the moment, this value is the nearest to the desired number...
           nearest = i;
@@ -238,7 +242,7 @@ Multivio.DisplayImage = {
         }
       }
     }
-    SC.Logger.debug('Best index: ' + nearest);
+    //SC.Logger.debug('Best index: ' + nearest);
     if(roundedDown) {
       if(nearest === 0 || desiredNumber > zooms[nearest]) {
         return nearest;

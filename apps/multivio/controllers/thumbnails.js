@@ -46,6 +46,7 @@ Multivio.imageThumbnailsController = SC.ArrayController.create(
       if(!SC.none(sel))  {
         var newPage  = sel.firstObject().get('pageNumber');
         if(currentPage != newPage) {
+        SC.Logger.debug('imageThumbnail set current page: ' + currentPage);
           this.set('currentPage', sel.firstObject().get('pageNumber'));
         }
       }
@@ -55,8 +56,11 @@ Multivio.imageThumbnailsController = SC.ArrayController.create(
   _currentPageDidChange: function() {
     var currentPage = this.get('currentPage');
     if(!SC.none(currentPage) && currentPage > 0) {
-      SC.Logger.debug('Select current page: ' + currentPage + ' and ' + this.objectAt(currentPage - 1));
-      this.selectObject(this.objectAt(currentPage - 1));
+      var toSelect = this.objectAt(currentPage - 1);
+      if(toSelect !== this.get('selection').firstObject()){
+        SC.Logger.debug('imageThumbnail select object for current page: ' + currentPage);
+        this.selectObject(toSelect);
+      }
     }
   }.observes('currentPage').cacheable(),
 
@@ -115,11 +119,10 @@ Multivio.pdfThumbnailsController = SC.ArrayController.create(
     var sel = this.get('selection');
     if(!SC.none(sel) && !SC.none(sel.firstObject())) {
       var currentPage = this.get('currentPage');
-      if(!SC.none(sel))  {
         var newPage  = sel.firstObject().get('pageNumber');
         if(currentPage != newPage) {
-          this.set('currentPage', sel.firstObject().get('pageNumber'));
-        }
+        SC.Logger.debug('pdfThumbnail set current page: ' + newPage);
+          this.set('currentPage', newPage);
       }
     }
   }.observes('selection').cacheable(),
@@ -127,7 +130,7 @@ Multivio.pdfThumbnailsController = SC.ArrayController.create(
   _currentPageDidChange: function() {
     var currentPage = this.get('currentPage');
     if(!SC.none(currentPage) && currentPage > 0) {
-      SC.Logger.debug('Select current page: ' + currentPage + ' and ' + this.objectAt(currentPage - 1));
+      SC.Logger.debug('pdfThumbnails: Select current page: ' + currentPage);
       this.selectObject(this.objectAt(currentPage - 1));
     }
   }.observes('currentPage').cacheable(),

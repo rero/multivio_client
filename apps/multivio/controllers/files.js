@@ -21,7 +21,7 @@ Multivio.LOADING_DONE = 'done';
 Multivio.LOADING_ERROR = 'error';
 Multivio.LOADING_LOADING = 'loading';
 
-Multivio.filesController = SC.ArrayController.create({
+Multivio.FilesController = SC.ArrayController.extend({
 
   /**
     Single selection
@@ -226,8 +226,11 @@ Multivio.filesController = SC.ArrayController.create({
     }
   },
 
-  _mvo_contentDidChange: function(){
-    SC.Logger.debug('file received!!!!!');
+
+  didChange: function() {
+    SC.Logger.debug('Did Change');
+  },
+  _contentDidChange: function(){
     var url = this.get('currentUrl');
     var fetchedObject = this.find(this.get('currentUrl'));
     var fetchedParentObject = this.get('currentParent');
@@ -244,9 +247,11 @@ Multivio.filesController = SC.ArrayController.create({
         //this.set('currentFile', url);
         this.set('loadingStatus', Multivio.LOADING_DONE);
         this.set('currentFile', fetchedObject);
+        SC.Logger.debug('file received: %@'.fmt(url));
         Multivio.mainStatechart.sendEvent('fileLoaded', fetchedObject);
       }
     }
   }.observes('[]')
 
 });
+Multivio.filesController = Multivio.FilesController.create({});

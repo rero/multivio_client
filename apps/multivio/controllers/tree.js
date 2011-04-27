@@ -50,6 +50,7 @@ Multivio.treeController = SC.TreeController.create({
   currentIndexBinding: 'Multivio.filesController.currentIndex',
 
   _urlCache: null,
+  dontChangeIndex: NO,
 
   init:function() {
     var currentNode = Multivio.Outline.create({label : 'root', 'childs' : null, file_position: {url:'' , index: -1}});
@@ -126,19 +127,7 @@ Multivio.treeController = SC.TreeController.create({
     //this.set('content', newContent); 
     parent.set('childs', newContent);
   },
-
-  _currentIndexDidChange: function() {
-    var currentIndex = this.get('currentIndex'); 
-    var currentFile = this.get('currentFile');
-    if(!SC.none(currentFile)) {
-      var nodeToSelect = this._getNodeFromIndex(currentIndex, this.get('_urlCache')[currentFile.url]);
-      if(!SC.none(nodeToSelect)) {
-        nodeToSelect.set('dontChangeIndex', YES);
-        this.selectObject(nodeToSelect);
-      }
-    }
-  }.observes('currentIndex'),
-
+  
   _getNodeFromIndex: function(index, rootNode) {
     var children = rootNode.get('treeItemChildren');
 
@@ -187,6 +176,22 @@ Multivio.treeController = SC.TreeController.create({
     return this._findParentFileNode(parent, childUrl);
   },
 
+
+  _currentIndexDidChange: function() {
+    var currentIndex = this.get('currentIndex'); 
+    var currentFile = this.get('currentFile');
+    if(!SC.none(currentFile)) {
+      var nodeToSelect = this._getNodeFromIndex(currentIndex, this.get('_urlCache')[currentFile.url]);
+      if(!SC.none(nodeToSelect)) {
+        if(nodeToSelect != this.get('selection').firstObject()) {
+          this.set('dontChangeIndex', YES);
+        SC.Logger.debug('Tree select object for current index: ' + currentIndex);
+          this.selectObject(nodeToSelect);
+        }
+      }
+    }
+  }.observes('currentIndex'),
+
   _selectionDidChange: function () {
     if (!this.get('allowsSelection')) {
       return;
@@ -199,7 +204,7 @@ Multivio.treeController = SC.TreeController.create({
     if (SC.none(so)) {
       return;
     }
-    if(so.get('dontChangeIndex')) {
+    if(this.get('dontChangeIndex')) {
       this.set('dontChangeIndex', NO);
       return;
     }
@@ -209,6 +214,7 @@ Multivio.treeController = SC.TreeController.create({
     Multivio.filesController.selectNewFile(urlToFetch, parentUrl);
     if(!SC.none(so.file_position) && so.file_position.index > -1 &&
       this.get('currentIndex') !== so.file_position.index) {
+        SC.Logger.debug('Tree select current index: ' + so.file_position.index);
       this.set('currentIndex', so.file_position.index);
     }
     //Multivio.mainStatechart.sendEvent('fetchFile');

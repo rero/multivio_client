@@ -18,7 +18,6 @@ Multivio.thumbnailsView = SC.PickerPane.design({
       rowSpacing: 10,
 
       _selectionDidChanged: function() {
-        SC.Logger.debug('selection: changed'); 
         var sel = this.get('selection').firstObject();
         if(!SC.none(sel) && sel.get('pageNumber') > 0) {
           SC.Logger.debug('selection: changed ' + sel.get('pageNumber')); 

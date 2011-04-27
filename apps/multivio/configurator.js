@@ -115,7 +115,8 @@ Multivio.configurator = SC.Object.create(
     image: "/document/render?",
     imageSize: "/document/get_size?",
     
-    search: "/document/search?query=%@&from=%@&to=%@&context_size=%@&max_results=%@&angle=%@&url=",
+    search: "/document/search?query=%@&context_size=20&max_results=50&angle=0&url=%@",
+    //search: "/document/search?query=%@&from=%@&to=%@&context_size=%@&max_results=%@&angle=%@&url=",
     getText: "/document/get_text?page_nr=%@&x1=%@&y1=%@&x2=%@&y2=%@&angle=%@&url=",    
     getPageIndexing: "/document/get_indexing?page_nr=%@&from=%@&to=%@&url=",
     
