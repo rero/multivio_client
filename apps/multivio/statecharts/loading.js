@@ -22,7 +22,7 @@ Multivio.LoadFile = {
     this.gotoState('error');  
   },
 
-  loadingFile: Ki.State.design({
+  loadingFile: SC.State.design({
     fileLoaded:function(context) {
       this.gotoState(this.get('parentState').receivedFile, context);
     }
@@ -30,8 +30,8 @@ Multivio.LoadFile = {
 };
 
 
-Multivio.LoadNextFile = Ki.State.design(Multivio.LoadFile, {
-  receivedFile: Ki.State.design({
+Multivio.LoadNextFile = SC.State.design(Multivio.LoadFile, {
+  receivedFile: SC.State.design({
     enterState: function(context) {
       var currentRootNode = context;
       SC.Logger.debug("Enter received with: " + currentRootNode.url);
@@ -65,8 +65,8 @@ Multivio.LoadNextFile = Ki.State.design(Multivio.LoadFile, {
 });
 
 
-Multivio.LoadPreviousFile = Ki.State.design(Multivio.LoadFile, {
-  receivedFile: Ki.State.design({
+Multivio.LoadPreviousFile = SC.State.design(Multivio.LoadFile, {
+  receivedFile: SC.State.design({
     enterState: function(context) {
       var currentRootNode = context;
       SC.Logger.debug("Enter received with: " + currentRootNode.url);

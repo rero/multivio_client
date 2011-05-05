@@ -11,7 +11,7 @@
 @extends SC.View
 */
 sc_require('controllers/tree.js');
-Multivio.SearchViewItem = SC.ListItemView.extend(
+Multivio.SearchViewItem = SC.ListItemView.extend(SC.AutoResize,
   /** @scope Multivio.NavigationItem.prototype */ {
 
   // TODO: Add your own code here.
@@ -19,29 +19,31 @@ Multivio.SearchViewItem = SC.ListItemView.extend(
   displayProperties: ['label'],
   //layout: {height: 40, centerX: 0, centerY: 0, width: 200}
   classNames: ['mvo-toc-entry'],
+  supportsAutoResize: YES,
+  iconWidth: 16,
 
-  autoResize: function() {
-    // get the layer
-    var layer = this.get("layer");
+  autoResizeText: function() {
+    return this.getPath('content.label');
+  }.property('content'),
 
-    // return if there wasn't one (no font sizes, etc. to use with measuring)
-    if (!layer) {
-      return;
+  autoResizeLayer: function() {
+      return this.get('layer');
+  }.property(),
+
+  autoResizePadding: function() {
+    var width = 0;
+    width = this.get('iconWidth') + (this.get('outlineLevel') + 1) * this.get('outlineIndent');
+    return {width: width, height: 0};
+  }.property('outlineLevel', 'outlineIndent', 'iconWidth').cacheable(),
+  
+  _measureSizeDidChange: function () {
+    var contentWidth = this.get('measuredSize').width;
+    var parentView = this.get('parentView');
+    if(contentWidth > parentView.get('frame').width) {
+      parentView.adjust('width', contentWidth);
     }
+  }.observes('measuredSize')
 
-    // get metrics, using layer as example element
-    var labelSize = SC.metricsForString(this.get("content").get('label'), layer);
-    var iconWidth = 16;
-    var newWidth = labelSize.width + iconWidth + (this.get('outlineLevel') + 1) * this.get('outlineIndent');
-    this.adjust("width", newWidth);
-    if (this.get('parentView').get('frame').width < newWidth) {
-      this.get('parentView').adjust('width', newWidth);
-    }
-  },
-
-  _layerDidChange: function () {
-    this.autoResize();
-  }.observes('layer')
 });
 
 Multivio.SearchView = SC.PickerPane.design({

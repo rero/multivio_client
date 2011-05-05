@@ -18,12 +18,13 @@ sc_require('statecharts/loading.js');
   for user interaction
 
 @author maj
-@extends Ki.State
+@extends SC.State
   @since 1.0
 */
-Multivio.ApplicationReadyState = Ki.State.extend({
+Multivio.ApplicationReadyState = SC.State.extend({
 
   initialSubstate: 'contentReady',
+  autoInitStatechart: NO,
 
   enterState: function() {
     Multivio.getPath('mainPage.mainPane').append();
@@ -42,11 +43,11 @@ Multivio.ApplicationReadyState = Ki.State.extend({
     this.gotoState('error');
   },
 
-  loadingNextContentFile: Ki.State.plugin('Multivio.LoadNextFile'),
+  loadingNextContentFile: SC.State.plugin('Multivio.LoadNextFile'),
 
-  loadingPreviousContentFile: Ki.State.plugin('Multivio.LoadPreviousFile'),
+  loadingPreviousContentFile: SC.State.plugin('Multivio.LoadPreviousFile'),
 
-  contentReady: Ki.State.design({
+  contentReady: SC.State.design({
 
 
     enterState: function() {

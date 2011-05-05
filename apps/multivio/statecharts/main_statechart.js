@@ -13,20 +13,21 @@
   Main application statechart
   
   @author maj
-  @extends Ki.Statechart
+  @extends SC.Statechart
   @since 1.0
 */
-Multivio.mainStatechart = Ki.Statechart.create({
+Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,{
+//Multivio.mainStatechart = SC.Statechart.create({
   initialState: 'starting',
   trace: YES,
 
-  starting: Ki.State.design({
+  starting: SC.State.design({
     loadApp: function() {
       this.gotoState('initializing'); 
     }
   }),
   
-  initializing: Ki.State.design({
+  initializing: SC.State.design({
     enterState: function() {
       SC.Logger.debug('Initializing...');
       var panel = Multivio.getPath('loadingPage.mainPane');
@@ -59,9 +60,9 @@ Multivio.mainStatechart = Ki.Statechart.create({
     }
   }),
   
-  applicationReady: Ki.State.plugin('Multivio.ApplicationReadyState'),
+  applicationReady: SC.State.plugin('Multivio.ApplicationReadyState'),
 
-  error: Ki.State.design({
+  error: SC.State.design({
     enterState: function() {
       var panel = Multivio.getPath('errorPage.mainPane');
       panel.append();
@@ -69,7 +70,7 @@ Multivio.mainStatechart = Ki.Statechart.create({
     }
   }),
 
-  end: Ki.State.design({
+  end: SC.State.design({
     enterState: function() {
       SC.Logger.log("Application ended.");
     }

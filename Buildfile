@@ -22,7 +22,7 @@ proxy '/local',
 # required libraries
 mode :all do
  config :all,
-   :required => [:sproutcore, 'sproutcore/animation', :ki],
+   :required => [:sproutcore, 'sproutcore/animation', 'sproutcore/statechart'],
    :theme_name => 'sc-theme mvo-dark-gray-theme',
 	 :load_fixtures => true
 end

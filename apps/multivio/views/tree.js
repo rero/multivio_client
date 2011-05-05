@@ -11,37 +11,35 @@
 @extends SC.View
 */
 sc_require('controllers/tree.js');
-Multivio.TreeViewItem = SC.ListItemView.extend(
-  /** @scope Multivio.NavigationItem.prototype */ {
+Multivio.TreeViewItem = SC.ListItemView.extend(SC.AutoResize,{
 
   // TODO: Add your own code here.
   displayProperties: ['file_position', 'label', 'labelPage'],
-  //layout: {height: 40, centerX: 0, centerY: 0, width: 200}
   classNames: ['mvo-toc-entry'],
+  supportsAutoResize: YES,
+  iconWidth: 16,
 
-  autoResize: function() {
-    // get the layer
-    var layer = this.get("layer");
+  autoResizeText: function() {
+    return this.getPath('content.labelPage');
+  }.property('content'),
 
-    // return if there wasn't one (no font sizes, etc. to use with measuring)
-    if (!layer) {
-      return;
+  autoResizeLayer: function() {
+      return this.get('layer');
+  }.property(),
+
+  autoResizePadding: function() {
+    var width = 0;
+    width = this.get('iconWidth') + (this.get('outlineLevel') + 1) * this.get('outlineIndent');
+    return {width: width, height: 0};
+  }.property('outlineLevel', 'outlineIndent', 'iconWidth').cacheable(),
+
+  _measureSizeDidChange: function () {
+    var contentWidth = this.get('measuredSize').width;
+    var parentView = this.get('parentView');
+    if(contentWidth > parentView.get('frame').width) {
+      parentView.adjust('width', contentWidth);
     }
-
-      // get metrics, using layer as example element
-      var labelSize = SC.metricsForString(this.get("content").get('labelPage'), layer);
-      var iconWidth = 16;
-      var newWidth = labelSize.width + iconWidth + (this.get('outlineLevel') + 1) * this.get('outlineIndent');
-      this.adjust("width", newWidth);
-      if (this.get('parentView').get('frame').width < newWidth) {
-        this.get('parentView').adjust('width', newWidth);
-      }
-  },
-
-  _layerDidChange: function () {
-    this.autoResize();
-  }.observes('layer')
-
+  }.observes('measuredSize')
 });
 
 Multivio.TreeView = SC.PickerPane.design({
@@ -58,6 +56,7 @@ Multivio.TreeView = SC.PickerPane.design({
       contentBinding: 'Multivio.treeController.arrangedObjects',
       selectionBinding: 'Multivio.treeController.selection',
       exampleView: Multivio.TreeViewItem
+
     })
   }),
 
@@ -66,7 +65,7 @@ Multivio.TreeView = SC.PickerPane.design({
       {
         return sc_super();
       } else {
-      return NO ;
+        return NO ;
       }
   }
 
