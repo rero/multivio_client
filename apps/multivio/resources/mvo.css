@@ -6,6 +6,13 @@ body, .sc-view, .sc-pane, .sc-main, .ace, .ace.source-list.collection {
 	color: #fff;
 }
 	*/
+.mvo-search-results {
+	opacity: 0.50;
+	-moz-opacity: 0.50;
+	-khtml-opacity: 0.50;
+	filter: alpha(opacity=50);
+	background-color: #999;
+}
 #mvo-tree-view .mvo-toc-entry label {
 	font-size: 11px;
 }

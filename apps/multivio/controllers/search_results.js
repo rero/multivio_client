@@ -16,7 +16,7 @@ sc_require('controllers/files.js');
 Multivio.filesForSearchController = Multivio.FilesController.create({});
 
 
-Multivio.searchController = SC.ArrayController.create({
+Multivio.searchResultsController = SC.ArrayController.create({
   allowsMultipleSelection: NO,
   loadingStatus: undefined,
   content: Multivio.SearchData,
@@ -25,7 +25,7 @@ Multivio.searchController = SC.ArrayController.create({
 
   fetchFile: function(url, query) {
     if(this.get('loadingStatus') === Multivio.LOADING_LOADING) {
-      throw	new Error('searchController: concurrent file fetch');
+      throw	new Error('searchResultsController: concurrent file fetch');
     }
     var alreadyLoaded = this.find(url, query);
     if(alreadyLoaded) {
@@ -128,7 +128,7 @@ Multivio.searchTreeController = SC.TreeController.create(
   currentFile: null,
   currentFileBinding: SC.Binding.oneWay('Multivio.filesController.selection'),
   currentSearch: null,
-  currentSearchBinding: 'Multivio.searchController.selection',
+  currentSearchBinding: 'Multivio.searchResultsController.selection',
   currentPage: null,
   currentPageBinding: 'Multivio.filesController.currentIndex',
 
@@ -156,7 +156,7 @@ Multivio.searchTreeController = SC.TreeController.create(
       if(currentFile.get('isContentFile')){
         if(SC.none(this.get('content').url) || currentFile.url !== this.get('content').url || query !== this.get('content').query){
           this.set('searchStatus', 'searching...');
-          Multivio.searchController.fetchFile(currentFile.url, query);
+          Multivio.searchResultsController.fetchFile(currentFile.url, query);
         }
       }
     }

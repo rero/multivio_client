@@ -136,7 +136,7 @@ Multivio.SearchView = SC.PickerPane.design({
         useCanvas: NO,
 
         isVisible: YES,
-        isVisibleBinding: 'Multivio.searchController.isLoading',
+        isVisibleBinding: 'Multivio.searchResultsController.isLoading',
         value: static_url('images/progress_wheel_medium.gif'),
         classNames: "mvo-waiting-small".w()
       }),

@@ -24,7 +24,7 @@ Multivio.DisplayImage = {
 
         var scaleFactor = this.get('_zoomScale')[this.get('_currentZoomIndex')];
         var newUrl, newWidth, newHeight;
-        var angle = this.get('rotationAngle');
+        var angle = -this.get('rotationAngle');
         
         //different zoom mode
         switch(this.get('mode')) {
@@ -128,6 +128,22 @@ Multivio.DisplayImage = {
     }else{
       return this.get('metadata').defaultNativeSize[0];
     }
+  }.property('currentPage', 'metadata').cacheable(),
+
+  nativeSize: function() {
+    if(SC.none(this.get('metadata')) ||
+      SC.none(this.getPath('metadata.defaultNativeSize'))) {
+      return {'width': 0, 'height': 0};
+    }
+    var nativeSizes = this.get('metadata').nativeSize;
+    var currentPage = this.get('currentPage');
+    var size;
+    if(!SC.none(nativeSizes) && !SC.none(nativeSizes[currentPage])) {
+      size = nativeSizes[currentPage];
+    }else{
+      size = this.get('metadata').defaultNativeSize;
+    }
+      return {'width': size[0], 'height': size[1]};
   }.property('currentPage', 'metadata').cacheable(),
   
   hasThumbnails: function() {
@@ -285,12 +301,17 @@ Multivio.DisplayImage = {
   //********************// 
   rotateLeft: function() {
     var currentAngle = this.get('rotationAngle');
-    this.set('rotationAngle', (currentAngle - 90) % 360);
+    var newAngle = currentAngle - 90;
+    if(newAngle < 0){
+      newAngle = 360 + newAngle;
+    }
+    this.set('rotationAngle', newAngle % 360);
   },
 
   rotateRight: function() {
     var currentAngle = this.get('rotationAngle');
-    this.set('rotationAngle', (currentAngle + 90) % 360);
+    var newAngle = currentAngle + 90;
+    this.set('rotationAngle', newAngle % 360);
   }
 
 };

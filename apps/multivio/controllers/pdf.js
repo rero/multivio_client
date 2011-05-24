@@ -8,6 +8,7 @@
 
 sc_require('views/pdf_view.js');
 sc_require('mixins/image.js');
+sc_require('controllers/files.js');
 
 
 
@@ -42,6 +43,10 @@ Multivio.pdfFileController = SC.ObjectController.create(Multivio.DisplayImage, {
   _currentUrl: function (){
     return "page_nr=%@&url=%@".fmt(this.get('currentPage'), this.get('url'));
   }.property('url', 'currentPage').cacheable(),
+
+  currentZoomScale: function() {
+
+  }.property('_currentZoomIndex', '_zoomScale'),
   
   nPages:function() {
     if(!SC.none(this.get('metadata'))) {

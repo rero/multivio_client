@@ -2,9 +2,9 @@ sc_require('views/thumbnail.js');
 sc_require('controllers/thumbnails.js');
 
 Multivio.thumbnailsView = SC.PickerPane.design({
-  isAnchored: YES,
+  layout: { width: 130, top: 0, left:0, bottom: 100},
+  //isAnchored: NO,
   isModal: NO,
-  layout: { width: 130, bottom: 100},
   canBeClosed: YES,
   contentView: SC.ScrollView.design({
     contentView: SC.SourceListView.design({

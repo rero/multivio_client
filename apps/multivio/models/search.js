@@ -17,7 +17,7 @@ Multivio.SearchRecord = SC.Object.extend({
 });
 
 
-Multivio.SearchData = SC.Object.create(SC.Enumerable, SC.Array, Multivio.RemoteData, {
+Multivio.SearchData = SC.Object.create(SC.Array, Multivio.RemoteData, {
   getSearchResult: function (query, url) {
     var serverAdress = Multivio.configurator.
       getPath('baseUrlParameters.search').fmt(query, url);

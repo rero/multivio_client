@@ -1,4 +1,5 @@
 sc_require('mixins/fadeinout.js');
+sc_require('views/center_image.js');
 Multivio.mainPdfView =  SC.View.design({
   childViews: ['waitingView', 'pdfScrollView', 'bottomToolbar'], 
 
@@ -34,68 +35,17 @@ Multivio.mainPdfView =  SC.View.design({
   pdfScrollView: SC.ScrollView.design({
     classNames: "mvo-center".w(),
     layout: { top: 0, left: 0, bottom: 0, right: 0},
-    contentView: SC.ImageView.design({
+    contentView: Multivio.CenterImage.design({
       layout: { centerX: 0, centerY: 0 },
-      classNames: "mvo-page".w(),
-      visibleWidth: 0,
-      visibleHeight: 0,
-      valueBinding: 'Multivio.pdfFileController.currentUrl',
-      imageDidLoad: function (url, imageOrError) {
-        var img_height = this.get('image').height;
-        var img_width = this.get('image').width;
-        var parent_width = this.get('visibleWidth');
-        var parent_height = this.get('visibleHeight');
-        var _layout = {};
-        if(img_height > 1 && img_width > 1) {
-          _layout.width = img_width;
-          _layout.height = img_height;
-          if(parent_width > img_width) {
-            _layout.centerX = 0;
-          }else{
-            _layout.left = 0;
-          }
-          if(parent_height > img_height) {
-            _layout.centerY = 0;
-          }else{
-            _layout.top = 0;
-          }
-          this.set('layout', _layout);
-          //this.get('parentView').contentViewFrameDidChange(YES);
-          this.notifyPropertyChange("layer");
-          SC.Logger.debug('ImageView updated');
-        }
-      }.observes('image').cacheable(),
-
-      parentViewDidResize: function() {
-        this.set('visibleHeight', this.get('parentView').get('frame').height);
-        this.set('visibleWidth', this.get('parentView').get('frame').width);
+      init:function() {
         sc_super();
-      },
-
-      //redifined this default method in order remove the defaultBlankImage
-      _image_valueDidChange: function() {
-        var value = this.get('imageValue'),
-        type = this.get('type');
-
-        // check to see if our value has changed
-        if (value !== this._iv_value) {
-          this._iv_value = value;
-
-          // While the new image is loading use SC.BLANK_IMAGE as a placeholder
-          //this.set('image', SC.BLANK_IMAGE);
-          this.set('status', SC.IMAGE_STATE_LOADING);
-
-          // order: image cache, normal load
-          if (!this._loadImageUsingCache()) {
-            if (!this._loadImage()) {
-              // CSS class? this will be handled automatically
-            }
-          }
-        }
-      }.observes('imageValue').cacheable()
+        this.get('imageView').bind('value', 'Multivio.pdfFileController.currentUrl');
+        this.get('selectionView').bind('nativeSize', 'Multivio.pdfFileController.nativeSize');
+        this.get('selectionView').bind('rotationAngle', 'Multivio.pdfFileController.rotationAngle');
+      }
+      //valueBinding: 'Multivio.pdfFileController.currentUrl'
     })
   }),
-
   bottomToolbar: SC.NavigationBarView.design(SC.Animatable, Multivio.FadeInOut, {
     childViews: ['previousButton', 'nextButton', 'rotateRightButton', 'rotateLeftButton', 'nextZoomButton', 'previousZoomButton', 'nextPageButton', 'previousPageButton', 'fitWidthButton', 'fitAllButton'],
     classNames: "mvo-front-view-transparent".w(),
