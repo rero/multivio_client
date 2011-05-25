@@ -1,5 +1,7 @@
 sc_require('mixins/fadeinout.js');
 sc_require('views/center_image.js');
+sc_require('controllers/pdf.js');
+
 Multivio.mainPdfView =  SC.View.design({
   childViews: ['waitingView', 'pdfScrollView', 'bottomToolbar'], 
 
@@ -42,6 +44,8 @@ Multivio.mainPdfView =  SC.View.design({
         this.get('imageView').bind('value', 'Multivio.pdfFileController.currentUrl');
         this.get('selectionView').bind('nativeSize', 'Multivio.pdfFileController.nativeSize');
         this.get('selectionView').bind('rotationAngle', 'Multivio.pdfFileController.rotationAngle');
+        this.get('selectionView').bind('content', 'Multivio.currentSearchResultsController.arrangedObjects');
+        this.get('selectionView').bind('selection', 'Multivio.currentSearchResultsController.selection');
       }
       //valueBinding: 'Multivio.pdfFileController.currentUrl'
     })

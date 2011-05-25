@@ -32,7 +32,7 @@ Multivio.pdfFileController = SC.ObjectController.create(Multivio.DisplayImage, {
   currentPage: null,
   currentPageBinding: 'Multivio.filesController.currentIndex',
 
-  _centerImageStatusBinding: SC.Binding.oneWay('Multivio.mainPage.mainPdfView.pdfScrollView.contentView.status'),
+  _centerImageStatusBinding: SC.Binding.oneWay('Multivio.mainPage.mainPdfView.pdfScrollView.contentView.imageView.status'),
 
   _appOptionsBinding: SC.Binding.oneWay('Multivio.inputParameters.options'),
 

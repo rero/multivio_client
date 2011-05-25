@@ -16,19 +16,19 @@ Multivio.Outline = SC.Object.extend(SC.TreeItemContent, {
   treeItemIsExpanded: YES,
 
   treeItemChildren: function() {
-    var ret = [];
 
     var children = this.get('childs');
     if(SC.none(children)) {
       return null;
     }
     var expanded = YES;
-    for(var i=0;i<children.length;i++) {
-      ret.push(Multivio.Outline.create({parentNode: this, treeItemIsExpanded:expanded}, children[i]));
-      //expanded = NO;
-    }
-    return ret ; 
+
+    return children.map(function(item){
+      return Multivio.Outline.create({parentNode: this, treeItemIsExpanded:expanded}, item);
+    }, this);
+
   }.property('childs').cacheable(),
+
   labelPage: function() {
     var index = this.get('file_position').index;
     if(index > 0) {
@@ -119,10 +119,9 @@ Multivio.treeController = SC.TreeController.create({
     //physicalStructure
     if(SC.none(newContent)){
       physicalStructure = child.physicalStructure;
-      newContent = [];
-      for (var i=0;i<physicalStructure.length;i++) {
-        newContent.push({label: physicalStructure[i].label, file_position: {index: -1, url: physicalStructure[i].url}});
-      }
+      newContent = physicalStructure.map(function(item){
+        return {label: item.label, file_position: {index: -1, url: item.url}}; 
+      });
     }
     //this.set('content', newContent); 
     parent.set('childs', newContent);

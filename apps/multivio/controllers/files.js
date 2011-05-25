@@ -66,9 +66,9 @@ Multivio.FilesController = SC.ArrayController.extend({
     if(this.get('loadingStatus') === Multivio.LOADING_LOADING) {
       throw	new Error('filesController: concurrent file fetch');
     }
-    var alreadyLoaded = this.find(url);
-    if(alreadyLoaded && alreadyLoaded.get('isComplete')) {
-      //this.set('currentFile', url);
+    var alreadyLoaded = this.findProperty('url', url);
+    if(!SC.none(alreadyLoaded) && alreadyLoaded.get('isComplete')) {
+      this.set('currentFile', url);
       Multivio.mainStatechart.sendEvent('fileLoaded', alreadyLoaded);
     }else{
       this.set('loadingStatus', Multivio.LOADING_LOADING);
@@ -94,13 +94,14 @@ Multivio.FilesController = SC.ArrayController.extend({
     
     //is the child the last?
     if(childUrl !== lastChildUrl) {
+
       //getSuccessor
       var currentIndex = -1;
-      for(var i=0; i<physicalStructure.length; i++) {
-        if(childUrl === physicalStructure[i].url) {
-          currentIndex = i;
-        }
+      var tmp = physicalStructure.findProperty('url', childUrl);
+      if(tmp) {
+        currentIndex = physicalStructure.indexOf(tmp);
       }
+      
       if(currentIndex < 0) {
         throw "Multivio.filesController._nextFile: Child not found in physical structure";
       }
@@ -148,11 +149,11 @@ Multivio.FilesController = SC.ArrayController.extend({
     if(childUrl !== firstChildUrl) {
       //getSuccessor
       var currentIndex = -1;
-      for(var i=0; i<physicalStructure.length; i++) {
-        if(childUrl === physicalStructure[i].url) {
-          currentIndex = i;
-        }
+      var tmp = physicalStructure.findProperty('url', childUrl);
+      if(tmp) {
+        currentIndex = physicalStructure.indexOf(tmp);
       }
+
       if(currentIndex < 0) {
         throw "Multivio.filesController._nextFile: Child not found in physical structure";
       }
@@ -208,47 +209,40 @@ Multivio.FilesController = SC.ArrayController.extend({
     return this._previousFile(parent, currentFile);
   }.property('currentSelection'),
 
-  find: function(url) {
-    var records = this.get('content');
-    for(var i=0;i<records.length();i++) {
-      if(records.objectAt(i).url === url) {
-        return records.objectAt(i);
-      }
-    }
-    return null;
-  },
-
   selectNewFile: function(url, parentUrl) {
     //SC.Logger.debug('%@');
     if(!SC.none(this.get('currentSelection')) &&
       this.get('currentSelection').url !== url) {
-      Multivio.mainStatechart.sendEvent('fetchFile', {url: url, parent: this.find(parentUrl)});
+      Multivio.mainStatechart.sendEvent('fetchFile', {url: url, parent: this.findProperty('url', parentUrl)});
     }
   },
-
 
   didChange: function() {
     SC.Logger.debug('Did Change');
   },
+
   _contentDidChange: function(){
     var url = this.get('currentUrl');
-    var fetchedObject = this.find(this.get('currentUrl'));
-    var fetchedParentObject = this.get('currentParent');
-    if(!SC.none(fetchedObject)){
-      //accept new fetch request
-      if(fetchedObject.get('isComplete')) {
-        //set parent
-        if(!SC.none(fetchedParentObject)){
-          fetchedObject.set('parent', fetchedParentObject);
+    if(url) {
+      var fetchedObject = this.findProperty('url', this.get('currentUrl'));
+      SC.Logger.debug('file received: %@: %@'.fmt(url, fetchedObject));
+      var fetchedParentObject = this.get('currentParent');
+      if(fetchedObject){
+        //accept new fetch request
+        if(fetchedObject.get('isComplete')) {
+          //set parent
+          if(!SC.none(fetchedParentObject)){
+            fetchedObject.set('parent', fetchedParentObject);
+          }
+          this.set('currentUrl', undefined);
+          this.set('currentParent', undefined);
+          SC.Logger.debug('fileLoaded');
+          //this.set('currentFile', url);
+          this.set('loadingStatus', Multivio.LOADING_DONE);
+          this.set('currentFile', fetchedObject);
+          SC.Logger.debug('file received: %@'.fmt(url));
+          Multivio.mainStatechart.sendEvent('fileLoaded', fetchedObject);
         }
-        this.set('currentUrl', undefined);
-        this.set('currentParent', undefined);
-        SC.Logger.debug('fileLoaded');
-        //this.set('currentFile', url);
-        this.set('loadingStatus', Multivio.LOADING_DONE);
-        this.set('currentFile', fetchedObject);
-        SC.Logger.debug('file received: %@'.fmt(url));
-        Multivio.mainStatechart.sendEvent('fileLoaded', fetchedObject);
       }
     }
   }.observes('[]')

@@ -83,6 +83,7 @@ Multivio.imageThumbnailsController = SC.ArrayController.create(
         pageNr += 1;
       }
     }
+
     //select current page
     var currentPage = this.get('currentPage');
     if(!SC.none(currentPage) && currentPage > 0) {

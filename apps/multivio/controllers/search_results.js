@@ -22,6 +22,7 @@ Multivio.searchResultsController = SC.ArrayController.create({
   content: Multivio.SearchData,
   currentUrl: null,
   currentQuery: null,
+  currentIndex: null,
 
   fetchFile: function(url, query) {
     if(this.get('loadingStatus') === Multivio.LOADING_LOADING) {
@@ -49,17 +50,11 @@ Multivio.searchResultsController = SC.ArrayController.create({
   }.property('loadingStatus'),
 
   find: function(url, query) {
-    var records = this.get('content');
-    if(SC.none(records)) {
-      return null;
+    var results = this.filterProperty('query', query);
+    if(!SC.none(results)) {
+      results = results.findProperty('url', url);
     }
-    for(var i=0;i<records.length();i++) {
-      if(records.objectAt(i).url === url &&
-        records.objectAt(i).query === query) {
-        return records.objectAt(i);
-      }
-    }
-    return null;
+    return results;
   },
 
   _contentDidChange: function(){
@@ -93,11 +88,10 @@ Multivio.searchItem = SC.Object.extend(SC.TreeItemContent, {
     }
 
     var expanded = YES;
-    for(var i=0;i<children.length;i++) {
-      ret.push(Multivio.searchItem.create({parentNode: this, treeItemIsExpanded:expanded}, children[i]));
-      //expanded = NO;
-    }
-    return ret ; 
+    return children.map(function(item) {
+        return Multivio.searchItem.create({parentNode: this, treeItemIsExpanded:expanded}, item);          
+    }, this);
+
   }.property('results'),
 
   label: function() {
@@ -109,7 +103,7 @@ Multivio.searchItem = SC.Object.extend(SC.TreeItemContent, {
     if(this.get('maxReached') !== 0) {
       nResults = "%@ %@".fmt(nResults, "+");
     }
-    var file = Multivio.filesController.find(url);
+    var file = Multivio.filesController.findProperty('url', url);
     if(SC.none(file)) {
       return "<strong>%@</strong> (%@)".fmt(this.get('url'), nResults);
     }
@@ -131,6 +125,8 @@ Multivio.searchTreeController = SC.TreeController.create(
   currentSearchBinding: 'Multivio.searchResultsController.selection',
   currentPage: null,
   currentPageBinding: 'Multivio.filesController.currentIndex',
+  currentSearchIndex: null,
+  currentSearchIndexBinding: 'Multivio.searchResultsController.currentIndex',
 
   hasResult: function() {
     if(this.get('content').length > 0) {
@@ -176,14 +172,20 @@ Multivio.searchTreeController = SC.TreeController.create(
 
   _selectionDidChanged: function() {
     var currentPage = this.get('currentPage');
+    var currentSearchIndex = this.get('currentSearchIndex');
     var selection = this.get('selection').firstObject();
     if(!SC.none(selection)) {
       var pageToSelect = 1;
+      var indexToSelect = 0;
       if(!SC.none(selection.index)) {
         pageToSelect = selection.index.page;
+        indexToSelect = selection.idx;
       }
       if (currentPage !== pageToSelect) {
         this.set('currentPage', pageToSelect);
+      }
+      if (currentSearchIndex !== indexToSelect) {
+        this.set('currentSearchIndex', indexToSelect);
       }
     }
   }.observes('selection'),

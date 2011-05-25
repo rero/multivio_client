@@ -51,10 +51,7 @@ Multivio.imageFileController = SC.ObjectController.create(Multivio.DisplayImage,
     var physical = this.get('physicalStructure');
     var mime = this.getPath('metadata.mime');
     if(!SC.none(mime) && mime.match('image/.*?') && !SC.none(physical)) {
-      for(var i=0;i<physical.length;i++) {
-        _urls.push(physical[i].url);
-      }
-      this.set('_urls', _urls);
+      this.set('_urls', physical.getEach('url'));
     }
     this.set('currentPage', 1);
   }.observes('url').cacheable(),

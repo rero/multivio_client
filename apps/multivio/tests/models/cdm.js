@@ -28,7 +28,7 @@ function checkServerVersionKo() {
 function checkTitle() {
   // Should be to find record now
   var url = 'http://doc.rero.ch/record/4321/export/xm';
-  var title = Multivio.CDM.find(url).get('metadata').title;
+  var title = Multivio.CDM.findProperty('url', url).get('metadata').title;
   equals(title, '"Ho rifatto la mia vita due volte"', 'serverVersion should not be defined');
   // Resume the test runner again
   start();
@@ -37,7 +37,7 @@ function checkTitle() {
 function checkLogic() {
   // Should be to find record now
   var url = 'http://doc.rero.ch/lm.php?url=1000,40,6,20091106095458-OI/2009INFO006.pdf';
-  var logic = Multivio.CDM.find(url).get('logicalStructure');
+  var logic = Multivio.CDM.findProperty('url', url).get('logicalStructure');
   equals(logic[0].label, 'Contents', 'first entry for logical should be Content');
   // Resume the test runner again
   start();
@@ -46,7 +46,7 @@ function checkLogic() {
 function checkPhysic() {
   // Should be to find record now
   var url = 'http://doc.rero.ch/lm.php?url=1000,40,6,20091106095458-OI/2009INFO006.pdf';
-  var physic = Multivio.CDM.find(url).get('physicalStructure');
+  var physic = Multivio.CDM.findProperty('url', url).get('physicalStructure');
   equals(physic[0].label, '2009INFO006.pdf', 'first entry for physical should be 2009INFO006.pdf');
   // Resume the test runner again
   start();
@@ -106,6 +106,6 @@ test('check push cdm', function() {
   var url = "http://doc.rero.ch/record/4321/export/xm";
   var fileRec = Multivio.FileRecord.create({url: url});
   Multivio.CDM.pushObject(fileRec);
-  var result = Multivio.CDM.find(url);
+  var result = Multivio.CDM.findProperty('url', url);
   equals(url, result.url, "Objects should be equals");
 });

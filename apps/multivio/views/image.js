@@ -32,7 +32,10 @@ Multivio.mainImageView =  SC.View.design({
     layout: { top: 0, left: 0, bottom: 0, right: 0},
     contentView: Multivio.CenterImage.design({
       layout: { centerX: 0, centerY: 0 },
-      valueBinding: 'Multivio.imageFileController.currentUrl'
+      init:function() {
+        sc_super();
+        this.get('imageView').bind('value', 'Multivio.imageFileController.currentUrl');
+      }
     })
   }),
 

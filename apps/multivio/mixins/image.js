@@ -243,7 +243,7 @@ Multivio.DisplayImage = {
     var nearest = -1;
     var bestDistanceFoundYet = Number.MAX_VALUE;
     // We iterate on the array...
-    for (var i = 0; i < zooms.length; i++) {
+    for(var i = 0; i < zooms.length; i++) {
       // if we found the desired number, we return it.
       if (zooms[i] === desiredNumber) {
         nearest = i;

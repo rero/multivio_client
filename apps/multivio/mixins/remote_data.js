@@ -50,7 +50,7 @@ Multivio.RemoteData = {
   _receivedData: function(response, url, field) {
     if (SC.ok(response)) {
       var result = response.get("body");
-      var rec = this.find(url);
+      var rec = this.findProperty('url', url);
       SC.Logger.debug('_receivedData for ' + url + ' :' + rec);
       if(SC.none(rec)) {
         rec = Multivio.FileRecord.create({url: url});
@@ -68,15 +68,6 @@ Multivio.RemoteData = {
     }else{
       this._requestError();
     }
-  },
-
-  find: function(url) {
-    var records = this.get('content');
-    for(var i=0;i<this.length();i++) {
-      if(this.objectAt(i).url === url) {
-        return this.objectAt(i);
-      }
-    }
-    return null;
   }
+
 };

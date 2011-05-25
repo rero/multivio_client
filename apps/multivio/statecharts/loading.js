@@ -35,7 +35,7 @@ Multivio.LoadNextFile = SC.State.design(Multivio.LoadFile, {
     enterState: function(context) {
       var currentRootNode = context;
       SC.Logger.debug("Enter received with: " + currentRootNode.url);
-      var currentNode = Multivio.filesController.find(currentRootNode.url);
+      var currentNode = Multivio.filesController.findProperty('url', currentRootNode.url);
       //rootNode not loaded
       if(SC.none(currentNode)) {
         this.gotoState(this.get('parentState').loadingFile);
@@ -70,7 +70,7 @@ Multivio.LoadPreviousFile = SC.State.design(Multivio.LoadFile, {
     enterState: function(context) {
       var currentRootNode = context;
       SC.Logger.debug("Enter received with: " + currentRootNode.url);
-      var currentNode = Multivio.filesController.find(currentRootNode.url);
+      var currentNode = Multivio.filesController.findProperty('url', currentRootNode.url);
       //rootNode not loaded
       if(SC.none(currentNode)) {
         this.gotoState(this.get('parentState').loadingFile);
