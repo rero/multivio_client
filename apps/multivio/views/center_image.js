@@ -1,0 +1,155 @@
+// ==========================================================================
+// Project:   Multivio.CenterImage
+// Copyright: ©2011 My Company, Inc.
+// ==========================================================================
+/*globals Multivio */
+
+/** @class
+
+(Document Your View Here)
+
+@extends SC.View
+*/
+sc_require('controller/search_result.js');
+Multivio.CenterImage = SC.View.extend({
+  childViews: ['imageView', 'selectionView'],
+  classNames: "mvo-center-image".w(),
+  visibleWidth: 0,
+  visibleHeight: 0,
+  image: null,
+  imageBinding: "*imageView.image",
+
+  imageDidLoad: function (url, imageOrError) {
+    var img_height = this.get('image').height;
+    var img_width = this.get('image').width;
+    var parent_width = this.get('visibleWidth');
+    var parent_height = this.get('visibleHeight');
+    var _layout = {};
+    if(img_height > 1 && img_width > 1) {
+      _layout.width = img_width;
+      _layout.height = img_height;
+      if(parent_width > img_width) {
+        _layout.centerX = 0;
+      }else{
+        _layout.left = 0;
+      }
+      if(parent_height > img_height) {
+        _layout.centerY = 0;
+      }else{
+        _layout.top = 0;
+      }
+      this.set('layout', _layout);
+      this.notifyPropertyChange("layer");
+      SC.Logger.debug('ImageView updated');
+    }
+  }.observes('image').cacheable(),
+
+  parentViewDidResize: function() {
+    this.set('visibleHeight', this.getPath('parentView.frame').height);
+    this.set('visibleWidth', this.getPath('parentView.frame').width);
+    sc_super();
+  },
+
+
+  selectionView: SC.CollectionView.design({
+    layout: {left: 0, right: 0, top:0, bottom:0},
+    nativeSize: null,
+    rotationAngle: null,
+
+    currentZoomFactor: function() {
+      var angle = this.get('rotationAngle');
+      if(angle % 180) {
+        return this.getPath('frame.height')/this.get('nativeSize').width;
+      }else{
+        return this.getPath('frame.width')/this.get('nativeSize').width;
+      }
+    }.property('nativeSize', 'layout', 'rotationAngle'),
+
+    viewDidResize: function() {
+      sc_super();
+      this.reload(); 
+    },
+      _selectionDidChanged: function() {
+        var sel = this.get('selection');
+        if(!SC.none(sel) && sel.firstObject()) {
+          sel = sel.firstObject();
+          var itemView = this.itemViewForContentObject(sel) ;
+          if (itemView) this.scrollToItemView(itemView) ;
+        }
+      }.observes('selection'),
+
+    layoutForContentIndex: function(contentIndex) {
+      var current = this.get('content').objectAt(contentIndex);
+      var zoomFactor = this.get('currentZoomFactor');
+      if(current){
+        var angle = this.get('rotationAngle');
+          switch(Math.abs(angle % 360)) {
+            case 0:
+              return {
+              top: current.bounding_box.y1*zoomFactor,
+              left: current.bounding_box.x1*zoomFactor,
+              height: (current.bounding_box.y2 - current.bounding_box.y1)*zoomFactor,
+              width: (current.bounding_box.x2 - current.bounding_box.x1)*zoomFactor
+            };
+            case 90:
+              return {
+              right: current.bounding_box.y1*zoomFactor,
+              top: current.bounding_box.x1*zoomFactor,
+              width: (current.bounding_box.y2 - current.bounding_box.y1)*zoomFactor,
+              height: (current.bounding_box.x2 - current.bounding_box.x1)*zoomFactor
+            };
+            case 180:
+              return {
+              bottom: current.bounding_box.y1*zoomFactor,
+              right: current.bounding_box.x1*zoomFactor,
+              height: (current.bounding_box.y2 - current.bounding_box.y1)*zoomFactor,
+              width: (current.bounding_box.x2 - current.bounding_box.x1)*zoomFactor
+            };
+            case 270:
+              return {
+              left: current.bounding_box.y1*zoomFactor,
+              bottom: current.bounding_box.x1*zoomFactor,
+              width: (current.bounding_box.y2 - current.bounding_box.y1)*zoomFactor,
+              height: (current.bounding_box.x2 - current.bounding_box.x1)*zoomFactor
+            };
+          }
+      }
+    },
+
+    exampleView: SC.View.extend(SC.Control,{
+      classNames: "mvo-search-results".w(),
+      render: function(context){
+        if(this.get('isSelected')) {
+        context.addClass('sel');
+        }
+      }
+    })
+  }),
+
+  imageView : SC.ImageView.design({
+    classNames: "mvo-page".w(),
+    layout: {left: 0, right: 0, top: 0, bottom: 0},
+
+    //redifined this default method in order remove the defaultBlankImage
+    _image_valueDidChange: function() {
+      var value = this.get('imageValue'),
+      type = this.get('type');
+
+      // check to see if our value has changed
+      if (value !== this._iv_value) {
+        this._iv_value = value;
+
+        // While the new image is loading use SC.BLANK_IMAGE as a placeholder
+        //this.set('image', SC.BLANK_IMAGE);
+        this.set('status', SC.IMAGE_STATE_LOADING);
+
+        // order: image cache, normal load
+        if (!this._loadImageUsingCache()) {
+          if (!this._loadImage()) {
+            // CSS class? this will be handled automatically
+          }
+        }
+      }
+    }.observes('imageValue').cacheable()
+  })
+});
