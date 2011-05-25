@@ -19,7 +19,7 @@ Multivio.CenterImage = SC.View.extend({
   image: null,
   imageBinding: "*imageView.image",
 
-  imageDidLoad: function (url, imageOrError) {
+  imageDidLoad: function () {
     var img_height = this.get('image').height;
     var img_width = this.get('image').width;
     var parent_width = this.get('visibleWidth');
@@ -42,12 +42,12 @@ Multivio.CenterImage = SC.View.extend({
       this.notifyPropertyChange("layer");
       SC.Logger.debug('ImageView updated');
     }
-  }.observes('image').cacheable(),
+  }.observes('image'),
 
   parentViewDidResize: function() {
+    sc_super();
     this.set('visibleHeight', this.getPath('parentView.frame').height);
     this.set('visibleWidth', this.getPath('parentView.frame').width);
-    sc_super();
   },
 
 
@@ -129,6 +129,13 @@ Multivio.CenterImage = SC.View.extend({
   imageView : SC.ImageView.design({
     classNames: "mvo-page".w(),
     layout: {left: 0, right: 0, top: 0, bottom: 0},
+    canLoadInBackground: YES,
+    imageDidLoad: function (url, imageOrError) {
+      //TODO: why do I have to adjust width/height as the layout is defined to
+      //take all the stuffs!
+      this.adjust('width', this.get('image').width);
+      this.adjust('height', this.get('image').height);
+    }.observes('image'),
 
     //redifined this default method in order remove the defaultBlankImage
     _image_valueDidChange: function() {
