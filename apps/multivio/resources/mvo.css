@@ -6,6 +6,34 @@ body, .sc-view, .sc-pane, .sc-main, .ace, .ace.source-list.collection {
 	color: #fff;
 }
 	*/
+
+/*
+-----------------------------
+Multivio splash page
+-----------------------------
+*/
+
+#mvo-splash-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 170px;
+  width: 231px;
+  background: none;
+  margin: -85px 0px 0px -116px;
+  font: 18px "Lucida Grande","Lucida Sans Unicode",Helvetica,Arial,Verdana,sans-serif;
+}
+
+#mvo-splash-content img {
+  display: block;
+  clear: both;
+  margin: 20px auto 5px auto;
+}
+
+/*
+-----------------------------
+*/
+
 .mvo-center-image {
 	box-shadow: 12px 12px 12px #CCCCCC;
 	-moz-box-shadow: 12px 12px 12px #CCCCCC;
