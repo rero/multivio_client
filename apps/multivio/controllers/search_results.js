@@ -174,7 +174,10 @@ Multivio.searchTreeController = SC.TreeController.create(
       Multivio.searchResultsController.set('currentQuery', query);
       //search in all content files
       if(Multivio.getPath('searchResultsController.searchToAll')){
+        SC.Logger.debug('searchToAll');
         Multivio.mainStatechart.sendEvent('findAll', query);
+      } else {
+        Multivio.mainStatechart.sendEvent('findInCurrent', query);
       }
     }
   }.observes('currentQuery'),

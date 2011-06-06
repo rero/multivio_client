@@ -24,19 +24,34 @@ Multivio.SearchReadyState = SC.State.extend({
   initialSubstate: 'searchReady',
 
   searchReady: SC.State.design({
+
     enterState: function() {
       Multivio.searchResultsController.set('loadingStatus', Multivio.LOADING_DONE);
     },
+
     findAll: function(context) {
       var rootUrl = Multivio.filesSearchController.get('referer');
       Multivio.searchResultsController.set('loadingStatus', Multivio.LOADING_LOADING);
-      this.gotoState('waitingForSearchResults', {url: rootUrl, parent: undefined});
+      this.gotoState('waitingForSearchResults', {node: {url: rootUrl, parent: undefined}, searchInNext: YES});
+    },
+
+    findInCurrent: function(context) {
+      var rootUrl = Multivio.filesSearchController.get('referer');
+      Multivio.searchResultsController.set('loadingStatus', Multivio.LOADING_LOADING);
+      var currentFile = Multivio.getPath('filesController.currentFile');
+      this.gotoState('waitingForSearchResults', {node: currentFile, searchInNext: NO});
     }
+
   }),
 
   waitingForSearchResults: SC.State.design({
+    searchInNext: NO,
+
     enterState: function(context) {
-      var currentRootNode = context;
+      var currentRootNode = context.node;
+      if(!SC.none(context.searchInNext)) {
+        this.set('searchInNext', context.searchInNext);
+      }
       SC.Logger.debug("Search enter received with: " + currentRootNode.url);
       var currentNode = Multivio.filesSearchController.findProperty('url', currentRootNode.url);
 
@@ -63,21 +78,23 @@ Multivio.SearchReadyState = SC.State.extend({
         Multivio.filesSearchController.fetchFile(nextNodeUrl, currentNode);
         return;
       }
-
     },
+
     searchResultsLoaded:function(context) {
         var nextNode = Multivio.filesSearchController.hasNextFile();
-        if(nextNode) {
-          this.gotoState(this, nextNode);
+        if(nextNode && this.get('searchInNext')) {
+          this.gotoState(this, {node:nextNode});
         }else{
           Multivio.searchTreeController.set('msgStatus', "Done");
           this.gotoState('searchReady');
           return;
         }
     },
+
     searchFileLoaded:function(context) {
-      this.gotoState(this, context);
+      this.gotoState(this, {node: context});
     },
+
     cancel:function() {
         Multivio.searchTreeController.set('msgStatus', "Aborted");
       this.gotoState('searchReady');
