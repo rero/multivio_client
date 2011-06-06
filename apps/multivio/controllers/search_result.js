@@ -26,22 +26,21 @@ Multivio.currentSearchResultsController = SC.ArrayController.create({
   currentResultsBinding: 'Multivio.searchResultsController.selection',
   currentPage: null,
   currentPageBinding: 'Multivio.filesController.currentIndex',
+  currentFile: null,
+  currentFileBinding: 'Multivio.filesController.currentFile',
   currentSearchIndex: null,
   currentSearchIndexBinding: 'Multivio.searchResultsController.currentIndex',
 
-  _currentSearchIndexDidChange: function() {
-
-  }.observes('currentSearchIndex'),
 
   _currentPageDidChange: function(){
     
     this._removeAll();
     var currentPage = this.get('currentPage');
-    var currentResults = this.get('currentResults');
-    if(currentPage < 1 || SC.none(currentResults) || SC.none(currentResults.firstObject())){
+    var currentResults = Multivio.searchResultsController.findProperty('url', this.getPath('currentFile.url'));
+    if(currentPage < 1 || SC.none(currentResults)){
       return;
     }
-    currentResults = currentResults.firstObject().results;
+    currentResults = currentResults.results;
     
     var toAdd = currentResults.filter(function(item, index, enumerable){
       if(item.index.page === this.get('currentPage')){
@@ -57,7 +56,7 @@ Multivio.currentSearchResultsController = SC.ArrayController.create({
     }, this);
     SC.Logger.debug('here');
 //    this.set('currentSearchIndex', 0);
-  }.observes('currentPage', 'currentResults'),
+  }.observes('currentPage', 'currentFile'),
   
     _contentDidChanged: function() {
       var currentSearchIndex = this.get('currentSearchIndex');

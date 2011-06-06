@@ -10,7 +10,7 @@
 
 @extends SC.View
 */
-sc_require('controller/search_result.js');
+sc_require('controllers/search_result.js');
 Multivio.CenterImage = SC.View.extend({
   childViews: ['imageView', 'selectionView'],
   classNames: "mvo-center-image".w(),

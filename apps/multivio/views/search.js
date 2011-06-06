@@ -54,17 +54,22 @@ Multivio.SearchView = SC.PickerPane.design({
   canBeClosed: YES,
   contentView: SC.View.design({
     childViews: ['messageLabelView', 'searchQueryView',
-      'previousResultButtonView', 'nextResultButtonView', 'resultsScrollView',
-      'searchScopeView', 'waitingView'],
+      'findAllView', 'labelView',
+      'resultsScrollView', 'waitingView'],
+      //'previousResultButtonView', 'nextResultButtonView', 'resultsScrollView',
 
       searchQueryView: SC.TextFieldView.design({
         layout: { top: 0, left: 0, right: 0, height: 24 },
         applyImmediately: NO,
         hintBinding: 'Multivio.searchTreeController.defaultQueryMessage',
-        valueBinding: 'Multivio.searchTreeController.query',
+        valueBinding: 'Multivio.searchTreeController.currentQuery',
+        //TODO: to change to isEditable when sproutcore will be solved the
+        //      problem.
+        isEnabledBinding: 'Multivio.searchTreeController.isEditable',
         fieldDidFocus: function(evt) {
           sc_super();
-          this.selectAll();
+          this.set('value','');
+          //this.selectAll();
         },
 
         selectAll: function() {
@@ -75,18 +80,38 @@ Multivio.SearchView = SC.PickerPane.design({
             this.set('selection', selection);
           }
         },
-        rightAccessoryView: SC.ImageButtonView.design({
-          layout: { top: 2, right: 0, width: 20, height: 20 },
-          isEnabledBinding: 'Multivio.searchTreeController.allowsSelection',
+        leftAccessoryView: SC.ImageButtonView.design({
+          layout: { top: 2, left: 0, width: 20, height: 20 },
+          isEnabledBinding: 'Multivio.searchTreeController.isEditable',
           image: 'image-button-search-16',
           title: 'search',
           target: 'Multivio.mainPage.searchView.contentView.searchQueryView',
           action: 'commitEditing'
+        }),
+        rightAccessoryView: SC.ImageButtonView.design({
+          layout: { top: 2, right: 0, width: 20, height: 20 },
+          isEnabledBinding: 'Multivio.searchResultsController.isLoading',
+          image: 'image-button-cancel-16',
+          title: 'cancel-search',
+          defaultResponder: 'Multivio.mainStatechart',
+          //target: 'Multivio.mainPage.searchView.contentView.searchQueryView',
+          action: 'cancel'
         })
       }),
 
+      findAllView: SC.CheckboxView.design({
+        layout: { top: 24, left: 0, width: 20, height: 20 },
+        toggleOffValue: NO,
+        toggleOnValue: YES,
+        valueBinding: 'Multivio.searchResultsController.searchToAll'
+      }),
+      labelView: SC.LabelView.design({
+        layout: { top: 24, left: 22, right: 0, height: 20 },
+        value: "Search to all"
+      }),
+
       resultsScrollView: SC.ScrollView.design({
-        layout: { top: 100, left: 0, right: 0, bottom: 0 },
+        layout: { top: 44, left: 0, right: 0, bottom: 20 },
         contentView: SC.SourceListView.design({
           rowHeight: 18,
           rowSpacing: 4,
@@ -97,6 +122,7 @@ Multivio.SearchView = SC.PickerPane.design({
         })
       }),
         
+      /*
       nextResultButtonView: SC.ImageButtonView.design({
         layout: { top: 70, height: 20, width: 20, right: 0 },
         image: 'image-button-down-16',
@@ -112,9 +138,7 @@ Multivio.SearchView = SC.PickerPane.design({
         target: 'Multivio.searchTreeController',
         action: 'goToPreviousResult'
       }),
-
       searchScopeView : SC.SelectButtonView.design({
-
         layout: { top: 36, left: 0, right: 0, height: 25 },
         isEnabledBinding: 'Multivio.searchTreeController.allowsSelection',    
         toolTip: '_searchIn'.loc(),
@@ -128,9 +152,10 @@ Multivio.SearchView = SC.PickerPane.design({
         needsEllipsis: NO,
         supportFocusRing: NO
       }),
+      */
 
       waitingView: SC.ImageView.design({
-        layout: { top: 72, left: 0, width: 22, height: 22 },
+        layout: { bottom: 0, right: 0, width: 20, height: 20 },
         
         //canvas do not work with animated gifs
         useCanvas: NO,
@@ -142,10 +167,10 @@ Multivio.SearchView = SC.PickerPane.design({
       }),
 
       messageLabelView: SC.LabelView.design({
-        layout: { top: 72, left: 30, right: 0, height: 22 },
-        textAlign: SC.ALIGN_LEFT,
+        layout: { bottom: 0, left: 0, right: 22, height: 20 },
+        textAlign: SC.ALIGN_RIGHT,
         classNames: 'message',
-        valueBinding: 'Multivio.searchTreeController.searchStatus'
+        valueBinding: 'Multivio.searchTreeController.msgStatus'
       })
 
   }),

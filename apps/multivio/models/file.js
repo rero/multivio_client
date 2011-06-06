@@ -33,6 +33,25 @@ Multivio.FileRecord = SC.Object.extend({
     return YES;
   }.property('metadata'),//.cacheable()
   
+  isSearchable: function(){
+    if(this.get('metadata').mime.match(/pdf/)){
+      return YES;
+    }
+    return NO;
+  }.property('metadata'),//.cacheable()
+
+  label: function(){
+    var parent = this.get('parent');
+    if(parent) {
+      var phys = parent.get('physicalStructure');
+      if(phys){
+      var meInParent = phys.findProperty('url', this.get('url'));
+      return meInParent.label;
+      }
+    }
+    return this.title;
+  }.property('metadata', 'parent'),//.cacheable()
+
   isPdfFile: function(){
     if(this.get('metadata').mime.match(/pdf$/)){
       return NO;

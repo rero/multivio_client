@@ -16,6 +16,7 @@
   @extends SC.Statechart
   @since 1.0
 */
+sc_require('statecharts/search_ready.js');
 Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,{
 //Multivio.mainStatechart = SC.Statechart.create({
   initialState: 'starting',
@@ -51,16 +52,16 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,{
     serverError: function() {
       SC.Logger.debug("InitializationError called");
       this.gotoState('error');  
-    },
-
-
-    initializationError: function() {
-      SC.Logger.debug("InitializationError called");
-      this.gotoState('error');  
     }
+
   }),
   
-  applicationReady: SC.State.plugin('Multivio.ApplicationReadyState'),
+  applicationReady: SC.State.design({
+    //stateAreConcurrent: YES,
+   substatesAreConcurrent: YES,
+    content: SC.State.plugin('Multivio.ContentReadyState'),
+    search: SC.State.plugin('Multivio.SearchReadyState')
+  }),
 
   error: SC.State.design({
     enterState: function() {

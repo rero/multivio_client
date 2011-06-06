@@ -5,22 +5,28 @@ Johnny Mariethoz <Johnny.Mariethoz@rero.ch>
 
 Main Tasks
 ----------
-- search
-- text selection
-- calendar
-- pre-indexing
+- search (1day)
+- text selection (1day, 1-2day)
+
+- calendar(3day)
+- pre-indexing(2 day)
 
 Minor Tasks
 -----------
-- overview
+- overview (1day)
+
 - download
 - 100%
 - page number
 - go to page
-- finalize shortcut
-- grid thumbnails
-- themes + appearance
-- API
+
+- finalize shortcut (1day)
+
+- grid thumbnails (1/2 day)
+- themes + appearance (1day)
+- API (1 day)
+
+- tests and IE (5 days)
 
 DONE
 ---

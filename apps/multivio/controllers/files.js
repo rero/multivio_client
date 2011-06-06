@@ -29,6 +29,7 @@ Multivio.FilesController = SC.ArrayController.extend({
     @type Boolean
   */
   allowsMultipleSelection: NO,
+  fileLoadedEvent: 'fileLoaded',
   
   /**
     Url of the bibliographic record
@@ -69,7 +70,7 @@ Multivio.FilesController = SC.ArrayController.extend({
     var alreadyLoaded = this.findProperty('url', url);
     if(!SC.none(alreadyLoaded) && alreadyLoaded.get('isComplete')) {
       this.set('currentFile', url);
-      Multivio.mainStatechart.sendEvent('fileLoaded', alreadyLoaded);
+      Multivio.mainStatechart.sendEvent(this.get('fileLoadedEvent'), alreadyLoaded);
     }else{
       this.set('loadingStatus', Multivio.LOADING_LOADING);
       this.set('currentUrl', url);
@@ -80,6 +81,16 @@ Multivio.FilesController = SC.ArrayController.extend({
     }
   },
 
+  title: function() {
+    var referer = this.get('referer');
+    if(referer) {
+        var refRecord = this.findProperty('url', referer);
+        if(refRecord) {
+          return refRecord.getPath('metadata.title');
+        }
+    }
+    return "";
+  }.property('[]', 'referer'),
 
   _nextFile: function(fileRecord, childRecord) {
     if(SC.none(fileRecord) || SC.none(fileRecord.get('url'))) {
@@ -213,6 +224,7 @@ Multivio.FilesController = SC.ArrayController.extend({
     //SC.Logger.debug('%@');
     if(!SC.none(this.get('currentSelection')) &&
       this.get('currentSelection').url !== url) {
+      SC.Logger.debug('-------------> %@, %@'.fmt(url, this.get('currentSelection').url));
       Multivio.mainStatechart.sendEvent('fetchFile', {url: url, parent: this.findProperty('url', parentUrl)});
     }
   },
@@ -241,7 +253,7 @@ Multivio.FilesController = SC.ArrayController.extend({
           this.set('loadingStatus', Multivio.LOADING_DONE);
           this.set('currentFile', fetchedObject);
           SC.Logger.debug('file received: %@'.fmt(url));
-          Multivio.mainStatechart.sendEvent('fileLoaded', fetchedObject);
+          Multivio.mainStatechart.sendEvent(this.get('fileLoadedEvent'), fetchedObject);
         }
       }
     }

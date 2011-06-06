@@ -13,36 +13,42 @@
 sc_require('models/search.js');
 sc_require('controllers/files.js');
 
-Multivio.filesForSearchController = Multivio.FilesController.create({});
+Multivio.filesSearchController = Multivio.FilesController.create({fileLoadedEvent: 'searchFileLoaded'});
 
-
+/*********************************************************************************/
+/*********************************************************************************/
 Multivio.searchResultsController = SC.ArrayController.create({
   allowsMultipleSelection: NO,
-  loadingStatus: undefined,
+
+  loadingStatus: Multivio.LOADING_DONE,
   content: Multivio.SearchData,
-  currentUrl: null,
   currentQuery: null,
   currentIndex: null,
+ 
+  //for asynchronous data
+  _fetchingUrl: null,
+  _fetchingQuery: null,
+  searchToAll: null,
 
   fetchFile: function(url, query) {
-    if(this.get('loadingStatus') === Multivio.LOADING_LOADING) {
-      throw	new Error('searchResultsController: concurrent file fetch');
+    if(this.get('_fetchingUrl')) {
+      throw	new Error('searchResultsController: concurrent file fetch (%@ and %@)'.fmt(this.get('_fetchingUrl'), url));
     }
     var alreadyLoaded = this.find(url, query);
     if(alreadyLoaded) {
       //this.set('currentFile', url);
-      //Multivio.mainStatechart.sendEvent('fileLoaded', alreadyLoaded);
-        this.selectObject(alreadyLoaded);
+      SC.Logger.debug('Selecting: ' + alreadyLoaded.url);
+      this.selectObject(alreadyLoaded);
+      Multivio.mainStatechart.sendEvent('searchResultsLoaded', alreadyLoaded);
     }else{
-      this.set('loadingStatus', Multivio.LOADING_LOADING);
-      this.set('currentUrl', url);
-      this.set('currentQuery', query);
+      this.set('_internalLoadingStatus', Multivio.LOADING_LOADING);
+      this.set('_fetchingUrl', url);
+      this.set('_fetchingQuery', query);
       Multivio.SearchData.getSearchResult(query, url);
     }
   },
 
   isLoading: function() {
-
     if(this.get('loadingStatus') === Multivio.LOADING_LOADING) {
       return YES;
     }
@@ -58,37 +64,41 @@ Multivio.searchResultsController = SC.ArrayController.create({
   },
 
   _contentDidChange: function(){
-    SC.Logger.debug('file received!!!!!');
-    var url = this.get('currentUrl');
-    var query = this.get('currentQuery');
-    var fetchedObject = this.find(this.get('currentUrl'), query);
+    SC.Logger.debug('Search results received!!!!!');
+    var url = this.get('_fetchingUrl');
+    var query = this.get('_fetchingQuery');
+    var fetchedObject = this.find(this.get('_fetchingUrl'), query);
     if(!SC.none(fetchedObject)){
       //accept new fetch request
-        this.set('currentUrl', undefined);
-        this.set('currentQuery', undefined);
-        SC.Logger.debug('fileLoaded');
-        //this.set('currentFile', url);
-        this.set('loadingStatus', Multivio.LOADING_DONE);
+        this.set('_fetchingUrl', undefined);
+        this.set('_fetchingQuery', undefined);
         this.selectObject(fetchedObject);
-        //Multivio.mainStatechart.sendEvent('fileLoaded', fetchedObject);
+        Multivio.mainStatechart.sendEvent('searchResultsLoaded', fetchedObject);
     }
   }.observes('[]')
 });
 
+
+/*********************************************************************************/
+/*********************************************************************************/
 Multivio.searchItem = SC.Object.extend(SC.TreeItemContent, {
 
   treeItemIsExpanded: YES,
 
   treeItemChildren: function() {
-    var ret = [];
 
     var children = this.get('results');
     if(SC.none(children)) {
       return null;
     }
 
-    var expanded = YES;
-    return children.map(function(item) {
+    var expanded = NO;
+    return children.map(function(item, index) {
+      if(index === 0) {
+          expanded = YES;
+      }else {
+          expanded = NO;
+      }
         return Multivio.searchItem.create({parentNode: this, treeItemIsExpanded:expanded}, item);          
     }, this);
 
@@ -107,67 +117,82 @@ Multivio.searchItem = SC.Object.extend(SC.TreeItemContent, {
     if(SC.none(file)) {
       return "<strong>%@</strong> (%@)".fmt(this.get('url'), nResults);
     }
-    return "<strong>%@</strong> (%@)".fmt(file.getPath('metadata.title'), nResults);
+    return "<strong>%@</strong> (%@)".fmt(file.get('label'), nResults);
   }.property('url')
 }) ;
 
+
+/*********************************************************************************/
+/*********************************************************************************/
 Multivio.searchTreeController = SC.TreeController.create(
 /** @scope Multivio.searchController.prototype */ {
 
   // TODO: Add your own code here.
   defaultQueryMessage: 'Enter a new query here.',
-  query: null,
+  currentQuery: null,
   content: null,
-  searchStatus: 'Search in current file',
-  currentFile: null,
-  currentFileBinding: SC.Binding.oneWay('Multivio.filesController.selection'),
+  msgStatus: '',
+
+  //current search results
   currentSearch: null,
   currentSearchBinding: 'Multivio.searchResultsController.selection',
+
+  //current page index
   currentPage: null,
   currentPageBinding: 'Multivio.filesController.currentIndex',
+
+  //current serach index in results
   currentSearchIndex: null,
   currentSearchIndexBinding: 'Multivio.searchResultsController.currentIndex',
 
-  hasResult: function() {
-    if(this.get('content').length > 0) {
-      return YES;
-    }
-    return NO;
-  }.property('[]'),
+  loadingStatus: null,
+  loadingStatusBinding: 'Multivio.searchResultsController.loadingStatus',
 
   init: function() {
     sc_super();
-    var currentNode = Multivio.searchItem.create();
-    this.set('content', currentNode);
-    //var currentNode = Multivio.searchItem.create();
-    //this.set('content', currentNode);
+    var content = Multivio.searchItem.create({url: null, query: null, results: []});
+    this.set('content', content);
+    //set root item
   },
   
+  isEditable: function(){
+    var status = this.get('loadingStatus');
+    if (status === Multivio.LOADING_LOADING) {
+      return NO;
+    }
+    return YES;
+  }.property('loadingStatus'),
 
-  _currentFileDidChanged: function() {
-    var currentFile = this.get('currentFile');
-    var query = this.get('query');
-    if(!SC.none(query) && !SC.none(currentFile)) {
-      currentFile = currentFile.firstObject();
-      if(currentFile.get('isContentFile')){
-        if(SC.none(this.get('content').url) || currentFile.url !== this.get('content').url || query !== this.get('content').query){
-          this.set('searchStatus', 'searching...');
-          Multivio.searchResultsController.fetchFile(currentFile.url, query);
-        }
+  _currentQueryDidChanged: function() {
+    var query = this.get('currentQuery');
+    if(!SC.none(query) && query !== '') {
+    SC.Logger.debug("New query: " + query);
+      
+      //reset the content
+      this.clear();
+
+      Multivio.searchResultsController.set('currentQuery', query);
+      //search in all content files
+      if(Multivio.getPath('searchResultsController.searchToAll')){
+        Multivio.mainStatechart.sendEvent('findAll', query);
       }
     }
-  }.observes('currentFile', 'query'),
+  }.observes('currentQuery'),
     
-
-
   clear: function() {
-    this.set('query', null);
+    //var content = Multivio.searchItem.create();
     var content = this.get('content');
     content.url = null;
     content.query = null;
-    content.results = null;
-    this.propertyDidChange('content') ;
-
+    content.results = [];
+    //content.results = [];
+    //if(!SC.none(content.results)){
+    //  content.results.removeAt(0, content.results.get('length'));
+    //}else{
+    //  content.set('results', []);
+    //}
+    this.set('content', content);
+    //this.propertyDidChange('content') ;
   },
 
   _selectionDidChanged: function() {
@@ -180,8 +205,10 @@ Multivio.searchTreeController = SC.TreeController.create(
       if(!SC.none(selection.index)) {
         pageToSelect = selection.index.page;
         indexToSelect = selection.idx;
+        var urlToSelect = selection.url;
+        Multivio.filesController.selectNewFile(urlToSelect);
       }
-      if (currentPage !== pageToSelect) {
+      if (currentPage !== pageToSelect) { 
         this.set('currentPage', pageToSelect);
       }
       if (currentSearchIndex !== indexToSelect) {
@@ -192,7 +219,7 @@ Multivio.searchTreeController = SC.TreeController.create(
 
   _currentSearchDidChanged: function() {
     if(!SC.none(this.get('currentSearch'))){
-      var currentSearch = this.get('currentSearch').firstObject();
+      var currentSearch = Multivio.getPath('searchResultsController.selection').firstObject();
       if(!SC.none(currentSearch)) {
         var url = currentSearch.url;
         var query = currentSearch.query;
@@ -200,12 +227,10 @@ Multivio.searchTreeController = SC.TreeController.create(
         if(url !== content.url || query !== content.query) {
           content.url = url;
           content.query = query;
-          content.results = [currentSearch];
+          content.results.push({url: currentSearch.url, results: currentSearch.results, query: currentSearch.results});
           this.propertyDidChange('content') ;
-          this.set('content', this.get('content'));
-          this.set('searchStatus', 'done');
         }
       }
     }
-  }.observes('currentSearch')
+  }.observes('Multivio.searchResultsController.selection')
 }) ;

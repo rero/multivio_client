@@ -1,6 +1,6 @@
 sc_require('mixins/fadeinout.js');
 sc_require('controllers/image.js');
-sc_require('controllers/center_image.js');
+sc_require('views/center_image.js');
 Multivio.mainImageView =  SC.View.design({
   childViews: ['waitingView', 'imageScrollView', 'bottomToolbar'], 
 

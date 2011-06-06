@@ -1,7 +1,7 @@
 
 //mixin
 Multivio.LoadFile = {
-  initialSubstate: 'receivedFile',
+  initialSubstate: 'waiting',
 
   enterState: function(context) {
     if(SC.none(context)) {
@@ -20,25 +20,19 @@ Multivio.LoadFile = {
   serverError: function() {
     SC.Logger.debug("InitializationError called");
     this.gotoState('error');  
-  },
-
-  loadingFile: SC.State.design({
-    fileLoaded:function(context) {
-      this.gotoState(this.get('parentState').receivedFile, context);
-    }
-  })
+  }
 };
 
 
 Multivio.LoadNextFile = SC.State.design(Multivio.LoadFile, {
-  receivedFile: SC.State.design({
+  waiting: SC.State.design({
     enterState: function(context) {
       var currentRootNode = context;
       SC.Logger.debug("Enter received with: " + currentRootNode.url);
       var currentNode = Multivio.filesController.findProperty('url', currentRootNode.url);
       //rootNode not loaded
       if(SC.none(currentNode)) {
-        this.gotoState(this.get('parentState').loadingFile);
+        //this.gotoState(this.get('parentState').loadingFile);
         Multivio.filesController.fetchFile(currentRootNode.url, currentRootNode.parent);
         return;
       }
@@ -58,22 +52,26 @@ Multivio.LoadNextFile = SC.State.design(Multivio.LoadFile, {
       nextNodeUrl = currentPhys[0].url;
 
       //store current as parent and call child
-      this.gotoState(this.get('parentState').loadingFile);
+      //this.gotoState(this.get('parentState').loadingFile);
       Multivio.filesController.fetchFile(nextNodeUrl, currentNode);
+    },
+    fileLoaded:function(context) {
+      this.gotoState(this, context);
     }
   })
+
 });
 
 
 Multivio.LoadPreviousFile = SC.State.design(Multivio.LoadFile, {
-  receivedFile: SC.State.design({
+  waiting: SC.State.design({
     enterState: function(context) {
       var currentRootNode = context;
       SC.Logger.debug("Enter received with: " + currentRootNode.url);
       var currentNode = Multivio.filesController.findProperty('url', currentRootNode.url);
       //rootNode not loaded
       if(SC.none(currentNode)) {
-        this.gotoState(this.get('parentState').loadingFile);
+        //this.gotoState(this.get('parentState').loadingFile);
         Multivio.filesController.fetchFile(currentRootNode.url, currentRootNode.parent);
         return;
       }
@@ -93,8 +91,11 @@ Multivio.LoadPreviousFile = SC.State.design(Multivio.LoadFile, {
       nextNodeUrl = currentPhys[currentPhys.length - 1].url;
 
       //store current as parent and call child
-      this.gotoState(this.get('parentState').loadingFile);
+      //this.gotoState(this.get('parentState').loadingFile);
       Multivio.filesController.fetchFile(nextNodeUrl, currentNode);
+    },
+    fileLoaded:function(context) {
+      this.gotoState(this, context);
     }
   })
 });

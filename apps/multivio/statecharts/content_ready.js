@@ -21,10 +21,9 @@ sc_require('statecharts/loading.js');
 @extends SC.State
   @since 1.0
 */
-Multivio.ApplicationReadyState = SC.State.extend({
+Multivio.ContentReadyState = SC.State.extend({
 
   initialSubstate: 'contentReady',
-  autoInitStatechart: NO,
 
   enterState: function() {
     Multivio.getPath('mainPage.mainPane').append();
@@ -48,7 +47,6 @@ Multivio.ApplicationReadyState = SC.State.extend({
   loadingPreviousContentFile: SC.State.plugin('Multivio.LoadPreviousFile'),
 
   contentReady: SC.State.design({
-
 
     enterState: function() {
       //loading root
@@ -101,8 +99,6 @@ Multivio.ApplicationReadyState = SC.State.extend({
     },
 
     fetchFile: function(context){
-      var currentUrl = Multivio.filesController.get('currentUrl');
-      var currentParent = Multivio.filesController.get('currentParent');
       this.gotoState('loadingNextContentFile', context); 
     }
   })

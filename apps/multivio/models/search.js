@@ -27,14 +27,15 @@ Multivio.SearchData = SC.Object.create(SC.Array, Multivio.RemoteData, {
   _receivedData: function(response, url, query) {
     if (SC.ok(response)) {
       var result = response.get("body");
-      var rec = this.find(url, query);
-      SC.Logger.debug('_receivedData for ' + url + ' :' + rec);
+      SC.Logger.debug('_receivedData for ' + url + ' :' + query);
       //if(SC.none(rec)) {
         rec = Multivio.SearchRecord.create({url: url, query: query, results: result.file_position.results, maxReached: result.max_reached});
         rec.results.forEach(function(item, index, self) {
           item.idx = index;
         });
         this.pushObject(rec);
+        //this.arrayContentDidChange();
+        //this.enumerableContentDidChange();
       //}
     }else{
       this._requestError();

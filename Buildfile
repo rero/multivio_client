@@ -23,7 +23,7 @@ proxy '/local',
 mode :all do
  config :all,
    :required => [:sproutcore, 'sproutcore/animation', 'sproutcore/statechart'],
-   :theme_name => 'sc-theme mvo-dark-gray-theme',
+   :theme_name => 'sc-theme test',
 	 :load_fixtures => true
 end
 
