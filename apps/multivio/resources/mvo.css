@@ -10,10 +10,10 @@
 
 /*
 body, .sc-view, .sc-pane, .sc-main, .ace, .ace.source-list.collection {
-	background-color: #444; 
-	color: #fff;
+  background-color: #444; 
+  color: #fff;
 }
-	*/
+  */
 
 /*
 -----------------------------
@@ -46,28 +46,28 @@ Multivio splash page
 	height: 24px;
 }
 .mvo-center-image {
-	box-shadow: 12px 12px 12px #CCCCCC;
-	-moz-box-shadow: 12px 12px 12px #CCCCCC;
-	border: 1px solid #ccc;
+  box-shadow: 12px 12px 12px #CCCCCC;
+  -moz-box-shadow: 12px 12px 12px #CCCCCC;
+  border: 1px solid #ccc;
 }
 .mvo-center-image .sc-collection-view {
 	background: none;
 }
 .mvo-search-results {
-	opacity: 0.50;
-	-moz-opacity: 0.50;
-	-khtml-opacity: 0.50;
-	filter: alpha(opacity=50);
-	background-color: olive;
+  opacity: 0.50;
+  -moz-opacity: 0.50;
+  -khtml-opacity: 0.50;
+  filter: alpha(opacity=50);
+  background-color: olive;
 }
 .mvo-search-results.sc-collection-item.sel {
-	background-color: #ccc;
+  background-color: #ccc;
 }
 #mvo-tree-view .mvo-toc-entry label {
-	font-size: 11px;
+  font-size: 11px;
 }
 #mvo-thumbnails .sc-collection-item.sel {
-	background: none repeat scroll 0 0 #608AB9;
+  background: none repeat scroll 0 0 #608AB9;
 }
 
 .sc-list-item-view img{
@@ -79,13 +79,13 @@ Multivio splash page
 }
 
 #mvo-navigation-bar .sc-list-item-view img{
-/*	margin: 4px;*/
-	padding: 4px;
+/*  margin: 4px;*/
+  padding: 4px;
 }
 
 #mvo-navigation-bar .sc-list-item-view.sel {
-	background: none;
-	border:none;
+  background: none;
+  border:none;
 }
 
 
@@ -104,23 +104,23 @@ Multivio splash page
 
 /* others */
 .mvo-waiting {
-	background: none;
-	z-index: 1000;
+  background: none;
+  z-index: 1000;
 }
 
 .mvo-waiting-small {
-	background: none;
-	z-index: 1000;
+  background: none;
+  z-index: 1000;
 }
 
 .mvo-waiting-small img.icon {
-	width: 20px;
-	height: 20px;
+  width: 20px;
+  height: 20px;
 }
 .mvo-center {
-	border: 3px solid #aaa;
-	background-color: #eee;
-	padding: 20px;
+  border: 3px solid #aaa;
+  background-color: #eee;
+  padding: 20px;
 }
 
 .ace.toolbar, .mvo-front-view-transparent {
@@ -148,49 +148,49 @@ Multivio splash page
   ms-filter: "alpha(opacity=3)"; /* IE 8 */
   filter : alpha(opacity=3);
 }
-.sc-image-button-view .image-button-previous-doc {
+.mvo-default-theme .sc-image-button-view .image-button-previous-doc {
    background-image: sc_static("images/icons/24x24/jump_backwards_dark_24x24.png");
 }
-.sc-image-button-view .image-button-next-doc {
+.mvo-default-theme .sc-image-button-view .image-button-next-doc {
    background-image: sc_static("images/icons/24x24/jump_forward_dark_24x24.png");
 }
-.sc-image-button-view .image-button-previous-page {
+.mvo-default-theme .sc-image-button-view .image-button-previous-page {
    background-image: sc_static("images/icons/24x24/go_backwards_dark_24x24.png");
 }
-.sc-image-button-view .image-button-next-page {
+.mvo-default-theme .sc-image-button-view .image-button-next-page {
    background-image: sc_static("images/icons/24x24/go_forward_dark_24x24.png");
 }
-.sc-image-button-view .image-button-zoom-minus {
+.mvo-default-theme .sc-image-button-view .image-button-zoom-minus {
    background-image: sc_static("images/icons/24x24/zoom_minus_dark_24x24.png");
 }
-.sc-image-button-view .image-button-zoom-plus {
+.mvo-default-theme .sc-image-button-view .image-button-zoom-plus {
    background-image: sc_static("images/icons/24x24/zoom_plus_dark_24x24.png");
 }
-.sc-image-button-view .image-button-rotate-left {
+.mvo-default-theme .sc-image-button-view .image-button-rotate-left {
    background-image: sc_static("images/icons/24x24/rotate_left_dark_24x24.png");
 }
-.sc-image-button-view .image-button-rotate-right {
+.mvo-default-theme .sc-image-button-view .image-button-rotate-right {
    background-image: sc_static("images/icons/24x24/rotate_right_dark_24x24.png");
 }
-.sc-image-button-view .image-button-fit-width {
+.mvo-default-theme .sc-image-button-view .image-button-fit-width {
    background-image: sc_static("images/icons/24x24/full_width_dark_24x24.png");
 }
-.sc-image-button-view .image-button-fit-all {
+.mvo-default-theme .sc-image-button-view .image-button-fit-all {
    background-image: sc_static("images/icons/24x24/full_size_dark_24x24.png");
 }
 .sc-image-button-view .image-button-hundred-percent {
    background-image: sc_static("images/icons/24x24/100_percent_dark_24x24.png");
 }
 
-.sc-image-button-view .image-button-search-16 {
+.mvo-default-theme .sc-image-button-view .image-button-search-16 {
    background-image: sc_static("images/icons/16x16/search_dark_16x16.png");
 }
-.sc-image-button-view .image-button-cancel-16 {
+.mvo-default-theme .sc-image-button-view .image-button-cancel-16 {
    background-image: sc_static("images/icons/16x16/search_clear_16x16.png");
 }
-.sc-image-button-view .image-button-down-16 {
+.mvo-default-theme .sc-image-button-view .image-button-down-16 {
    background-image: sc_static("images/icons/16x16/down_dark_16x16.png");
 }
-.sc-image-button-view .image-button-up-16 {
+.mvo-default-theme .sc-image-button-view .image-button-up-16 {
    background-image: sc_static("images/icons/16x16/up_dark_16x16.png");
 }

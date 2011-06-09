@@ -25,6 +25,32 @@ Multivio = SC.Application.create(
   //store: SC.Store.create().from(SC.Record.fixtures)
   
   // TODO: Add global constants or singleton objects needed by your app here.
-  store: null
+  store: null,
 
-}) ;
+  // the name of the active theme
+  currentTheme: undefined
+});
+
+/**
+  Change the graphical theme that is currently selected. The name of the
+  theme to be applied must be a property called 'newTheme' of the object
+  given as input. This object is usually a view that calls this method
+  through a target/action binding. In that case the view must contain the
+  newTheme property.
+
+  @param {SC.Object} caller the object that called this method (usually an SC.View);
+*/
+Multivio.changeTheme = function (caller) {
+  var currentTheme = Multivio.get('currentTheme');
+  if (!SC.none(caller)) {
+    var newTheme = caller.get('newTheme');
+    if (!SC.none(newTheme) && newTheme !== currentTheme) {
+      alert('Changing theme from %@ to %@'.fmt(currentTheme, newTheme));
+      SC.Logger.debug('Changing theme from %@ to %@'.fmt(currentTheme, newTheme));
+      SC.$('body')
+          .addClass('mvo-%@-theme'.fmt(newTheme))
+          .removeClass('mvo-%@-theme'.fmt(currentTheme));
+    }
+    Multivio.set('currentTheme', newTheme);
+  }
+};

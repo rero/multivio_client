@@ -33,7 +33,14 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,{
       Multivio.set('store', SC.Store.create().from('Multivio.DataSource'));
       Multivio.getPath('mainPage.mainPane').append();
       Multivio.inputParameters.read();
+
+
     },
+    
+    exitState: function() {
+      Multivio.getPath('loadingPage.mainPane').remove();
+    },
+
     
     _inputParametersDidChange: function(){
       var inputServer = this.getPath('inputParameters.options.server');
@@ -52,6 +59,12 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,{
         var server = Multivio.store.find(Multivio.ServerRecord, 'inputServer');
         this.set('server', server);
       }
+      // update theme
+      var theme = Multivio.getPath('inputParameters.options').theme;
+      if (SC.none(theme)) {
+        theme = Multivio.configurator.get('defaultTheme');
+      }
+      Multivio.changeTheme(SC.Object.create({newTheme: theme}));
     }.observes('*inputParameters.options'),
 
     _serverDidChange:function() {

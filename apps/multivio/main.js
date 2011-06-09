@@ -18,6 +18,9 @@ Multivio.reload = function() {
 };
 Multivio.main = function main() {
 
+  Multivio.changeTheme(SC.Object.create({
+      newTheme: Multivio.configurator.get('defaultTheme')}));
+
   // Step 1: Instantiate Your Views
   // The default code here will make the mainPane for your application visible
   // on screen.  If you app gets any level of complexity, you will probably 

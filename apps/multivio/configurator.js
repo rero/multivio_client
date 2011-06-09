@@ -41,7 +41,22 @@ Multivio.configurator = SC.Object.create(
   /**
     The version of compatibility between server and client
   */
-  serverCompatibility: '0.4.0'
+  serverCompatibility: '0.4.0',
 
+  /**
+    Default theme
+  */
+  defaultTheme: 'default',
+
+  /**
+    List of allowed themes
+  */
+  allowedThemes: 'default white dark blue'.w(),
+  
+  /**
+    The theme to be used
+  */
+  initialTheme: 'mvo-white-theme'
+  
 
 });
