@@ -33,7 +33,6 @@ Multivio.currentSearchResultsController = SC.ArrayController.create({
 
 
   _currentPageDidChange: function(){
-    
     this._removeAll();
     var currentPage = this.get('currentPage');
     var currentResults = Multivio.searchResultsController.findProperty('url', this.getPath('currentFile.url'));

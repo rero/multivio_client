@@ -30,16 +30,9 @@ Multivio.ContentReadyState = SC.State.extend({
     //Multivio.filesController.fetchFile(Multivio.inputParameters.get('url'));
     //Multivio.getPath('mainPage.mainPane').becomeKeyPane();
   },
-  loadApp: function() {
-    this.gotoState('initializing'); 
-  },
 
   exitState: function() {
     Multivio.getPath('mainPage.mainPane').remove();
-  },
-
-  applicationError: function(){
-    this.gotoState('error');
   },
 
   loadingNextContentFile: SC.State.plugin('Multivio.LoadNextFile'),
@@ -49,7 +42,18 @@ Multivio.ContentReadyState = SC.State.extend({
   contentReady: SC.State.design({
 
     enterState: function() {
+      var url_to_get = Multivio.getPath('inputParameters.url');
+      var query = SC.Query.local(Multivio.FileRecord, "url={url}", {url:url_to_get});
+      var results = Multivio.store.find(query);
+      var rootFile = SC.Object.create({
+        treeItemIsExpanded: YES,
+        treeItemChildren: results,
+        guid: '0'
+      });
+      Multivio.treeController.set('content', rootFile);
+
       //loading root
+      /*
       if(Multivio.filesController.length() < 1) {
         var rootUrl = Multivio.filesController.get('referer');
         this.gotoState('loadingNextContentFile', {url: rootUrl, parent: undefined}); 
@@ -82,6 +86,7 @@ Multivio.ContentReadyState = SC.State.extend({
           }
         }
       }
+      */
     },
 
     nextFile: function(){

@@ -24,47 +24,56 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,{
 
   starting: SC.State.design({
     loadApp: function() {
+      Multivio.set('store', SC.Store.create().from('Multivio.DataSource'));
       this.gotoState('initializing'); 
     }
   }),
   
   initializing: SC.State.design({
+    server: null,
+
+    _serverDidChange: function() {
+      var server = this.get('server');
+      if(server) {
+        server.addRangeObserver(0, this, this._checkServerVersion);
+      }
+    }.observes('server'),
+
+    _checkServerVersion: function() {
+      var server = this.get('server');
+      if(server.get('length') > 0) {
+        if(server.firstObject().get('isOk')){
+          this.gotoState('applicationReady'); 
+        }else{
+          this.gotoState('error', {msg: 'Server is not compatible'});  
+        }
+      }
+    },
+
     enterState: function() {
       SC.Logger.debug('Initializing...');
       var panel = Multivio.getPath('loadingPage.mainPane');
       panel.append();
       Multivio.inputParameters.read();
-      Multivio.CDM.removeAll();
-      Multivio.filesController.set('content', Multivio.CDM);
-      Multivio.ServerVersion.getServerInfo();
-      SC.Logger.debug('After');
+      Multivio.get('store').unloadRecords(Multivio.FileRecord);
+      var server = Multivio.store.find(Multivio.ServerRecord);
+      this.set('server', server);
     },
     
     exitState: function() {
       Multivio.getPath('loadingPage.mainPane').remove();
-    },
-
-    initializationOk: function() {
-      SC.Logger.debug('Go to ready');
-      this.gotoState('applicationReady'); 
-    },
-    
-    serverError: function() {
-      SC.Logger.debug("InitializationError called");
-      this.gotoState('error');  
     }
-
   }),
   
   applicationReady: SC.State.design({
-    //stateAreConcurrent: YES,
    substatesAreConcurrent: YES,
-    content: SC.State.plugin('Multivio.ContentReadyState'),
-    search: SC.State.plugin('Multivio.SearchReadyState')
+    content: SC.State.plugin('Multivio.ContentReadyState')
+    //search: SC.State.plugin('Multivio.SearchReadyState')
   }),
 
   error: SC.State.design({
-    enterState: function() {
+    enterState: function(context) {
+      Multivio.errorController.set('errorMessage', context.msg);
       var panel = Multivio.getPath('errorPage.mainPane');
       panel.append();
       this.gotoState('end');

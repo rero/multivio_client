@@ -14,13 +14,20 @@ sc_require('controllers/tree.js');
 Multivio.TreeViewItem = SC.ListItemView.extend(SC.AutoResize,{
 
   // TODO: Add your own code here.
-  displayProperties: ['file_position', 'label', 'labelPage'],
   classNames: ['mvo-toc-entry'],
   supportsAutoResize: YES,
-  iconWidth: 16,
+  displayProperties: ['title', 'icon'],
+  contentIconKey: 'icon',
+  contentValueKey: 'title',
+  iconWidth: 32,
+  hasContentIcon: function() {
+    var content = this.get('content');
+    return content.get('icon') ? YES: NO;
+  }.property('content.icon'),
+
 
   autoResizeText: function() {
-    return this.getPath('content.labelPage');
+    return this.getPath('content.title');
   }.property('content'),
 
   autoResizeLayer: function() {
@@ -52,7 +59,7 @@ Multivio.TreeView = SC.PickerPane.design({
     contentView: SC.SourceListView.design({
       rowHeight: 18,
       rowSpacing: 4,
-      contentValueKey: 'labelPage',
+      contentValueKey: 'title',
       contentBinding: 'Multivio.treeController.arrangedObjects',
       selectionBinding: 'Multivio.treeController.selection',
       exampleView: Multivio.TreeViewItem

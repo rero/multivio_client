@@ -10,6 +10,22 @@
 
 @extends SC.Object
 */
+Multivio.treeController = SC.TreeController.create({
+  _selectionDidChange: function() {
+    var selection = this.get('selection');
+    if(selection) {
+      var obj = selection.firstObject();
+      if(obj && obj.get('canBeFetched')){
+        if(obj.fetchFromServer()){
+          //TODO: why do I have to do that?
+          this.notifyPropertyChange("content");
+        }
+      }
+    }
+  }.observes('selection')
+});
+
+/*
 sc_require('controllers/files.js');
 Multivio.Outline = SC.Object.extend(SC.TreeItemContent, {
 
@@ -220,3 +236,4 @@ Multivio.treeController = SC.TreeController.create({
   }.observes('selection')
 
 }) ;
+*/
