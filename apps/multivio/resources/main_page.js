@@ -14,6 +14,7 @@
   @since 0.1.0
 */
 
+sc_require('mixins/interface.js');
 sc_require('views/unsupported_view.js');
 sc_require('views/thumbnails.js');
 sc_require('views/pdf_view.js');
@@ -44,8 +45,9 @@ Multivio.mainPage = SC.Page.design({
     //topLeftView: Multivio.thumbnailsView,
 
     //topLeftView: Multivio.navigationBar,
-    centerView: SC.WellView.design({
-      layout: { top: 10, left: 40, bottom: 40 , right: 10 }
+    centerView: SC.ContainerView.design(Multivio.innerGradient, {
+      layout: { top: 10, left: 40, bottom: 40, right: 10 },
+      classNames: 'mvo-container-view'.w()
     })
   }),
   mainPdfView: Multivio.mainPdfView,

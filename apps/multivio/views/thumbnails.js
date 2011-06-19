@@ -10,7 +10,7 @@ sc_require('views/thumbnail.js');
 sc_require('controllers/thumbnails.js');
 
 Multivio.thumbnailsView = SC.PickerPane.design({
-  layout: { width: 130, top: 0, left:0, bottom: 100},
+  layout: { width: 130, bottom: 100},
   //isAnchored: NO,
   isModal: NO,
   canBeClosed: YES,
@@ -25,9 +25,9 @@ Multivio.thumbnailsView = SC.PickerPane.design({
       rowHeight: 130,
       rowSpacing: 10,
 
-      _selectionDidChanged: function() {
+      _selectionDidChanged: function () {
         var sel = this.get('selection').firstObject();
-        if(!SC.none(sel) && sel.get('pageNumber') > 0) {
+        if (!SC.none(sel) && sel.get('pageNumber') > 0) {
           SC.Logger.debug('selection: changed ' + sel.get('pageNumber')); 
           this.scrollToContentIndex(sel.get('pageNumber') - 1);
         }
@@ -35,12 +35,12 @@ Multivio.thumbnailsView = SC.PickerPane.design({
     })
   }),
 
-  modalPaneDidClick: function(evt) {
-    if(this.get('canBeClosed'))
-      {
-        return sc_super();
-      } else {
-        return NO ;
-      }
+  modalPaneDidClick: function (evt) {
+    if (this.get('canBeClosed')) {
+      return sc_super();
+    }
+    else {
+      return NO;
+    }
   }
 });

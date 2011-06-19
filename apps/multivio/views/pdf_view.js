@@ -22,10 +22,10 @@ Multivio.mainPdfView =  SC.View.design({
     if(evt.keyCode === 40) {
       Multivio.mainStatechart.sendEvent('nextIndex');
     }
-    if(evt.keyCode === 39) {
+    if (evt.keyCode === 39) {
       Multivio.mainStatechart.sendEvent('nextFile');
     }
-    if(evt.keyCode === 37) {
+    if (evt.keyCode === 37) {
       Multivio.mainStatechart.sendEvent('previousFile');
     }
     return NO;
@@ -47,7 +47,7 @@ Multivio.mainPdfView =  SC.View.design({
     layout: { top: 0, left: 0, bottom: 0, right: 0},
     contentView: Multivio.CenterImage.design({
       layout: { centerX: 0, centerY: 0 },
-      init:function() {
+      init: function () {
         sc_super();
         this.get('imageView').bind('value', 'Multivio.pdfFileController.currentUrl');
         this.get('selectionView').bind('nativeSize', 'Multivio.pdfFileController.nativeSize');

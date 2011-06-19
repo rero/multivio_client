@@ -8,18 +8,38 @@
 
 /* thumbnails */
 
-/*
-body, .sc-view, .sc-pane, .sc-main, .ace, .ace.source-list.collection {
-  background-color: #444; 
+.ace.body {
+  background: none repeat scroll 0 0 #fff;
+}
+
+.ace.sc-pane, .ace.sc-main {
+  background: none repeat scroll 0 0 #444;
   color: #fff;
 }
-  */
+
+/*
+.ace.sc-view {
+  background: none repeat scroll 0 0 #ccc;
+}
+*/
+
+.ace.source-list.collection {
+  background: none repeat scroll 0 0 #ccc;
+}
+
+.image-and-highlight-container {
+  background: none repeat scroll 0 0 red;
+}
 
 /*
 -----------------------------
 Multivio splash page
 -----------------------------
 */
+
+#loading {
+  background: none repeat scroll 0 0 #fff;
+}
 
 #mvo-splash-content {
   position: absolute;
@@ -29,7 +49,7 @@ Multivio splash page
   width: 231px;
   background: none;
   margin: -85px 0px 0px -116px;
-  font: 18px "Lucida Grande","Lucida Sans Unicode",Helvetica,Arial,Verdana,sans-serif;
+  font: 18px "Lucida Grande","Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
 }
 
 #mvo-splash-content img {
@@ -37,7 +57,10 @@ Multivio splash page
   clear: both;
   margin: 20px auto 5px auto;
 }
+
 /*
+-----------------------------
+Multivio main styles
 -----------------------------
 */
 
@@ -45,6 +68,15 @@ Multivio splash page
 	text-align: center;
 	height: 24px;
 }
+.sc-scroll-view {
+  background: none repeat scroll 0 0 blue;
+}
+
+
+.ace.sc-container-view {
+  background: none repeat scroll 0 0 #666;
+}
+
 .mvo-center-image {
   box-shadow: 12px 12px 12px #CCCCCC;
   -moz-box-shadow: 12px 12px 12px #CCCCCC;
@@ -61,7 +93,7 @@ Multivio splash page
   background-color: olive;
 }
 .mvo-search-results.sc-collection-item.sel {
-  background-color: #ccc;
+  background: none repeat scroll 0 0 #ccc;
 }
 #mvo-tree-view .mvo-toc-entry label {
   font-size: 11px;
@@ -70,7 +102,7 @@ Multivio splash page
   background: none repeat scroll 0 0 #608AB9;
 }
 
-.sc-list-item-view img{
+.sc-list-item-view img {
   display: block;
   margin: auto;
   position: static;
@@ -78,19 +110,24 @@ Multivio splash page
   vertical-align: middle;
 }
 
-#mvo-navigation-bar .sc-list-item-view img{
+#mvo-navigation-bar .sc-list-item-view img {
 /*  margin: 4px;*/
   padding: 4px;
 }
 
+#mvo-navigation-bar {
+  background: none repeat scroll 0 0 #444;
+  border:none;
+}
+
 #mvo-navigation-bar .sc-list-item-view.sel {
-  background: none;
+  background: none repeat scroll 0 0 #ccc;
   border:none;
 }
 
 
-.sc-list-item-view.sel img{
-   background-color: #ccc;
+.sc-list-item-view.sel img {
+  background: none repeat scroll 0 0 #ccc;
 }
 
 .sc-list-item-view p{
@@ -119,7 +156,7 @@ Multivio splash page
 }
 .mvo-center {
   border: 3px solid #aaa;
-  background-color: #eee;
+  background: none repeat scroll 0 0 #666;
   padding: 20px;
 }
 
@@ -129,18 +166,25 @@ Multivio splash page
   /*z-index: -10000;*/
 }
 
+
+/*
+-----------------------------
+Button layout
+-----------------------------
+*/
+
 .sc-image-button-view {
   background: none;
 }
 
-.sc-image-button-view .img{
+.sc-image-button-view .img {
   padding: 4px;
   cursor: pointer;
   background-position: center center;
   background-repeat: no-repeat;
 }
 .sc-image-button-view.active .img, .sc-image-button-view.sel .img {
-   background-color: lightSteelBlue;
+  background: none repeat scroll 0 0 lightSteelBlue;
 }
 .sc-image-button-view.disabled .img{
   opacity: 0.3;
@@ -148,6 +192,14 @@ Multivio splash page
   ms-filter: "alpha(opacity=3)"; /* IE 8 */
   filter : alpha(opacity=3);
 }
+
+
+/*
+-----------------------------
+Button images
+-----------------------------
+*/
+
 .mvo-default-theme .sc-image-button-view .image-button-previous-doc {
    background-image: sc_static("images/icons/24x24/jump_backwards_dark_24x24.png");
 }
@@ -193,4 +245,161 @@ Multivio splash page
 }
 .mvo-default-theme .sc-image-button-view .image-button-up-16 {
    background-image: sc_static("images/icons/16x16/up_dark_16x16.png");
+}
+
+
+/*
+-----------------------------
+Border gradients
+-----------------------------
+*/
+
+/* inner edges - normal size (10px) */
+.top-edge {
+  background: static_url('images/mvo-sprite-x.png') repeat-x 0px -10px;
+  position: absolute;
+  height: 10px;
+  top: 0px;
+  right: 0px;
+  left: 0px;
+  z-index: 2;
+}
+.right-edge {
+  background: static_url('images/mvo-sprite-y.png') repeat-y 0px 0px;
+  position: absolute;
+  width: 10px;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  z-index: 2;
+}
+.bottom-edge {
+  background: static_url('images/mvo-sprite-x.png') repeat-x 0px 0px;
+  position: absolute;
+  height: 10px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  z-index: 2;
+}
+.left-edge {
+  background: static_url('images/mvo-sprite-y.png') repeat-y -10px 0px;
+  position: absolute;
+  width: 10px;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  z-index: 2;
+}
+
+/* thin inner edges for inner palette content (6px) */
+.top-edge-thin {
+  background: static_url('images/mvo-sprite-x-thin.png') repeat-x 0px -5px;
+  position: absolute;
+  height: 6px;
+  top: 0px;
+  right: 0px;
+  left: 0px;
+  z-index: 2;
+}
+.right-edge-thin {
+  background: static_url('images/mvo-sprite-y-thin.png') repeat-y 0px 0px;
+  position: absolute;
+  width: 5px;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  z-index: 2;
+}
+.bottom-edge-thin {
+  background: static_url('images/mvo-sprite-x-thin.png') repeat-x 0px 0px;
+  position: absolute;
+  height: 5px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  z-index: 2;
+}
+.left-edge-thin {
+  background: static_url('images/mvo-sprite-y-thin.png') repeat-y -5px 0px;
+  position: absolute;
+  width: 5px;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  z-index: 2;
+}
+
+/* outer edges */
+.outer-top-left-edge {
+  background: static_url('images/mvo-round-transparency-333-90.png') 0px 0px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 4px;
+  height: 4px;
+  z-index: 2;
+}
+.outer-top-edge {
+  background: static_url('images/transparency_333_90.png');
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 0px;
+  height: 4px;
+  z-index: 2;
+}
+.outer-top-right-edge {
+  background: static_url('images/mvo-round-transparency-333-90.png') -4px 0px;
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  top: 0px;
+  right: 0px;
+  z-index: 2;
+}
+.outer-right-edge {
+  background: static_url('images/transparency_333_90.png');
+  position: absolute;
+  width: 4px;
+  top: 4px;
+  bottom: 4px;
+  right: 0px;
+  z-index: 2;
+}
+.outer-bottom-right-edge {
+  background: static_url('images/mvo-round-transparency-333-90.png') -4px -4px;
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  bottom: 0px;
+  right: 0px;
+  z-index: 2;
+}
+.outer-bottom-edge {
+  background: static_url('images/transparency_333_90.png');
+  position: absolute;
+  bottom: 0px;
+  right: 4px;
+  left: 4px;
+  height: 4px;
+  z-index: 2;
+}
+.outer-bottom-left-edge {
+  background: static_url('images/mvo-round-transparency-333-90.png') 0px -4px;
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  bottom: 0px;
+  left: 0px;
+  z-index: 2;
+}
+.outer-left-edge {
+  background: static_url('images/transparency_333_90.png');
+  position: absolute;
+  width: 4px;
+  top: 4px;
+  bottom: 4px;
+  left: 0px;
+  z-index: 2;
 }

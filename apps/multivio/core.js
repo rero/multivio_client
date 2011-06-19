@@ -45,7 +45,6 @@ Multivio.changeTheme = function (caller) {
   if (!SC.none(caller)) {
     var newTheme = caller.get('newTheme');
     if (!SC.none(newTheme) && newTheme !== currentTheme) {
-      alert('Changing theme from %@ to %@'.fmt(currentTheme, newTheme));
       SC.Logger.debug('Changing theme from %@ to %@'.fmt(currentTheme, newTheme));
       SC.$('body')
           .addClass('mvo-%@-theme'.fmt(newTheme))
