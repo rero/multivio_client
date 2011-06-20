@@ -12,7 +12,10 @@
 
 @extends SC.View
 */
+
+sc_require('mixins/interface.js');
 sc_require('controllers/tree.js');
+
 Multivio.TreeViewItem = SC.ListItemView.extend(SC.AutoResize,{
 
   // TODO: Add your own code here.
@@ -55,9 +58,10 @@ Multivio.TreeView = SC.PickerPane.design({
   isAnchored: YES,
   isModal: NO,
   layout: { width: 314, bottom: 100},
+  classNames: 'mvo-palette-pane'.w(),
   layerId: 'mvo-tree-view',
   canBeClosed: YES,
-  contentView: SC.ScrollView.design({
+  contentView: SC.ScrollView.design(Multivio.innerGradientThinTopBottom, {
     contentView: SC.SourceListView.design({
       rowHeight: 18,
       rowSpacing: 4,

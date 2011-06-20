@@ -44,7 +44,7 @@ Multivio.mainPdfView =  SC.View.design({
 
   pdfScrollView: SC.ScrollView.design({
     classNames: "mvo-center".w(),
-    layout: { top: 0, left: 0, bottom: 0, right: 0},
+    layout: { top: 5, left: 5, bottom: 5, right: 5},
     contentView: Multivio.CenterImage.design({
       layout: { centerX: 0, centerY: 0 },
       init: function () {

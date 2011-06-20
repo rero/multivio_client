@@ -13,6 +13,7 @@
 @extends SC.View
 */
 Multivio.CenterImage = SC.View.extend({
+  layout: {top: 5, right: 5, bottom: 5, left: 5},
   childViews: ['imageView', 'selectionView', 'infoPanel'],
   classNames: "mvo-center-image".w(),
   visibleWidth: 0,

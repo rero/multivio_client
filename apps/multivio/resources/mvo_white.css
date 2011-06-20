@@ -7,45 +7,45 @@
 */
 
 .mvo-white-theme .sc-image-button-view .image-button-previous-doc {
-   background-image: sc_static("images/icons/24x24/jump_backwards_light_24x24.png");
+  background-image: sc_static("images/icons/24x24/jump_backwards_light_24x24.png");
 }
 .mvo-white-theme .sc-image-button-view .image-button-next-doc {
-   background-image: sc_static("images/icons/24x24/jump_forward_light_24x24.png");
+  background-image: sc_static("images/icons/24x24/jump_forward_light_24x24.png");
 }
 .mvo-white-theme .sc-image-button-view .image-button-previous-page {
-   background-image: sc_static("images/icons/24x24/go_backwards_light_24x24.png");
+  background-image: sc_static("images/icons/24x24/go_backwards_light_24x24.png");
 }
 .mvo-white-theme .sc-image-button-view .image-button-next-page {
-   background-image: sc_static("images/icons/24x24/go_forward_light_24x24.png");
+  background-image: sc_static("images/icons/24x24/go_forward_light_24x24.png");
 }
 .mvo-white-theme .sc-image-button-view .image-button-zoom-minus {
-   background-image: sc_static("images/icons/24x24/zoom_minus_light_24x24.png");
+  background-image: sc_static("images/icons/24x24/zoom_minus_light_24x24.png");
 }
 .mvo-white-theme .sc-image-button-view .image-button-zoom-plus {
-   background-image: sc_static("images/icons/24x24/zoom_plus_light_24x24.png");
+  background-image: sc_static("images/icons/24x24/zoom_plus_light_24x24.png");
 }
 .mvo-white-theme .sc-image-button-view .image-button-rotate-left {
-   background-image: sc_static("images/icons/24x24/rotate_left_light_24x24.png");
+  background-image: sc_static("images/icons/24x24/rotate_left_light_24x24.png");
 }
 .mvo-white-theme .sc-image-button-view .image-button-rotate-right {
-   background-image: sc_static("images/icons/24x24/rotate_right_light_24x24.png");
+  background-image: sc_static("images/icons/24x24/rotate_right_light_24x24.png");
 }
 .mvo-white-theme .sc-image-button-view .image-button-fit-width {
-   background-image: sc_static("images/icons/24x24/full_width_light_24x24.png");
+  background-image: sc_static("images/icons/24x24/full_width_light_24x24.png");
 }
 .mvo-white-theme .sc-image-button-view .image-button-fit-all {
-   background-image: sc_static("images/icons/24x24/full_size_light_24x24.png");
+  background-image: sc_static("images/icons/24x24/full_size_light_24x24.png");
 }
 
 .mvo-white-theme .sc-image-button-view .image-button-search-16 {
-   background-image: sc_static("images/icons/16x16/search_light_16x16.png");
+  background-image: sc_static("images/icons/16x16/search_light_16x16.png");
 }
 .mvo-white-theme .sc-image-button-view .image-button-cancel-16 {
-   background-image: sc_static("images/icons/16x16/search_clear_16x16.png");
+  background-image: sc_static("images/icons/16x16/search_clear_16x16.png");
 }
 .mvo-white-theme .sc-image-button-view .image-button-down-16 {
-   background-image: sc_static("images/icons/16x16/down_light_16x16.png");
+  background-image: sc_static("images/icons/16x16/down_light_16x16.png");
 }
 .mvo-white-theme .sc-image-button-view .image-button-up-16 {
-   background-image: sc_static("images/icons/16x16/up_light_16x16.png");
+  background-image: sc_static("images/icons/16x16/up_light_16x16.png");
 }

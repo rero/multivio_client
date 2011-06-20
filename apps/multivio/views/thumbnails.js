@@ -6,15 +6,17 @@
 ==============================================================================
 */
 
+sc_require('mixins/interface.js');
 sc_require('views/thumbnail.js');
 sc_require('controllers/thumbnails.js');
 
 Multivio.thumbnailsView = SC.PickerPane.design({
   layout: { width: 130, bottom: 100},
+  classNames: 'mvo-palette-pane'.w(),
   //isAnchored: NO,
   isModal: NO,
   canBeClosed: YES,
-  contentView: SC.ScrollView.design({
+  contentView: SC.ScrollView.design(Multivio.innerGradientThinTopBottom, {
     contentView: SC.SourceListView.design({
       layerId: 'mvo-thumbnails',
       contentValueKey: 'pageNumber',

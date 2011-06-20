@@ -12,7 +12,9 @@
 
 @extends SC.View
 */
+sc_require('mixins/interface.js');
 sc_require('controllers/tree.js');
+
 Multivio.SearchViewItem = SC.ListItemView.extend(SC.AutoResize,
   /** @scope Multivio.NavigationItem.prototype */ {
 
@@ -52,6 +54,7 @@ Multivio.SearchView = SC.PickerPane.design({
   isAnchored: YES,
   isModal: NO,
   layout: { width: 314, bottom: 100},
+  classNames: 'mvo-palette-pane'.w(),
   layerId: 'mvo-tree-view',
   canBeClosed: YES,
   contentView: SC.View.design({
@@ -114,7 +117,7 @@ Multivio.SearchView = SC.PickerPane.design({
         value: "Search to all"
       }),
 
-      resultsScrollView: SC.ScrollView.design({
+      resultsScrollView: SC.ScrollView.design(Multivio.innerGradientThinTopBottom, {
         layout: { top: 44, left: 0, right: 0, bottom: 20 },
         contentView: SC.SourceListView.design({
           rowHeight: 18,
