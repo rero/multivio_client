@@ -19,56 +19,61 @@
 sc_require('statecharts/search_ready.js');
 Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,{
 //Multivio.mainStatechart = SC.Statechart.create({
-  initialState: 'starting',
+  initialState: 'main',
   trace: YES,
+  autoInitStatechart: NO,
 
-  starting: SC.State.design({
-    loadApp: function() {
-      Multivio.set('store', SC.Store.create().from('Multivio.DataSource'));
-      this.gotoState('initializing'); 
-    }
-  }),
-  
-  initializing: SC.State.design({
+  main: SC.State.design({
+    inputParameters: null,
+    inputParametersBinding: 'Multivio.inputParameters',
+    serverRecord: null,
     server: null,
-
-    _serverDidChange: function() {
-      var server = this.get('server');
-      if(server) {
-        server.addRangeObserver(0, this, this._checkServerVersion);
-      }
-    }.observes('server'),
-
-    _checkServerVersion: function() {
-      var server = this.get('server');
-      if(server.get('length') > 0) {
-        if(server.firstObject().get('isOk')){
-          this.gotoState('applicationReady'); 
-        }else{
-          this.gotoState('error', {msg: 'Server is not compatible'});  
-        }
-      }
-    },
-
+    
     enterState: function() {
-      SC.Logger.debug('Initializing...');
-      var panel = Multivio.getPath('loadingPage.mainPane');
-      panel.append();
+      SC.Logger.debug('------ Main --------');
+      Multivio.set('store', SC.Store.create().from('Multivio.DataSource'));
+      Multivio.getPath('mainPage.mainPane').append();
       Multivio.inputParameters.read();
-      Multivio.get('store').unloadRecords(Multivio.FileRecord);
-      var server = Multivio.store.find(Multivio.ServerRecord);
-      this.set('server', server);
     },
     
-    exitState: function() {
-      Multivio.getPath('loadingPage.mainPane').remove();
-    }
+    _inputParametersDidChange: function(){
+      var inputServer = this.getPath('inputParameters.options.server');
+      SC.Logger.debug('------ readInput --------');
+      inputServer = inputServer ? inputServer : 'server';
+      var serverName = Multivio.configurator.get('serverName');
+      if(this.get('server') !== inputServer) {
+        var panel = Multivio.getPath('loadingPage.mainPane');
+        panel.append();
+        
+        Multivio.configurator.set('serverName', inputServer);
+        Multivio.get('store').unloadRecords(Multivio.FileRecord);
+        Multivio.get('store').unloadRecords(Multivio.ServerRecord);
+        Multivio.get('store').unloadRecords(Multivio.SearchRecord);
+        Multivio.get('store').unloadRecords(Multivio.SearchResultRecord);
+        var server = Multivio.store.find(Multivio.ServerRecord, 'inputServer');
+        this.set('server', server);
+      }
+    }.observes('*inputParameters.options'),
+
+    _serverDidChange:function() {
+      var server = this.get('server');
+      if(server && server.get('isOk')){
+        Multivio.getPath('loadingPage.mainPane').remove();
+        this.gotoState('applicationReady'); 
+      }
+      /*TODO: check status to go to error*/
+      /*else{
+        this.gotoState('error', {msg: 'Server is not compatible'});  
+      }*/
+    }.observes('*server.status')
   }),
   
+    
   applicationReady: SC.State.design({
    substatesAreConcurrent: YES,
-    content: SC.State.plugin('Multivio.ContentReadyState')
-    //search: SC.State.plugin('Multivio.SearchReadyState')
+    //initialSubstate: 'content',
+    content: SC.State.plugin('Multivio.ContentReadyState'),
+    search: SC.State.plugin('Multivio.SearchReadyState')
   }),
 
   error: SC.State.design({

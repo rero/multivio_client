@@ -1,6 +1,7 @@
 sc_require('mixins/fadeinout.js');
 sc_require('controllers/image.js');
 sc_require('views/center_image.js');
+
 Multivio.mainImageView =  SC.View.design({
   childViews: ['waitingView', 'imageScrollView', 'bottomToolbar'], 
 
@@ -35,6 +36,8 @@ Multivio.mainImageView =  SC.View.design({
       init:function() {
         sc_super();
         this.get('imageView').bind('value', 'Multivio.imageFileController.currentUrl');
+        this.get('selectionView').bind('nativeSize', 'Multivio.imageFileController.nativeSize');
+        this.get('selectionView').bind('rotationAngle', 'Multivio.imageFileController.rotationAngle');
       }
     })
   }),
@@ -50,14 +53,14 @@ Multivio.mainImageView =  SC.View.design({
       layout: {centerY: 0,  left: 10, width: 32, height: 32 },
       action: 'previousFile',
       title: '<<',
-      isEnabledBinding: "Multivio.filesController.hasPreviousFile"
+      isEnabledBinding: "Multivio.currentFileNodeController.hasPreviousFile"
     }),
 
     nextButton: SC.ImageButtonView.design({
       layout: {centerY: 0,  left: 40, width: 32,  height: 32 },
       image: 'image-button-next-doc',
       action: 'nextFile',
-      isEnabledBinding: "Multivio.filesController.hasNextFile",
+      isEnabledBinding: "Multivio.currentFileNodeController.hasNextFile",
       title: '>>'
     }),
     
@@ -79,18 +82,16 @@ Multivio.mainImageView =  SC.View.design({
     previousPageButton: SC.ImageButtonView.design({
       layout: {centerY: 0,  left: 180, width: 32, height: 32 },
       image: 'image-button-previous-page',
-      target: 'Multivio.imageFileController',
-      action: 'previousPage',
-      isEnabledBinding: 'Multivio.imageFileController.hasPreviousPage',
+      action: 'previousIndex',
+      isEnabledBinding: 'Multivio.currentFileNodeController.hasPreviousIndex',
       title: '<'
     }),
 
     nextPageButton: SC.ImageButtonView.design({
       layout: {centerY: 0,  left: 210, width: 32, height: 32 },
       image: 'image-button-next-page',
-      target: 'Multivio.imageFileController',
-      action: 'nextPage',
-      isEnabledBinding: 'Multivio.imageFileController.hasNextPage',
+      action: 'nextIndex',
+      isEnabledBinding: 'Multivio.currentFileNodeController.hasNextIndex',
       title: '>'
     }),
 

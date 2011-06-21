@@ -10,7 +10,6 @@
 
 @extends SC.View
 */
-sc_require('controllers/search_result.js');
 Multivio.CenterImage = SC.View.extend({
   childViews: ['imageView', 'selectionView'],
   classNames: "mvo-center-image".w(),
@@ -81,36 +80,37 @@ Multivio.CenterImage = SC.View.extend({
     layoutForContentIndex: function(contentIndex) {
       var current = this.get('content').objectAt(contentIndex);
       var zoomFactor = this.get('currentZoomFactor');
+      SC.Logger.debug("------> %@".fmt(this.get('nativeSize')));
       if(current){
         var angle = this.get('rotationAngle');
           switch(Math.abs(angle % 360)) {
             case 0:
               return {
-              top: current.bounding_box.y1*zoomFactor,
-              left: current.bounding_box.x1*zoomFactor,
-              height: (current.bounding_box.y2 - current.bounding_box.y1)*zoomFactor,
-              width: (current.bounding_box.x2 - current.bounding_box.x1)*zoomFactor
+              top: current.get('y1')*zoomFactor,
+              left: current.get('x1')*zoomFactor,
+              height: (current.get('y2') - current.get('y1'))*zoomFactor,
+              width: (current.get('x2') - current.get('x1'))*zoomFactor
             };
             case 90:
               return {
-              right: current.bounding_box.y1*zoomFactor,
-              top: current.bounding_box.x1*zoomFactor,
-              width: (current.bounding_box.y2 - current.bounding_box.y1)*zoomFactor,
-              height: (current.bounding_box.x2 - current.bounding_box.x1)*zoomFactor
+              right: current.get('y1')*zoomFactor,
+              top: current.get('x1')*zoomFactor,
+              width: (current.get('y2') - current.get('y1'))*zoomFactor,
+              height: (current.get('x2') - current.get('x1'))*zoomFactor
             };
             case 180:
               return {
-              bottom: current.bounding_box.y1*zoomFactor,
-              right: current.bounding_box.x1*zoomFactor,
-              height: (current.bounding_box.y2 - current.bounding_box.y1)*zoomFactor,
-              width: (current.bounding_box.x2 - current.bounding_box.x1)*zoomFactor
+              bottom: current.get('y1')*zoomFactor,
+              right: current.get('x1')*zoomFactor,
+              height: (current.get('y2') - current.get('y1'))*zoomFactor,
+              width: (current.get('x2') - current.get('x1'))*zoomFactor
             };
             case 270:
               return {
-              left: current.bounding_box.y1*zoomFactor,
-              bottom: current.bounding_box.x1*zoomFactor,
-              width: (current.bounding_box.y2 - current.bounding_box.y1)*zoomFactor,
-              height: (current.bounding_box.x2 - current.bounding_box.x1)*zoomFactor
+              left: current.get('y1')*zoomFactor,
+              bottom: current.get('x1')*zoomFactor,
+              width: (current.get('y2') - current.get('y1'))*zoomFactor,
+              height: (current.get('x2') - current.get('x1'))*zoomFactor
             };
           }
       }
@@ -139,7 +139,8 @@ Multivio.CenterImage = SC.View.extend({
 
     //redifined this default method in order remove the defaultBlankImage
     _image_valueDidChange: function() {
-      var value = this.get('imageValue'),
+      var value = this.get('imageValue');
+      SC.Logger.debug('New value: %@'.fmt(value));
       type = this.get('type');
 
       // check to see if our value has changed

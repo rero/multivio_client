@@ -16,11 +16,10 @@ Multivio.DisplayImage = {
 
   currentUrl: function() {
 
-    //need metadata to get url
-    if(!SC.none(this.get('metadata'))){
+    if(this.get('isContent')){
       
       //pdf check
-      if(this.getPath('metadata.mime').match(this.get('mimeRegExp'))) {
+      if(this.get('isPdf') || this.get('isImage')) {
 
         var scaleFactor = this.get('_zoomScale')[this.get('_currentZoomIndex')];
         var newUrl, newWidth, newHeight;
@@ -59,7 +58,7 @@ Multivio.DisplayImage = {
   }.property( 'rotationAngle', '_currentZoomIndex', '_currentUrl' ,'_centerViewWidth', '_centerViewHeight', 'mode').cacheable(),
 
   _renderPrefix: function () {
-    var server = 'server.test';
+    var server = Multivio.configurator.get('serverName');
     if(!SC.none(this.get('_appOptions').server)) {
       server = this.get('_appOptions').server; 
     }
@@ -76,75 +75,32 @@ Multivio.DisplayImage = {
     }
   }.property('_centerImageStatus').cacheable(),
   
-  //********************// 
-  //        PAGES       //
-  //********************// 
-  hasNextPage: function() {
-    if(this.get('currentPage') < this.get('nPages')) {
-      return YES;
-    }
-    return NO;
-  }.property('nPages', 'currentPage').cacheable(),
-
-  hasPreviousPage: function() {
-    if(this.get('currentPage') > 1) {
-      return YES;
-    }
-    return NO;
-  }.property('nPages', 'currentPage').cacheable(),
-
-  nextPage: function() {
-    if(this.get('hasNextPage')) {
-      this.set('currentPage', this.get('currentPage') + 1);
-    }
-  },
-
-  previousPage: function() {
-    if(this.get('hasPreviousPage')) {
-      this.set('currentPage', this.get('currentPage') - 1);
-    }
-  },
-
-  nPages:function() {
-    if(!SC.none(this.get('metadata'))) {
-      return this.get('metadata').nPages;
-    }
-    return 0;
-  }.property('metadata').cacheable(),
   
   //********************// 
   //        ZOOM        //
   //********************// 
 
   _defaultWidth: function() {
-    if(SC.none(this.get('metadata')) ||
-      SC.none(this.getPath('metadata.defaultNativeSize'))) {
-      return 0;
-    }
-    var nativeSizes = this.get('metadata').nativeSize;
-    var currentPage = this.get('currentPage');
-    if(!SC.none(nativeSizes) && !SC.none(nativeSizes[currentPage])) {
-      return nativeSizes[currentPage][0];
-    }else{
-      return this.get('metadata').defaultNativeSize[0];
-    }
-  }.property('currentPage', 'metadata').cacheable(),
+    return this.getPath('nativeSize.width');
+  }.property('nativeSize').cacheable(),
+  _defaultHeight: function() {
+    return this.getPath('nativeSize.height');
+  }.property('nativeSize').cacheable(),
 
   nativeSize: function() {
-    if(SC.none(this.get('metadata')) ||
-      SC.none(this.getPath('metadata.defaultNativeSize'))) {
+    if(!this.get('defaultNativeSize')){
       return {'width': 0, 'height': 0};
     }
-    var nativeSizes = this.get('metadata').nativeSize;
+    var nativeSizes = this.get('nativeSizes');
     var currentPage = this.get('currentPage');
     var size;
     if(!SC.none(nativeSizes) && !SC.none(nativeSizes[currentPage])) {
       size = nativeSizes[currentPage];
     }else{
-      size = this.get('metadata').defaultNativeSize;
+      size = this.get('defaultNativeSize');
     }
       return {'width': size[0], 'height': size[1]};
-  }.property('currentPage', 'metadata').cacheable(),
+  }.property('currentPage', 'defaultNativeSize', 'nativeSizes').cacheable(),
   
   hasThumbnails: function() {
     if(this.get('nPages') > 1){
@@ -153,19 +109,6 @@ Multivio.DisplayImage = {
     return NO;
   }.property('nPages').cacheable(),
 
-  _defaultHeight: function() {
-    if(SC.none(this.get('metadata')) ||
-      SC.none(this.getPath('metadata.nativeSize'))) {
-      return 0;
-    }
-    var nativeSizes = this.get('metadata').nativeSize;
-    var currentPage = this.get('currentPage');
-    if(!SC.none(nativeSizes[currentPage])) {
-      return nativeSizes[currentPage][1];
-    }else{
-      return this.get('metadata').defaultNativeSize[1];
-    }
-  }.property('currentPage', 'metadata').cacheable(),
 
   fitWidth: function(key, value) {
     SC.Logger.debug('fitWidth: ' + value);

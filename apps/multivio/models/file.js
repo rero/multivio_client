@@ -23,19 +23,23 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent,
   title: SC.Record.attr(String),
   mime: SC.Record.attr(String),
   nPages: SC.Record.attr(Number),
-  nativeSize: SC.Record.attr(Object),
+  nativeSizes: SC.Record.attr(Object),
   defaultNativeSize: SC.Record.attr(Array),
-  children: SC.Record.attr(Array),
+  children: SC.Record.attr(Array, {lazilyInstantiate: YES}),
 
   _parentNode: null,
   _ancestorFileNode: null,
-  _queryChildren: null,
+  _children: null,
  
   /*****************************************************************************/ 
   init: function() {
     sc_super();
     this.set('treeItemIsExpanded', this.get('treeItemIsExpandedDefault'));
   },
+
+  isReady: function() { 
+    return (this.get('status') & SC.Record.READY) !== 0; 
+  }.property('status'),
  
   /*****************************************************************************/ 
   toString: function() {
@@ -46,7 +50,7 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent,
     to_return += "Title: %@\n".fmt(this.get('title'));
     to_return += "mime: %@\n".fmt(this.get('mime'));
     to_return += "Number of pages: %@\n".fmt(this.get('nPages'));
-    to_return += "Native size: %@\n".fmt(this.get('nativeSize'));
+    to_return += "Native size: %@\n".fmt(this.get('nativeSizes'));
     to_return += "Default native size: %@\n".fmt(this.get('defaultNativeSize'));
     to_return += "Children: %@\n".fmt(this.get('children'));
     return to_return;
@@ -56,7 +60,55 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent,
   isFileNode: function() {
     return this.get('mime') ? YES: NO;
   }.property('mime').cacheable(),
+
+ /*****************************************************************************/ 
+  fileNode: function() {
+    return this.get('isFileNode') ? this : this.get('_ancestorFileNode');
+  }.property('isFileNode', '_ancestorFileNode').cacheable(),
   
+ /*****************************************************************************/ 
+  isContent: function() {
+    if(this.get('isFileNode')){
+    return this.get('mime').match(/xml/) ? NO: YES;
+    }
+    return NO;
+  }.property('mime').cacheable(),
+
+ /*****************************************************************************/ 
+  isPdf: function() {
+    if(!this.get('mime')){
+      return NO;
+    }
+    if(this.get('isFileNode')){
+    return this.get('mime').match(/pdf/) ? YES: NO;
+    }
+    return NO;
+  }.property('mime').cacheable(),
+
+ /*****************************************************************************/ 
+  isSearchable: function(){
+    return this.get('isPdf') ? YES: NO;
+  }.property('isPdf'),
+  
+ /*****************************************************************************/ 
+  isImage: function() {
+    if(!this.get('mime')){
+      return NO;
+    }
+    if(this.get('isFileNode')){
+    return this.get('mime').match(/image/) ? YES: NO;
+    }
+    return NO;
+  }.property('mime').cacheable(),
+
+ /*****************************************************************************/ 
+  isXml: function() {
+    if(!this.get('mime')){
+      return NO;
+    }
+    return this.get('mime').match(/xml/) ? YES: NO;
+  }.property('mime'),
+
  /*****************************************************************************/ 
   treeItemIsExpandedDefault: function() {
     return this.get('children') ? YES: NO;
@@ -73,18 +125,15 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent,
   }.property('isFileNode', 'isFinalNode', 'children').cacheable(),
 
  /*****************************************************************************/ 
-  fetchFromServer: function() {
-    if(this.get('canBeFetched') && !this.get('_queryChildren'))
-      {
-        var query = SC.Query.local(Multivio.FileRecord, "url={url} AND isFileNode=YES", {url:this.get('url'), parent: this});
-        var results = Multivio.get('store').find(query);
-        this.set('treeItemChildren', results);
-        this.set('treeItemIsExpanded', YES);
-        return YES;
-      }
-      return NO;
+  appendChildren: function(children){
+    if(!this.get('_children')){
+      this.set('_children', children);
+      this.notifyPropertyChange('treeItemChildren');
+      this.set('treeItemIsExpanded', YES);
+      return YES;
+    }
+    return NO;
   },
-
  /*****************************************************************************/ 
   isFinalNode: function() {
     if(this.get('children')){
@@ -103,14 +152,35 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent,
   }.property('children', 'isFileNode', '_ancestorFileNode', 'url').cacheable(),
 
  /*****************************************************************************/ 
-  treeItemChildren: function(key, value) {
-
-    //set...
-    if (value !== undefined) {
-      this.set('_queryChildren', value);
+  canBeFetchedNodes:function(){
+    if(this.get('isContent') || !this.get('isFileNode')){
+      return null;
     }
+    return this._getCanBeFechedNodes(this.get('treeItemChildren'));
+  }.property('treeItemChildren', 'isContent', 'isFileNode'),
 
-    //get... 
+ /*****************************************************************************/ 
+  _getCanBeFechedNodes:function(children){
+    if(!children){
+      return [];
+    }
+    var toReturn = [];
+    children.forEach(function(item){
+      //SC.Logger.debug(item.statusString());
+        if(item.get('canBeFetched')){
+          toReturn.pushObject(item);
+        }else{
+          var toAdd = this._getCanBeFechedNodes(item.get('treeItemChildren'));
+          toReturn.pushObjects(toAdd);
+        }
+    }, this);
+    return toReturn;
+  },
+
+ /*****************************************************************************/ 
+  treeItemChildren: function() {
+
+
     //is a final leaf in the tree?
     if(this.get('isFinalNode')){
       return null;
@@ -138,10 +208,95 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent,
 
     //current node is not final and has no children property yet
     //fetch from the server!
-    var queryChildren = this.get('_queryChildren');
+    if(this.get('_children')){
+      return this.get('_children');
+    }
+    return null;
 
-    return queryChildren ? queryChildren : null;
-  }.property('children', '_queryChildren').cacheable()
+  }.property('children', '_children').cacheable(),
+  
 
+ /*****************************************************************************/ 
+  _nextFile: function(fileRecord, childRecord) {
+
+    var children = fileRecord.get('canBeFetchedNodes');
+    if(!childRecord){
+      if(children && children.get('length') > 0){
+      return children[0];
+      }else{
+        if(fileRecord.get('_ancestorFileNode')) {
+          return this._nextFile(fileRecord.get('_ancestorFileNode'), fileRecord);
+        }else{
+          return NO;
+        }
+      }
+    }
+    var matched = children.findProperty('url', childRecord.get('url'));
+    var childIndex = children.indexOf(matched);
+    if(childIndex < (children.get('length') - 1)) {
+      return children.objectAt(childIndex + 1); 
+    }
+    
+    //root Node
+    if(SC.none(fileRecord.get('_ancestorFileNode'))) {
+      return NO;
+    }
+
+    //the same in parents
+    return this._nextFile(fileRecord.get('_ancestorFileNode'), fileRecord);
+  },
+
+ /*****************************************************************************/ 
+  _previousFile: function(fileRecord, childRecord) {
+    var children = fileRecord.get('canBeFetchedNodes');
+    if(!childRecord){
+      if(children && children.get('length') > 0){
+        return children[0];
+      }else{
+          return NO;
+      }
+    }
+    var matched = children.findProperty('url', childRecord.get('url'));
+    var childIndex = children.indexOf(matched);
+    if(childIndex > 0) {
+      return children.objectAt(childIndex - 1); 
+    }
+    //root Node
+    if(!fileRecord.get('_ancestorFileNode')) {
+      return NO;
+    }
+    
+
+    //the same in parents
+    return this._previousFile(fileRecord.get('_ancestorFileNode'), fileRecord);
+  },
+
+ /*****************************************************************************/ 
+  hasNextFile: function() {
+    
+    if(!this.get('isFileNode')) {
+      return NO;
+    }
+
+    var ancestor = this.get('_ancestorFileNode');
+    //rootNode
+    return this._nextFile(this, null);
+  }.property('isContent', '_ancestorFileNode', 'treeItemChildren'),
+
+
+ /*****************************************************************************/ 
+  hasPreviousFile: function() {
+    if(!this.get('isFileNode')) {
+      return NO;
+    }
+
+    var ancestor = this.get('_ancestorFileNode');
+    if(SC.none(ancestor)) {
+      return NO;
+    }
+    
+    return this._previousFile(ancestor, this);
+  }.property('isContent', '_ancestorFileNode', 'treeItemChildren')
+  
 });
 

@@ -22,6 +22,9 @@ Multivio.ServerRecord = SC.Record.extend(
   version: SC.Record.attr(Number),
   
   serverCompatibility: '0.4.0',
+  isReady: function() { 
+    return (this.get('status') & SC.Record.READY) !== 0; 
+  }.property('status'),
 
   isOk: function(){
     var toCompare = this.get('api_version');

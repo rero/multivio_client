@@ -90,12 +90,12 @@ Multivio.SearchView = SC.PickerPane.design({
         }),
         rightAccessoryView: SC.ImageButtonView.design({
           layout: { top: 2, right: 0, width: 20, height: 20 },
-          isEnabledBinding: 'Multivio.searchResultsController.isLoading',
+          isEnabledBinding: 'Multivio.searchTreeController.isLoading',
           image: 'image-button-cancel-16',
           title: 'cancel-search',
           defaultResponder: 'Multivio.mainStatechart',
           //target: 'Multivio.mainPage.searchView.contentView.searchQueryView',
-          action: 'cancel'
+          action: 'cancelSearch'
         })
       }),
 
@@ -103,8 +103,10 @@ Multivio.SearchView = SC.PickerPane.design({
         layout: { top: 24, left: 0, width: 20, height: 20 },
         toggleOffValue: NO,
         toggleOnValue: YES,
-        valueBinding: 'Multivio.searchResultsController.searchToAll'
+        isEnabledBinding: SC.Binding.oneWay('Multivio.searchTreeController.isLoading').not(),
+        valueBinding: 'Multivio.searchTreeController.searchInAll'
       }),
+
       labelView: SC.LabelView.design({
         layout: { top: 24, left: 22, right: 0, height: 20 },
         value: "Search to all"
@@ -161,7 +163,7 @@ Multivio.SearchView = SC.PickerPane.design({
         useCanvas: NO,
 
         isVisible: YES,
-        isVisibleBinding: 'Multivio.searchResultsController.isLoading',
+        isVisibleBinding: 'Multivio.searchTreeController.isLoading',
         value: static_url('images/progress_wheel_medium.gif'),
         classNames: "mvo-waiting-small".w()
       }),

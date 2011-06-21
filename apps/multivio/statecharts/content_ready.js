@@ -5,10 +5,12 @@
   License:    See file COPYING
 ==============================================================================
 */
-/*globals Multivio */
 
 sc_require('resources/main_page.js');
-sc_require('controllers/files.js');
+sc_require('controllers/file.js');
+sc_require('controllers/tree.js');
+sc_require('controllers/pdf.js');
+sc_require('controllers/image.js');
 sc_require('statecharts/loading.js');
 
 /**
@@ -23,88 +25,258 @@ sc_require('statecharts/loading.js');
 */
 Multivio.ContentReadyState = SC.State.extend({
 
-  initialSubstate: 'contentReady',
+  initialSubstate: 'displayingDummy',
+
+  currentRootNode: null,
+  currentRootNodeBinding: 'Multivio.rootNodeController',
+
+  currentFileNode: null,
+  currentFileNodeBinding: 'Multivio.currentFileNodeController',
+
+  treeControllerSelection: null,
+  treeControllerSelectionBinding: 'Multivio.treeController.selection',
 
   enterState: function() {
     Multivio.getPath('mainPage.mainPane').append();
-    //Multivio.filesController.fetchFile(Multivio.inputParameters.get('url'));
-    //Multivio.getPath('mainPage.mainPane').becomeKeyPane();
+    var url_to_get = Multivio.getPath('inputParameters.url');
+    var record = Multivio.store.find(Multivio.FileRecord, url_to_get);
+
+    //set root document
+    Multivio.rootNodeController.set('content', record);
+
+    //set current document
+    Multivio.currentFileNodeController.set('content', record);
+  },
+  _currentIndexDidChange: function() {
+    Multivio.treeController.set('currentIndex', Multivio.getPath('currentFileNodeController.currentIndex'));
+  }.observes('*currentFileNode.currentIndex'),
+
+  _currentFileNodeUrlDidChange: function() {
+    var selection = Multivio.treeController.getPath('selection.firstObject');
+    if(selection && this.getPath('currentFileNode.url') && selection.get('url') !== this.getPath('currentFileNode.url')) {
+      Multivio.treeController.selectObject(Multivio.store.find(Multivio.FileRecord, this.getPath('currentFileNode.url')));
+    }
+  }.observes('*currentFileNode.url'),
+
+  _rootNodeDidChange: function() {
+    var currentRootNode = this.getPath('currentRootNode');
+    if(currentRootNode && currentRootNode.get('isLoaded')) {
+      Multivio.treeController.get('content').set('treeItemChildren', [currentRootNode]);
+      //Multivio.currentFileNodeController.set('currentIndex', 1);
+      //Multivio.treeController.update();
+    }
+  }.observes('*currentRootNode.url'),
+
+  _treeControllerSelectionDidChange: function() {
+    SC.Logger.debug("Selection did change");
+    var selection = this.getPath('treeControllerSelection.firstObject');
+    if(selection) {
+      //var fileIndex = selection.index;
+      if(selection.get('url') !== Multivio.currentFileNodeController.get('url')) {
+        Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
+        this.gotoState('setDocument', selection);
+      }
+      if(!selection.get('index')){
+        Multivio.currentFileNodeController.set('currentIndex', 1);
+      }else{ 
+        if (selection.get('index') !== Multivio.currentFileNodeController.get('currentIndex')){
+          Multivio.currentFileNodeController.set('currentIndex', selection.get('index'));
+        }
+      }
+    }
+  }.observes('treeControllerSelection'),
+
+  _documentTypeDidChange: function() {
+    var record = this.get('currentFileNode');
+    SC.Logger.debug("Mime changed: %@".fmt(record.get('mime')));
+    if(record.get('mime')){
+      if(record.get('isPdf')) {
+        SC.Logger.debug("PDF....");
+        this.gotoState('displayingPdf');
+        return;
+      }
+      if(record.get('isImage')) {
+        SC.Logger.debug("Image....");
+        this.gotoState('displayingImage');
+        return;
+      }
+      if(record.get('isXml')){
+        this.gotoState('getNextDocument', this.get('currentFileNode'));
+        return;
+      }
+      this.gotoState('displayingUnsupported');
+    }
+  }.observes('*currentFileNode.mime'),
+
+  gotoFile: function(url) {
+    var currentUrl = Multivio.getPath('currentFileNodeController.url');
+    if(url !== currentUrl){
+      var record = Multivio.store.find(Multivio.FileRecord, url);
+      Multivio.currentFileNodeController.set('content', record);
+    }
+  },
+
+  nextFile: function() {
+    if(Multivio.currentFileNodeController.get('hasNextFile')){
+      Multivio.currentFileNodeController.set('currentIndex', 1);
+      Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
+      this.gotoState('getNextDocument', Multivio.currentFileNodeController);
+    }
+  },
+
+  previousFile: function() {
+    if(Multivio.currentFileNodeController.get('hasPreviousFile')){
+      Multivio.currentFileNodeController.set('currentIndex', 1);
+      Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
+      this.gotoState('getPreviousDocument', Multivio.currentFileNodeController);
+    }
   },
 
   exitState: function() {
     Multivio.getPath('mainPage.mainPane').remove();
   },
 
-  loadingNextContentFile: SC.State.plugin('Multivio.LoadNextFile'),
+  /************** SubStates *************************/
+  displayingDummy: SC.State,
 
-  loadingPreviousContentFile: SC.State.plugin('Multivio.LoadPreviousFile'),
-
-  contentReady: SC.State.design({
-
-    enterState: function() {
-      var url_to_get = Multivio.getPath('inputParameters.url');
-      var query = SC.Query.local(Multivio.FileRecord, "url={url}", {url:url_to_get});
-      var results = Multivio.store.find(query);
-      var rootFile = SC.Object.create({
-        treeItemIsExpanded: YES,
-        treeItemChildren: results,
-        guid: '0'
-      });
-      Multivio.treeController.set('content', rootFile);
-
-      //loading root
-      /*
-      if(Multivio.filesController.length() < 1) {
-        var rootUrl = Multivio.filesController.get('referer');
-        this.gotoState('loadingNextContentFile', {url: rootUrl, parent: undefined}); 
-        return;
+  setDocument: SC.State.design({
+    enterState: function(fromNode) {
+      var node;
+      if(fromNode.get('canBeFetched')) {
+        node = fromNode;
+      }else{
+        node = fromNode.get('fileNode');
       }
+      var record = Multivio.store.find(Multivio.FileRecord, node.get('url'));
+      if(!record.get('isReady')){
+        SC.Logger.debug("Append");
+        record.set('_ancestorFileNode', node.get('_ancestorFileNode'));
+        node.appendChildren([record]);
+      }
+      //SC.Logger.debug("Get Next: %@ (%@)".fmt(node.get('url'), Multivio.currentFileNodeController.get('url')));
+      Multivio.currentFileNodeController.set('content', record);
+    }
+  }),
 
-      var currentFile = Multivio.filesController.get('currentSelection');
-      var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
-      if(!SC.none(currentFile) && 
-         !SC.none(currentFile.metadata)){
-        if(currentFile.metadata.mime.match('.*?/pdf')) {
-          if(viewToChange.get('nowShowing') !== 'mainPdfView') {
-            viewToChange.set('nowShowing', 'mainPdfView');
-            Multivio.getPath('mainPage.mainPdfView').becomeFirstResponder();
-            Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('content', 'Multivio.pdfThumbnailsController.arrangedObjects');
-            Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('selection', 'Multivio.pdfThumbnailsController.selection');
-            Multivio.getPath('mainPage.mainPdfView.bottomToolbar').displayBar();
-          }
+  getNextDocument: SC.State.design({
+    enterState: function(fromNode) {
+      var node;
+      if(fromNode.get('canBeFetched')) {
+        node = fromNode;
+      }else{
+        if(fromNode.get('isFileNode')){
+          var next = fromNode.get('fileNode').get('hasNextFile');
+          node = next;
         }else{
-          if(currentFile.metadata.mime.match('image/.*?')) {
-            if(viewToChange.get('nowShowing') !== 'mainImageView') {
-              viewToChange.set('nowShowing', 'mainImageView');
-              Multivio.getPath('mainPage.mainImageView').becomeFirstResponder();
-              Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('content', 'Multivio.imageThumbnailsController.arrangedObjects');
-              Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('selection', 'Multivio.imageThumbnailsController.selection');
-              Multivio.getPath('mainPage.mainImageView.bottomToolbar').displayBar();
-            }
-          }else{
-            viewToChange.set('nowShowing', 'unsupportedDocumentView');
-          }
+          node = fromNode.get('fileNode');
         }
       }
-      */
-    },
-
-    nextFile: function(){
-      var predecessorNode = Multivio.filesController.get('hasNextFile');
-      if(predecessorNode) {
-        this.gotoState('loadingNextContentFile', predecessorNode); 
+      var record = Multivio.store.find(Multivio.FileRecord, node.get('url'));
+      if(!record.get('_ancestorFileNode')){
+        SC.Logger.debug("Append");
+        record.set('_ancestorFileNode', node.get('_ancestorFileNode'));
+        node.appendChildren([record]);
       }
-    },
+      Multivio.currentFileNodeController.set('content', record);
+      Multivio.currentFileNodeController.set('currentIndex', 1);
+    }
+  }),
 
-    previousFile: function(){
-      var predecessorNode = Multivio.filesController.get('hasPreviousFile');
-      if(predecessorNode) {
-        this.gotoState('loadingPreviousContentFile', predecessorNode); 
+  getPreviousDocument: SC.State.design({
+    enterState: function(fromNode) {
+      var previous = fromNode.get('hasPreviousFile');
+      var record = Multivio.store.find(Multivio.FileRecord, previous.get('url'));
+      record.set('_ancestorFileNode', previous.get('_ancestorFileNode'));
+      SC.Logger.debug("Get Previous: %@".fmt(previous.get('url')));
+      Multivio.currentFileNodeController.set('content', record);
+      Multivio.currentFileNodeController.set('currentIndex', 1);
+    }
+  }),
+
+  /*displaying content */
+  displayingPdf: SC.State.design({
+
+    currentPage: null,
+    currentPageBinding: 'Multivio.currentFileNodeController.currentIndex',
+
+    enterState: function() {
+      var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
+      if(viewToChange.get('nowShowing') !== 'mainPdfView') {
+        viewToChange.set('nowShowing', 'mainPdfView');
+        Multivio.getPath('mainPage.mainPdfView').becomeFirstResponder();
+        // add bindings only after the current file is determined
+        Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('content', 'Multivio.pdfThumbnailsController.arrangedObjects');
+        Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('selection', 'Multivio.pdfThumbnailsController.selection');
+        // TODO: unbind these afterwards
+        Multivio.getPath('mainPage.mainPdfView.bottomToolbar').displayBar();
       }
+      //Multivio.currentFileNodeController.set('currentIndex', 1);
+      Multivio.pdfFileController.set('content', Multivio.currentFileNodeController);
+      Multivio.pdfFileController.set('currentPage', this.get('currentPage'));
+      Multivio.treeController.selectObject(Multivio.currentFileNodeController.get('content'));
     },
 
-    fetchFile: function(context){
-      this.gotoState('loadingNextContentFile', context); 
+    exitState: function() {
+      Multivio.pdfFileController.set('content', null);
+      //Multivio.pdfFileController.set('currentPage', null);
+    },
+    gotoIndex: function(index) {
+        var currentIndex = Multivio.getPath('currentFileNodeController.currentIndex');
+        if(currentIndex !== index) {
+           Multivio.currentFileNodeController.set('currentIndex', index);
+           return YES;
+        }
+        return NO;
+    },
+    nextIndex: function() {
+      if (Multivio.currentFileNodeController.get('hasNextIndex')) {
+        Multivio.currentFileNodeController.set('currentIndex', Multivio.currentFileNodeController.get('currentIndex') + 1);
+        return YES;
+      } 
+      return NO;
+    },
+    previousIndex: function() {
+      if (Multivio.currentFileNodeController.get('hasPreviousIndex')) {
+        Multivio.currentFileNodeController.set('currentIndex', Multivio.currentFileNodeController.get('currentIndex') - 1);
+        return YES;
+      } 
+      return NO;
+    },
+    _currentPageDidChange: function() {
+      var currentPage = this.get('currentPage');
+      if(currentPage && currentPage !== Multivio.pdfFileController.get('currentPage')) {
+        Multivio.pdfFileController.set('currentPage', currentPage);
+      }
+    }.observes('currentPage')
+  }),
+
+  displayingImage: SC.State.design({
+    enterState: function() {
+      var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
+      if(viewToChange.get('nowShowing') !== 'mainImageView') {
+        viewToChange.set('nowShowing', 'mainImageView');
+        Multivio.getPath('mainPage.mainImageView').becomeFirstResponder();
+        Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('content', 'Multivio.imageThumbnailsController.arrangedObjects');
+        Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('selection', 'Multivio.imageThumbnailsController.selection');
+        Multivio.getPath('mainPage.mainImageView.bottomToolbar').displayBar();
+      }
+      Multivio.imageFileController.set('content', Multivio.currentFileNodeController);
+      Multivio.treeController.selectObject(Multivio.currentFileNodeController.get('content'));
+    },
+    exitState: function() {
+      Multivio.imageFileController.set('content', null);
+      //Multivio.imageFileController.set('currentPage', null);
+    }
+  }),
+
+  displayingUnsupported: SC.State.design({
+    enterState: function() {
+      var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
+      if(viewToChange.get('nowShowing') !== 'unsupportedDocumentView') {
+        viewToChange.set('nowShowing', 'unsupportedDocumentView');
+        viewToChange.set('nowShowing', 'unsupportedDocumentView');
+      }
     }
   })
+
 });

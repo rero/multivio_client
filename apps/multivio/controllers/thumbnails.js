@@ -45,7 +45,7 @@ Multivio.imageThumbnailsController = SC.ArrayController.create(
       var currentPage = this.get('currentPage');
       if(!SC.none(sel))  {
         var newPage  = sel.firstObject().get('pageNumber');
-        if(currentPage != newPage) {
+        if(currentPage !== newPage) {
         SC.Logger.debug('imageThumbnail set current page: ' + currentPage);
           this.set('currentPage', sel.firstObject().get('pageNumber'));
         }
@@ -57,7 +57,7 @@ Multivio.imageThumbnailsController = SC.ArrayController.create(
     var currentPage = this.get('currentPage');
     if(!SC.none(currentPage) && currentPage > 0) {
       var toSelect = this.objectAt(currentPage - 1);
-      if(toSelect !== this.get('selection').firstObject()){
+      if(toSelect !== this.getPath('selectionfirstObject')){
         SC.Logger.debug('imageThumbnail select object for current page: ' + currentPage);
         this.selectObject(toSelect);
       }
@@ -85,10 +85,10 @@ Multivio.imageThumbnailsController = SC.ArrayController.create(
     }
 
     //select current page
-    var currentPage = this.get('currentPage');
-    if(!SC.none(currentPage) && currentPage > 0) {
-      this.selectObject(this.objectAt(currentPage - 1));
-    }
+    //var currentPage = this.get('currentPage');
+    //if(!SC.none(currentPage) && currentPage > 0) {
+    //  this.selectObject(this.objectAt(currentPage - 1));
+    //}
   }.observes('nPages', 'urls').cacheable()
 
 }) ;
@@ -105,6 +105,7 @@ Multivio.pdfThumbnailsController = SC.ArrayController.create(
 
   url: null,
   urlBinding: SC.Binding.oneWay('Multivio.pdfFileController.url'),
+
   _appOptions: null,
   _appOptionsBinding: SC.Binding.oneWay('Multivio.inputParameters.options'),
 
@@ -156,10 +157,10 @@ Multivio.pdfThumbnailsController = SC.ArrayController.create(
       }
     }
     //select current page
-    var currentPage = this.get('currentPage');
-    if(!SC.none(currentPage) && currentPage > 0) {
-      this.selectObject(this.objectAt(currentPage - 1));
-    }
+    //var currentPage = this.get('currentPage');
+    //if(!SC.none(currentPage) && currentPage > 0) {
+    //  this.selectObject(this.objectAt(currentPage - 1));
+    //}
   }.observes('nPages', 'url').cacheable()
 
 }) ;

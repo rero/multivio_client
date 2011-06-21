@@ -1,55 +1,85 @@
-/**
-==============================================================================
-  Project:    Multivio - https://www.multivio.org/
-  Copyright:  (c) 2009-2011 RERO
-  License:    See file COPYING
-==============================================================================
-*/
-sc_require('mixins/remote_data.js');
-sc_require('configurator.js');
+// ==========================================================================
+// Project:   Multivio.Metadata
+// Copyright: ©2011 My Company, Inc.
+// ==========================================================================
+/*globals Multivio */
 
-Multivio.SearchRecord = SC.Object.extend({
-  maxReached: -1,
-  results: null,
+/** @class
+
+  (Document your Model here)
+
+  @extends SC.Record
+  @version 0.1
+*/
+
+Multivio.SearchResultRecord = SC.Record.extend(SC.TreeItemContent, {
+  left_context: SC.Record.attr(String),
+  right_context: SC.Record.attr(String),
+  matched: SC.Record.attr(String),
+  y2: SC.Record.attr(Number), 
+  x2: SC.Record.attr(Number), 
+  y1: SC.Record.attr(Number), 
+  x1: SC.Record.attr(Number), 
+  page: SC.Record.attr(Number),
+  treeItemChildren: null,
   url: null,
-  query: null
+  query: null,
+
+  label: function() {
+    return "%@<b>%@</b>%@ (p.%@)".fmt(this.get('left_context'), this.get('matched'), this.get('right_context'), this.get('page'));
+  }.property('left_context', 'matched', 'right_context', 'page').cacheable()
 
 });
 
-Multivio.SearchData = SC.Object.create(SC.Array, Multivio.RemoteData, {
-  getSearchResult: function (query, url) {
-    var serverAdress = Multivio.configurator.
-      getPath('baseUrlParameters.search').fmt(query, url);
-    this.get('requestHandler').
-      sendGetRequest(serverAdress, this, '_receivedData', url, query);
+Multivio.SearchRecord = SC.Record.extend(SC.TreeItemContent, {
+
+  // TODO: Add your own code here.
+  query: SC.Record.attr(String),
+  url: SC.Record.attr(String),
+  max_reached: SC.Record.attr(Number),
+  context_type: SC.Record.attr(String),
+  results: SC.Record.attr(Array, {lazilyInstantiate: YES}),
+
+  treeItemIsExpanded: NO,
+
+ 
+  /*****************************************************************************/ 
+  isReady: function() { 
+    return (this.get('status') & SC.Record.READY) !== 0; 
+  }.property('status'),
+ 
+  /*****************************************************************************/ 
+  toString: function() {
+    var to_return = "Query: %@\n".fmt(this.get('query'));
+    to_return += "Url: %@\n".fmt(this.get('url'));
+    to_return += "Max: %@\n".fmt(this.get('max_reached'));
+    to_return += "Right-context: %@\n".fmt(this.get('right_context'));
+    to_return += "Left-context: %@\n".fmt(this.get('left_context'));
+    return to_return;
   },
 
-  _receivedData: function(response, url, query) {
-    if (SC.ok(response)) {
-      var result = response.get("body");
-      SC.Logger.debug('_receivedData for ' + url + ' :' + query);
-      //if(SC.none(rec)) {
-        rec = Multivio.SearchRecord.create({url: url, query: query, results: result.file_position.results, maxReached: result.max_reached});
-        rec.results.forEach(function(item, index, self) {
-          item.idx = index;
-        });
-        this.pushObject(rec);
-        //this.arrayContentDidChange();
-        //this.enumerableContentDidChange();
-      //}
-    }else{
-      this._requestError();
+
+ /*****************************************************************************/ 
+  treeItemChildren: function() {
+
+    var children = this.get('results');
+    if(children) {
+      //create children records for both file and indexNode
+      return children.map(function(item, index){
+        //guid
+        var tmp = Multivio.store.createRecord(Multivio.SearchResultRecord, item);
+        tmp.set('url', this.get('url'));
+        tmp.set('query', this.get('query'));
+        return tmp;
+      }, this);
     }
-  },
-  find: function(url, query, idx) {
-    var results = this.filterProperty('query', query);
-    if(!SC.none(results)) {
-      results = results.findProperty('url', url);
-    }
-    if(SC.none(idx) || SC.none(results)){
-      return results;
-    }else{
-      return results.objectAt(idx);
-    }
-  }
+
+    return null;
+
+  }.property('results').cacheable(),
+
+  label: function() {
+    return "%@ (%@)".fmt(Multivio.store.find(Multivio.FileRecord, this.get('url')).get('title'), this.getPath('results.length'));
+  }.property('results', 'url')
+  
 });

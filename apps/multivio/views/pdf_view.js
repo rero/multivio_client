@@ -9,10 +9,10 @@ Multivio.mainPdfView =  SC.View.design({
   keyDown: function(evt) {
     SC.Logger.debug('KeyDown: ' + evt.keyCode );
     if(evt.keyCode === 38) {
-      Multivio.pdfFileController.previousPage();
+      Multivio.mainStatechart.sendEvent('previousIndex');
     }
     if(evt.keyCode === 40) {
-      Multivio.pdfFileController.nextPage();
+      Multivio.mainStatechart.sendEvent('nextIndex');
     }
     if(evt.keyCode === 39) {
       Multivio.mainStatechart.sendEvent('nextFile');
@@ -61,14 +61,14 @@ Multivio.mainPdfView =  SC.View.design({
       layout: {centerY: 0,  left: 10, width: 32, height: 32 },
       action: 'previousFile',
       title: '<<',
-      isEnabledBinding: "Multivio.filesController.hasPreviousFile"
+      isEnabledBinding: "Multivio.currentFileNodeController.hasPreviousFile"
     }),
 
     nextButton: SC.ImageButtonView.design({
       layout: {centerY: 0,  left: 40, width: 32,  height: 32 },
       image: 'image-button-next-doc',
       action: 'nextFile',
-      isEnabledBinding: "Multivio.filesController.hasNextFile",
+      isEnabledBinding: "Multivio.currentFileNodeController.hasNextFile",
       title: '>>'
     }),
     
@@ -90,18 +90,18 @@ Multivio.mainPdfView =  SC.View.design({
     previousPageButton: SC.ImageButtonView.design({
       layout: {centerY: 0,  left: 180, width: 32, height: 32 },
       image: 'image-button-previous-page',
-      target: 'Multivio.pdfFileController',
-      action: 'previousPage',
-      isEnabledBinding: 'Multivio.pdfFileController.hasPreviousPage',
+      //target: 'Multivio.pdfFileController',
+      action: 'previousIndex',
+      isEnabledBinding: 'Multivio.currentFileNodeController.hasPreviousIndex',
       title: '<'
     }),
 
     nextPageButton: SC.ImageButtonView.design({
       layout: {centerY: 0,  left: 210, width: 32, height: 32 },
       image: 'image-button-next-page',
-      target: 'Multivio.pdfFileController',
-      action: 'nextPage',
-      isEnabledBinding: 'Multivio.pdfFileController.hasNextPage',
+      //target: 'Multivio.pdfFileController',
+      action: 'nextIndex',
+      isEnabledBinding: 'Multivio.currentFileNodeController.hasNextIndex',
       title: '>'
     }),
 

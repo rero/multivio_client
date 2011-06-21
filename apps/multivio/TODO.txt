@@ -5,9 +5,7 @@ Johnny Mariethoz <Johnny.Mariethoz@rero.ch>
 
 Main Tasks
 ----------
-- search (1day)
 - text selection (1day, 1-2day)
-
 - calendar(3day)
 - pre-indexing(2 day)
 
@@ -32,3 +30,4 @@ DONE
 ---
 - tree to finalize
 - image support
+- search (1day)

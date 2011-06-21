@@ -8,8 +8,8 @@
 proxy '/server',
    #:url => '/server.test',
    #:to => 'demo.multivio.org'
-   :url => '/local',
-   :to => 'localhost:4041'
+   :url => '/server',
+   :to => 'demo.multivio.org'
 
 # proxy server - test
 proxy '/server.test',

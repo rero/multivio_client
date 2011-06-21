@@ -39,6 +39,9 @@ Multivio splash page
 	-moz-box-shadow: 12px 12px 12px #CCCCCC;
 	border: 1px solid #ccc;
 }
+.mvo-center-image .sc-collection-view {
+	background: none;
+}
 .mvo-search-results {
 	opacity: 0.50;
 	-moz-opacity: 0.50;

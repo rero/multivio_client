@@ -8,7 +8,7 @@
 
 sc_require('views/pdf_view.js');
 sc_require('mixins/image.js');
-sc_require('controllers/files.js');
+sc_require('controllers/file.js');
 
 
 
@@ -22,15 +22,15 @@ sc_require('controllers/files.js');
 Multivio.pdfFileController = SC.ObjectController.create(Multivio.DisplayImage, {
 
   //Bindings 
-  contentBinding: SC.Binding.oneWay('Multivio.fileController'),
+  //contentBinding: SC.Binding.oneWay('Multivio.currentFileNodeController'),
 
   _centerViewWidthBinding: SC.Binding.oneWay('Multivio.mainPage.mainPdfView.pdfScrollView.contentView.visibleWidth'),
 
   _centerViewHeightBinding: SC.Binding.oneWay('Multivio.mainPage.mainPdfView.pdfScrollView.contentView.visibleHeight'),
   centerImageBinding: SC.Binding.oneWay('Multivio.mainPage.mainPdfView.pdfScrollView.contentView.image'),
 
-  currentPage: null,
-  currentPageBinding: 'Multivio.filesController.currentIndex',
+  //currentPage: null,
+  //currentPageBinding: 'Multivio.currentFileNodeController.currentIndex',
 
   _centerImageStatusBinding: SC.Binding.oneWay('Multivio.mainPage.mainPdfView.pdfScrollView.contentView.imageView.status'),
 
@@ -46,18 +46,7 @@ Multivio.pdfFileController = SC.ObjectController.create(Multivio.DisplayImage, {
 
   currentZoomScale: function() {
 
-  }.property('_currentZoomIndex', '_zoomScale'),
+  }.property('_currentZoomIndex', '_zoomScale')
   
-  nPages:function() {
-    if(!SC.none(this.get('metadata'))) {
-      return this.get('metadata').nPages;
-    }
-    return 0;
-  }.property('metadata').cacheable(),
-
-  _urlDidChange: function() { 
-    SC.Logger.debug('url changed');
-    this.set('currentPage', 1);
-  }.observes('url').cacheable()
 
 });
