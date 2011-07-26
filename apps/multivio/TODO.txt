@@ -16,7 +16,6 @@ Minor Tasks
 - download
 - 100%
 - page number
-- go to page
 
 - finalize shortcut (1day)
 
@@ -31,3 +30,4 @@ DONE
 - tree to finalize
 - image support
 - search (1day)
+- go to page
