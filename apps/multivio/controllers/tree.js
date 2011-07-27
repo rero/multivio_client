@@ -14,6 +14,8 @@ Multivio.treeController = SC.TreeController.create({
 
   allowsMultipleSelection: NO,
   currentIndex: null,
+  currentIndexBinding: 'Multivio.currentFileNodeController.currentIndex',
+  userSelection: YES,
 
   init:function() {
     sc_super();
@@ -24,6 +26,7 @@ Multivio.treeController = SC.TreeController.create({
     });
       this.set('content', rootNode);
   },
+
   currentIndexDidChange: function() {
     var currentIndex = this.get('currentIndex');
     var currentFileNode = Multivio.getPath('currentFileNodeController.content');
@@ -31,6 +34,7 @@ Multivio.treeController = SC.TreeController.create({
       var record = this._getNodeFromIndex(currentIndex, currentFileNode);
       SC.Logger.debug("To select: %@".fmt(record.get('index')));
       if(record && record !== this.getPath('selection.firstObject')) {
+        this.set('userSelection', NO);
         this.selectObject(record);
       }
     }

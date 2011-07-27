@@ -93,8 +93,8 @@ Multivio.SearchView = SC.PickerPane.design({
           isEnabledBinding: 'Multivio.searchTreeController.isLoading',
           image: 'image-button-cancel-16',
           title: 'cancel-search',
-          defaultResponder: 'Multivio.mainStatechart',
-          //target: 'Multivio.mainPage.searchView.contentView.searchQueryView',
+          //defaultResponder: 'Multivio.mainStatechart',
+          target: 'Multivio.searchTreeController',
           action: 'cancelSearch'
         })
       }),

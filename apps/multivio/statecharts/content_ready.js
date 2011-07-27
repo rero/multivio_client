@@ -33,8 +33,8 @@ Multivio.ContentReadyState = SC.State.extend({
   currentFileNode: null,
   currentFileNodeBinding: 'Multivio.currentFileNodeController',
 
-  treeControllerSelection: null,
-  treeControllerSelectionBinding: 'Multivio.treeController.selection',
+  treeController: null,
+  treeControllerBinding: 'Multivio.treeController',
 
   enterState: function() {
     Multivio.getPath('mainPage.mainPane').append();
@@ -47,9 +47,6 @@ Multivio.ContentReadyState = SC.State.extend({
     //set current document
     Multivio.currentFileNodeController.set('content', record);
   },
-  _currentIndexDidChange: function() {
-    Multivio.treeController.set('currentIndex', Multivio.getPath('currentFileNodeController.currentIndex'));
-  }.observes('*currentFileNode.currentIndex'),
 
   _currentFileNodeUrlDidChange: function() {
     var selection = Multivio.treeController.getPath('selection.firstObject');
@@ -69,22 +66,23 @@ Multivio.ContentReadyState = SC.State.extend({
 
   _treeControllerSelectionDidChange: function() {
     SC.Logger.debug("Selection did change");
-    var selection = this.getPath('treeControllerSelection.firstObject');
+    var selection = this.getPath('treeController.selection.firstObject');
     if(selection) {
       //var fileIndex = selection.index;
       if(selection.get('url') !== Multivio.currentFileNodeController.get('url')) {
         Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
         this.gotoState('setDocument', selection);
       }
-      if(!selection.get('index')){
-        Multivio.currentFileNodeController.set('currentIndex', 1);
-      }else{ 
-        if (selection.get('index') !== Multivio.currentFileNodeController.get('currentIndex')){
-          Multivio.currentFileNodeController.set('currentIndex', selection.get('index'));
-        }
+      var newIndex =  selection.get('index') ? selection.get('index') : 1;
+      var treeController = this.get('treeController');
+      if(treeController.get('userSelection')){
+        Multivio.currentFileNodeController.setIfChanged('currentIndex', newIndex);
+        //treeController.set('softwareSelection', YES);
+      }else{
+        treeController.set('userSelection', YES);
       }
     }
-  }.observes('treeControllerSelection'),
+  }.observes('*treeController.selection'),
 
   _documentTypeDidChange: function() {
     var record = this.get('currentFileNode');
@@ -220,14 +218,7 @@ Multivio.ContentReadyState = SC.State.extend({
       Multivio.pdfFileController.set('content', null);
       //Multivio.pdfFileController.set('currentPage', null);
     },
-    gotoIndex: function(index) {
-        var currentIndex = Multivio.getPath('currentFileNodeController.currentIndex');
-        if(currentIndex !== index) {
-           Multivio.currentFileNodeController.set('currentIndex', index);
-           return YES;
-        }
-        return NO;
-    },
+
     nextIndex: function() {
       if (Multivio.currentFileNodeController.get('hasNextIndex')) {
         Multivio.currentFileNodeController.set('currentIndex', Multivio.currentFileNodeController.get('currentIndex') + 1);

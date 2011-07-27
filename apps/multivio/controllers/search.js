@@ -46,6 +46,11 @@ Multivio.searchTreeController = SC.TreeController.create({
   isEditable: function(){
     return this.get('isLoading') ? NO : YES;
   }.property('isLoading'),
+  cancelSearch: function() {
+    //SC.Logger.debug('Canceling...');
+    //alert('Hello');
+    Multivio.mainStatechart.sendEvent('cancelSearch');
+  },
 
   selectionDidChange: function() {
     var currentSelection = this.getPath('selection.firstObject');
@@ -56,7 +61,8 @@ Multivio.searchTreeController = SC.TreeController.create({
       selectedIndex = 1;
     }
      Multivio.mainStatechart.sendEvent('gotoFile', selectedUrl);
-     Multivio.mainStatechart.sendEvent('gotoIndex', selectedIndex);
+     //Multivio.mainStatechart.sendEvent('gotoIndex', selectedIndex);
+     Multivio.currentFileNodeController.setIfChanged('currentIndex', selectedIndex);
     }
   }.observes('selection')
   

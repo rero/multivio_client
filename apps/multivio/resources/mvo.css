@@ -29,11 +29,14 @@ Multivio splash page
   clear: both;
   margin: 20px auto 5px auto;
 }
-
 /*
 -----------------------------
 */
 
+.mvo-pagenr input {
+	text-align: center;
+	height: 24px;
+}
 .mvo-center-image {
 	box-shadow: 12px 12px 12px #CCCCCC;
 	-moz-box-shadow: 12px 12px 12px #CCCCCC;
