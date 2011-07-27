@@ -20,27 +20,34 @@ Multivio.navigationController = SC.ArrayController.create(
   currentOpenedPanel: undefined,
   content: [
     SC.Object.create({
-      panel: 'helpPane',
+      panel: 'mainPage.helpPane',
       icon: static_url("images/icons/24x24/help_dark_24x24.png")
     }),
     
     SC.Object.create({
-      panel: 'treeView',
+      panel: 'mainPage.treeView',
       icon: static_url("images/icons/24x24/tree_dark_24x24.png")
     }),
 
     SC.Object.create({
-      panel: 'thumbnailsView',
+      panel: 'mainPage.thumbnailsView',
       icon: static_url("images/icons/24x24/thumbnails_dark_24x24.png")
     }),
     SC.Object.create({
-      panel: 'searchView',
+      panel: 'mainPage.searchView',
       icon: static_url("images/icons/24x24/search_dark_24x24.png")
     }),
     
     SC.Object.create({
-      panel: 'mainPdfView.bottomToolbar',
-      icon: static_url("images/icons/24x24/show_toolbar_dark_24x24.png")
+      panel: 'mainPage.mainPdfView.bottomToolbar',
+      icon: static_url("images/icons/24x24/show_toolbar_dark_24x24.png"),
+      action: 'showBottomToolbar'
+    }),
+
+    SC.Object.create({
+      panel: 'download',
+      icon: static_url("images/icons/24x24/download_dark_24x24.png"),
+      action: 'download'
     })
   ],
 
@@ -50,23 +57,61 @@ Multivio.navigationController = SC.ArrayController.create(
     SC.Logger.debug('navigationBar: selection changed! ' + sel.length());
     if(!SC.none(sel) && sel.length() > 0)  {
       panelName = sel.firstObject().get('panel');
+      action = sel.firstObject().get('action');
       oldPanelName = this.get('currentOpenedPanel');
       if(!SC.none(oldPanelName) && panelName !== oldPanelName) {
-        Multivio.getPath('mainPage.'+oldPanelName).remove();
+        if(Multivio.getPath(oldPanelName).remove){
+          Multivio.getPath(oldPanelName).remove();
+        }
       }
-
       this.set('currentOpenedPanel', panelName);
       SC.Logger.debug('Panel Name: ' + panelName);
-      //Multivio.getPath('mainPage.thumbnailsView').set('canBeClosed', NO);
-      Multivio.getPath('mainPage.'+panelName).popup(Multivio.getPath('mainPage.mainPane.centerView'));
+      if(Multivio.getPath(panelName)){
+        Multivio.getPath(panelName).popup(Multivio.getPath('mainPage.mainPane.centerView'));
+      }else{
+        eval("this."+action+"()");
+      }
     }
     if(sel.length() === 0) {
       panelName = this.get('currentOpenedPanel');
       if(!SC.none(panelName)) {
-        Multivio.getPath('mainPage.'+panelName).remove();
+        if(Multivio.getPath(panelName)) {
+        Multivio.getPath(panelName).remove();
+        }
       }
       this.set('currentOpenedPanel', undefined);
     }
-  }.observes('selection')
+  }.observes('selection'),
+
+  performDownload: function() {
+    var url = Multivio.getPath('currentFileNodeController.url');
+    if (parseInt(SC.browser.msie, 0) === 7) {
+      window.location.href = url;
+    }
+    else {
+      window.open(url);
+    }
+    SC.Logger.debug('Download');
+  },
+
+  download: function() {
+    SC.AlertPane.info({
+      message: "Download current File",
+      description: "File size is: %@".fmt(Multivio.getPath('currentFileNodeController.humanReadableFileSize')),
+      caption: "It will open it in a new window",
+      buttons: [
+        { 
+        title: "Continue",
+        action: Multivio.navigationController.performDownload
+        //target: Multivio.navigationController
+      },
+      { 
+        title: "Cancel"
+        //action: "performDownload",
+        //target: Multivio.navigationController
+      }
+      ]
+    });
+  }
 
 }) ;

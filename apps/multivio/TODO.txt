@@ -13,7 +13,6 @@ Minor Tasks
 -----------
 - overview (1day)
 
-- download
 - 100%
 - page number
 
@@ -27,6 +26,7 @@ Minor Tasks
 
 DONE
 ---
+- download
 - tree to finalize
 - image support
 - search (1day)

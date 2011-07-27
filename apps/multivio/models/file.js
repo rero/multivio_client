@@ -57,6 +57,21 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent,
   },
 
  /*****************************************************************************/ 
+  humanReadableFileSize: function() {
+    var size = this.get('fileSize');
+    if(!size) {
+        return "";
+    }
+    var units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    var i = 0;
+    while(size >= 1024) {
+        size /= 1024;
+        ++i;
+    }
+    return size.toFixed(1) + ' ' + units[i];
+  }.property('fileSize'),
+
+ /*****************************************************************************/ 
   isFileNode: function() {
     return this.get('mime') ? YES: NO;
   }.property('mime').cacheable(),
