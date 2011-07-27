@@ -69,7 +69,8 @@ Multivio.navigationController = SC.ArrayController.create(
       this.set('currentOpenedPanel', panelName);
       SC.Logger.debug('Panel Name: ' + panelName);
       if(Multivio.getPath(panelName)){
-        Multivio.getPath(panelName).popup(Multivio.getPath('mainPage.mainPane.centerView'), SC.PICKER_MENU, [5, 5, 0]);
+        Multivio.getPath(panelName).popup(Multivio.getPath('mainPage.mainPane.leftView'), SC.PICKER_MENU, [5, 5, 0]);
+        //Multivio.getPath(panelName).popup(Multivio.getPath('mainPage.mainPane.centerView'), SC.PICKER_MENU, [5, 5, 0]);
       }else{
         eval("this."+action+"()");
       }

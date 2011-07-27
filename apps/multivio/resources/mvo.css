@@ -173,34 +173,40 @@ Multivio main styles
   /*z-index: -10000;*/
 }
 
-
 /*
 -----------------------------
 Button layout
 -----------------------------
 */
 
-.sc-button-view .img {
+.toolbar .sc-button-view .img {
   width: 24px;
   height: 24px;
   margin: 4px;
   cursor: pointer;
 }
 
-.sc-image-button-view {
+.toolbar .sc-image-button-view {
   background: none;
 }
 
+input {
+height: 24px;
+}
+label {
+	color: #000;
+}
 .sc-image-button-view .img {
-  padding: 4px;
+  padding: 0px;
   cursor: pointer;
   background-position: center center;
   background-repeat: no-repeat;
 }
-.sc-image-button-view.active .img, .sc-image-button-view.sel .img {
+.toolbar .sc-image-button-view.active .img, .sc-image-button-view.sel .img {
   background: none repeat scroll 0 0 lightSteelBlue;
 }
-.sc-image-button-view.disabled .img{
+
+.toolbar .sc-image-button-view.disabled .img{
   opacity: 0.3;
   moz-opacity : 0.3;
   ms-filter: "alpha(opacity=3)"; /* IE 8 */
