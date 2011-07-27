@@ -242,11 +242,12 @@ Multivio.ContentReadyState = SC.State.extend({
       } 
       return NO;
     },
+
     _currentPageDidChange: function() {
       var currentPage = this.get('currentPage');
       if(currentPage && currentPage !== Multivio.pdfFileController.get('currentPage')) {
         Multivio.pdfFileController.set('currentPage', currentPage);
-        Multivio.getPath('mainPage.mainPdfView.infoPanel').displayBar();
+        Multivio.getPath('mainPage.mainPdfView.pdfScrollView.contentView.infoPanel').displayBar();
       }
     }.observes('currentPage')
   }),

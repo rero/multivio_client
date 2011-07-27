@@ -3,7 +3,7 @@ sc_require('views/center_image.js');
 sc_require('controllers/pdf.js');
 
 Multivio.mainPdfView =  SC.View.design({
-  childViews: ['waitingView', 'pdfScrollView', 'infoPanel', 'bottomToolbar'], 
+  childViews: ['waitingView', 'pdfScrollView', 'bottomToolbar'], 
 
   acceptsFirstResponder: YES,
   keyDown: function(evt) {
@@ -46,23 +46,11 @@ Multivio.mainPdfView =  SC.View.design({
         this.get('selectionView').bind('rotationAngle', 'Multivio.pdfFileController.rotationAngle');
         this.get('selectionView').bind('content', 'Multivio.currentSearchResultsController.arrangedObjects');
         this.get('selectionView').bind('selection', 'Multivio.currentSearchResultsController.selection');
+        this.getPath('infoPanel.textView').bind('value', 'Multivio.pdfFileController.infoMessage');
       }
-      //valueBinding: 'Multivio.pdfFileController.currentUrl'
     })
   }),
 
-  infoPanel: SC.NavigationBarView.design(SC.Animatable, Multivio.FadeInOut, {
-    classNames: "mvo-front-view-transparent".w(),
-    layout: { centerX: 0, width: 100, height: 30, top: 16 },
-    acceptsFirstResponder: NO,
-    childViews: ['textView'],
-    textView: SC.LabelView.design({
-      layout: { centerY: 0, centerX: 0, width: 80, height: 20 },
-      textAlign: 'center',
-      value: null,
-      valueBinding: 'Multivio.pdfFileController.infoMessage'
-    })
-  }),
 
   bottomToolbar: SC.NavigationBarView.design(SC.Animatable, Multivio.FadeInOut, {
     childViews: ['previousButton', 'nextButton', 'rotateRightButton', 'rotateLeftButton', 'nextZoomButton', 'previousZoomButton', 'nextPageButton', 'pageEntry', 'previousPageButton', 'fitWidthButton', 'fitAllButton', 'hundredPercentButton'],

@@ -11,7 +11,7 @@
 @extends SC.View
 */
 Multivio.CenterImage = SC.View.extend({
-  childViews: ['imageView', 'selectionView'],
+  childViews: ['imageView', 'selectionView', 'infoPanel'],
   classNames: "mvo-center-image".w(),
   visibleWidth: 0,
   visibleHeight: 0,
@@ -49,6 +49,18 @@ Multivio.CenterImage = SC.View.extend({
     this.set('visibleWidth', this.getPath('parentView.frame').width);
   },
 
+  infoPanel: SC.NavigationBarView.design(SC.Animatable, Multivio.FadeInOut, {
+    classNames: "mvo-front-view-transparent".w(),
+    layout: { centerX: 0, width: 100, height: 30, top: 16 },
+    acceptsFirstResponder: NO,
+    childViews: ['textView'],
+    textView: SC.LabelView.design({
+      layout: { centerY: 0, centerX: 0, width: 80, height: 20 },
+      textAlign: 'center',
+      value: null
+      //valueBinding: 'Multivio.pdfFileController.infoMessage'
+    })
+  }),
 
   selectionView: SC.CollectionView.design({
     layout: {left: 0, right: 0, top:0, bottom:0},

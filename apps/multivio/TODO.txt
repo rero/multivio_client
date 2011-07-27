@@ -13,7 +13,6 @@ Minor Tasks
 -----------
 - overview (1day)
 
-
 - finalize shortcut (1day)
 
 - grid thumbnails (1/2 day)
