@@ -246,6 +246,7 @@ Multivio.ContentReadyState = SC.State.extend({
       var currentPage = this.get('currentPage');
       if(currentPage && currentPage !== Multivio.pdfFileController.get('currentPage')) {
         Multivio.pdfFileController.set('currentPage', currentPage);
+        Multivio.getPath('mainPage.mainPdfView.infoPanel').displayBar();
       }
     }.observes('currentPage')
   }),
@@ -259,6 +260,7 @@ Multivio.ContentReadyState = SC.State.extend({
         Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('content', 'Multivio.imageThumbnailsController.arrangedObjects');
         Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('selection', 'Multivio.imageThumbnailsController.selection');
         Multivio.getPath('mainPage.mainImageView.bottomToolbar').displayBar();
+        Multivio.getPath('mainPage.mainImageView.infoPanel').displayBar();
       }
       Multivio.imageFileController.set('content', Multivio.currentFileNodeController);
       Multivio.treeController.selectObject(Multivio.currentFileNodeController.get('content'));

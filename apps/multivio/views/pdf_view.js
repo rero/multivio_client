@@ -3,7 +3,7 @@ sc_require('views/center_image.js');
 sc_require('controllers/pdf.js');
 
 Multivio.mainPdfView =  SC.View.design({
-  childViews: ['waitingView', 'pdfScrollView', 'bottomToolbar'], 
+  childViews: ['waitingView', 'pdfScrollView', 'infoPanel', 'bottomToolbar'], 
 
   acceptsFirstResponder: YES,
   keyDown: function(evt) {
@@ -50,10 +50,24 @@ Multivio.mainPdfView =  SC.View.design({
       //valueBinding: 'Multivio.pdfFileController.currentUrl'
     })
   }),
-  bottomToolbar: SC.NavigationBarView.design(SC.Animatable, Multivio.FadeInOut, {
-    childViews: ['previousButton', 'nextButton', 'rotateRightButton', 'rotateLeftButton', 'nextZoomButton', 'previousZoomButton', 'nextPageButton', 'pageEntry', 'previousPageButton', 'fitWidthButton', 'fitAllButton'],
+
+  infoPanel: SC.NavigationBarView.design(SC.Animatable, Multivio.FadeInOut, {
     classNames: "mvo-front-view-transparent".w(),
-    layout: { centerX: 0, width: 460, height: 48, bottom: 20 },
+    layout: { centerX: 0, width: 100, height: 30, top: 16 },
+    acceptsFirstResponder: NO,
+    childViews: ['textView'],
+    textView: SC.LabelView.design({
+      layout: { centerY: 0, centerX: 0, width: 80, height: 20 },
+      textAlign: 'center',
+      value: null,
+      valueBinding: 'Multivio.pdfFileController.infoMessage'
+    })
+  }),
+
+  bottomToolbar: SC.NavigationBarView.design(SC.Animatable, Multivio.FadeInOut, {
+    childViews: ['previousButton', 'nextButton', 'rotateRightButton', 'rotateLeftButton', 'nextZoomButton', 'previousZoomButton', 'nextPageButton', 'pageEntry', 'previousPageButton', 'fitWidthButton', 'fitAllButton', 'hundredPercentButton'],
+    classNames: "mvo-front-view-transparent".w(),
+    layout: { centerX: 0, width: 490, height: 48, bottom: 20 },
     acceptsFirstResponder: NO,
     
     previousButton: SC.ImageButtonView.design({
@@ -98,6 +112,7 @@ Multivio.mainPdfView =  SC.View.design({
 
     pageEntry: SC.TextFieldView.design({
       layout: {centerY: 0,  left: 210, width: 50, height: 24 },
+      acceptsFirstResponder: NO,
       isTextArea:NO,
       applyImmediately: NO,
       contentBinding: 'Multivio.currentFileNodeController', 
@@ -112,7 +127,7 @@ Multivio.mainPdfView =  SC.View.design({
             }
             text+=charStr;
             var value = parseInt(text, 0);
-            if(value > 0 && value < Multivio.getPath('pdfFileController.nPages')) {
+            if(value > 0 && value <= Multivio.getPath('pdfFileController.nPages')) {
               return YES;
             }
           }
@@ -169,6 +184,15 @@ Multivio.mainPdfView =  SC.View.design({
       toggleOnValue: YES,
       valueBinding: 'Multivio.pdfFileController.fitWidth',
       title: 'width'
+    }),
+    hundredPercentButton: SC.ImageButtonView.design({
+      layout: {centerY: 0,  left: 450, width: 32, height: 32 },
+      image: 'image-button-hundred-percent',
+      target: 'Multivio.pdfFileController',
+      action: 'hundredPercentZoom',
+      keyEquivalent: '=',
+      isEnabledBinding: 'Multivio.pdfFileController.hundredPercentZoomEnabled',
+      title: 'hundred'
     })
   })
 });

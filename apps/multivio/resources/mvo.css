@@ -167,6 +167,9 @@ Multivio splash page
 .sc-image-button-view .image-button-fit-all {
    background-image: sc_static("images/icons/24x24/full_size_dark_24x24.png");
 }
+.sc-image-button-view .image-button-hundred-percent {
+   background-image: sc_static("images/icons/24x24/100_percent_dark_24x24.png");
+}
 
 .sc-image-button-view .image-button-search-16 {
    background-image: sc_static("images/icons/16x16/search_dark_16x16.png");

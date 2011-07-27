@@ -44,9 +44,20 @@ Multivio.pdfFileController = SC.ObjectController.create(Multivio.DisplayImage, {
     return "page_nr=%@&url=%@".fmt(this.get('currentPage'), this.get('url'));
   }.property('url', 'currentPage').cacheable(),
 
-  currentZoomScale: function() {
+  infoMessage: function() {
+    return "Page: %@/%@".fmt(this.get('currentPage'), this.get('nPages'));
+  }.property('currentPage', 'nPages'),
 
-  }.property('_currentZoomIndex', '_zoomScale')
+  hundredPercentZoom: function() {
+    this.setIfChanged('_currentZoomIndex', 7);
+    this.setIfChanged('mode', Multivio.ZOOM_MODE);
+  },
+
+  hundredPercentZoomEnabled: function() {
+    if (this.get('_currentZoomIndex') !== 7 || this.get('mode') !== Multivio.ZOOM_MODE) {
+      return YES;
+    }
+    return NO;
+  }.property('_currentZoomIndex','mode').cacheable()
   
-
 });
