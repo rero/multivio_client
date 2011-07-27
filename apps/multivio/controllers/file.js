@@ -2,7 +2,7 @@
 ==============================================================================
   Project:    Multivio - https://www.multivio.org/
   Copyright:  (c) 2009-2011 RERO
-  License:    See file license.js
+  License:    See file COPYING
 ==============================================================================
 */
 

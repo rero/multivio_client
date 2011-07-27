@@ -14,13 +14,13 @@ sc_require('controllers/image.js');
 sc_require('statecharts/loading.js');
 
 /**
-@class
+  @class
 
   One of the application states: becomes active when the application is ready
   for user interaction
 
-@author maj
-@extends SC.State
+  @author maj
+  @extends SC.State
   @since 1.0
 */
 Multivio.ContentReadyState = SC.State.extend({

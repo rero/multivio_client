@@ -2,7 +2,7 @@
 ==============================================================================
   Project:    Multivio - https://www.multivio.org/
   Copyright:  (c) 2009-2011 RERO
-  License:    See file license.js
+  License:    See file COPYING
 ==============================================================================
 */
 
@@ -156,11 +156,6 @@ Multivio.pdfThumbnailsController = SC.ArrayController.create(
         pageNr += 1;
       }
     }
-    //select current page
-    //var currentPage = this.get('currentPage');
-    //if(!SC.none(currentPage) && currentPage > 0) {
-    //  this.selectObject(this.objectAt(currentPage - 1));
-    //}
   }.observes('nPages', 'url').cacheable()
 
 }) ;

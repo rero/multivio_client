@@ -5,7 +5,6 @@
   License:    See file COPYING
 ==============================================================================
 */
-/*globals Multivio */
 
 // This is the function that will start your app running.  The default
 // implementation will load any fixtures you have created then instantiate

@@ -5,7 +5,6 @@
   License:    See file COPYING
 ==============================================================================
 */
-/*globals Multivio */
 
 /**
   @namespace
@@ -70,8 +69,14 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,{
   
     
   applicationReady: SC.State.design({
-   substatesAreConcurrent: YES,
-    //initialSubstate: 'content',
+    //stateAreConcurrent: YES,
+    substatesAreConcurrent: YES,
+
+    serverError: function() {
+      SC.Logger.debug("InitializationError called");
+      this.gotoState('error');
+    },
+
     content: SC.State.plugin('Multivio.ContentReadyState'),
     search: SC.State.plugin('Multivio.SearchReadyState')
   }),

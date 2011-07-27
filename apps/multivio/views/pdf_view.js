@@ -1,3 +1,11 @@
+/**
+==============================================================================
+  Project:    Multivio - https://www.multivio.org/
+  Copyright:  (c) 2009-2011 RERO
+  License:    See file COPYING
+==============================================================================
+*/
+
 sc_require('mixins/fadeinout.js');
 sc_require('views/center_image.js');
 sc_require('controllers/pdf.js');

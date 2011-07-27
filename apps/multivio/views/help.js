@@ -1,5 +1,12 @@
+/**
+==============================================================================
+  Project:    Multivio - https://www.multivio.org/
+  Copyright:  (c) 2009-2011 RERO
+  License:    See file COPYING
+==============================================================================
+*/
 
-  // help
+// help
 Multivio.HelpPane = SC.PickerPane.design({
   isAnchored: YES,
   isModal: NO,
