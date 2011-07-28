@@ -31,10 +31,10 @@ Multivio.thumbnailsView = SC.PickerPane.design({
       rowSpacing: 10,
 
       _selectionDidChanged: function () {
-        var sel = this.get('selection').firstObject();
-        if (!SC.none(sel) && sel.get('pageNumber') > 0) {
-          SC.Logger.debug('selection: changed ' + sel.get('pageNumber')); 
-          this.scrollToContentIndex(sel.get('pageNumber') - 1);
+        var selection = this.getPath('selection').firstObject();
+        if (selection && selection.get('pageNumber') > 0) {
+          SC.Logger.debug('selection: changed ' + selection.get('pageNumber')); 
+          this.scrollToContentIndex(selection.get('pageNumber') - 1);
         }
       }.observes('selection')
     })

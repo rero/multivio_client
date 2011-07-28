@@ -41,9 +41,9 @@ Multivio.navigationController = SC.ArrayController.create(
     }),
     
     SC.Object.create({
-      panel: 'showBottomToolbar',
-      icon: static_url("images/icons/24x24/show_toolbar_light_24x24.png"),
-      action: 'showBottomToolbar'
+      panel: 'mainPage.mainPane.centerView.contentView.bottomToolbar',
+      icon: static_url("images/icons/24x24/show_toolbar_light_24x24.png")
+      //action: 'showBottomToolbar'
     }),
 
     SC.Object.create({
@@ -85,11 +85,6 @@ Multivio.navigationController = SC.ArrayController.create(
       this.set('currentOpenedPanel', undefined);
     }
   }.observes('selection'),
-
-  showBottomToolbar: function() {
-    Multivio.getPath('mainPage.mainPane.centerView.contentView.bottomToolbar').displayBar();
-
-  },
 
   performDownload: function() {
     var url = Multivio.getPath('currentFileNodeController.url');

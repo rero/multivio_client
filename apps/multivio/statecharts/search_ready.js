@@ -102,6 +102,7 @@ Multivio.SearchReadyState = SC.State.extend({
         query: this.getPath('searchController.currentQuery'),
         url: this.getPath('currentSearchingFile.url')
       });
+      //query:set('orderBy', 'guid');
       Multivio.searchResultsController.set('content', Multivio.store.find(query));
     }
   }.observes('*currentFileNode.url'),

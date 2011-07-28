@@ -24,9 +24,9 @@ proxy '/local',
 # required libraries
 mode :all do
  config :all,
-   :required => [:sproutcore, 'sproutcore/animation', 'sproutcore/statechart'],
-   :theme_name => 'sc-theme test',
-	 :load_fixtures => true
+   :required => [:sproutcore, 'sproutcore/animation', 'sproutcore/statechart']
+   #:theme_name => 'sc-theme test',
+	 #:load_fixtures => true
 end
 
 # URL prefix - production
