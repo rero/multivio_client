@@ -23,11 +23,10 @@
 
 Multivio.inputParameters = SC.Object.create({
 
-  url: null,
   options: {},
 
   read: function(){
-    this.set('url', undefined);
+    this.beginPropertyChanges();
     this.set('options', {});
     var inputUrl = !SC.none(location.hash) ? location.hash.slice(1) : undefined;
     SC.Logger.debug("Read input args: " + inputUrl);
@@ -37,7 +36,7 @@ Multivio.inputParameters = SC.Object.create({
 
       //get input url argument
       var referer = inputParts.pop();
-      this.set('url', referer);
+      //this.set('url', referer);
       SC.Logger.debug("Referer: " + referer);
 
       //remove all match
@@ -49,8 +48,10 @@ Multivio.inputParameters = SC.Object.create({
           var res = optionsParts[i].split('='); 
           options[res[0]] = res[1];
       }
+      options.url = referer;
       this.set('options', options);
     }
+    this.endPropertyChanges();
   }
 });
 

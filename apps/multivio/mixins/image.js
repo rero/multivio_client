@@ -62,7 +62,7 @@ Multivio.DisplayImage = {
     }else{
       return undefined;
     }
-  }.property( 'rotationAngle', '_currentZoomIndex', '_currentUrl' ,'_centerViewWidth', '_centerViewHeight', 'mode').cacheable(),
+  }.property( 'rotationAngle', '_currentZoomIndex', '_currentUrl' ,'_centerViewWidth', '_centerViewHeight', 'mode'),
 
   _renderPrefix: function () {
     var server = Multivio.configurator.get('serverName');

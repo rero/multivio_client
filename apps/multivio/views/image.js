@@ -46,6 +46,7 @@ Multivio.mainImageView =  SC.View.design({
         this.get('imageView').bind('value', 'Multivio.imageFileController.currentUrl');
         this.get('selectionView').bind('nativeSize', 'Multivio.imageFileController.nativeSize');
         this.get('selectionView').bind('rotationAngle', 'Multivio.imageFileController.rotationAngle');
+        this.getPath('infoPanel.textView').bind('value', 'Multivio.imageFileController.infoMessage');
       }
     })
   }),

@@ -122,6 +122,9 @@ Multivio.SearchView = SC.PickerPane.design({
         contentView: SC.SourceListView.design({
           rowHeight: 18,
           rowSpacing: 4,
+          actOnSelect: YES,
+          action: 'userClicked',
+          target: 'Multivio.searchTreeController',
           contentValueKey: 'label',
           contentBinding: 'Multivio.searchTreeController.arrangedObjects',
           selectionBinding: 'Multivio.searchTreeController.selection',

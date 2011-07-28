@@ -19,7 +19,7 @@
 */
 Multivio.SearchReadyState = SC.State.extend({
 
-  initialSubstate: 'dummy',
+  initialSubstate: 'searchDummy',
   searchController: null,
   searchControllerBinding: 'Multivio.searchTreeController',
 
@@ -159,7 +159,7 @@ Multivio.SearchReadyState = SC.State.extend({
 
   /************** SubStates *************************/
   /*****************************************************************************/ 
-  dummy: SC.State,
+  searchDummy: SC.State,
 
   /*****************************************************************************/ 
   getNextSearchingResult: SC.State.design({

@@ -14,7 +14,9 @@
 // See comments for some pointers on what to do next.
 //
 Multivio.reload = function() {
-  //Multivio.inputParameters.read();
+  SC.Logger.debug('New input');
+ // Multivio.mainStatechart.sendEvent('main');
+  Multivio.inputParameters.read();
 };
 Multivio.main = function main() {
 

@@ -52,17 +52,17 @@ Multivio.searchTreeController = SC.TreeController.create({
     Multivio.mainStatechart.sendEvent('cancelSearch');
   },
 
-  selectionDidChange: function() {
-    var currentSelection = this.getPath('selection.firstObject');
+  userClicked: function(pane) {
+    var currentSelection = pane.getPath('selection.firstObject');
     if(currentSelection) {
-    var selectedIndex = currentSelection.get('page');
-    var selectedUrl = currentSelection.get('url');
-    if(!selectedIndex) {
-      selectedIndex = 1;
-    }
-     Multivio.mainStatechart.sendEvent('gotoFile', selectedUrl);
-     //Multivio.mainStatechart.sendEvent('gotoIndex', selectedIndex);
-     Multivio.currentFileNodeController.setIfChanged('currentIndex', selectedIndex);
+      var selectedIndex = currentSelection.get('page');
+      var selectedUrl = currentSelection.get('url');
+      if(!selectedIndex) {
+        selectedIndex = 1;
+      }
+      Multivio.mainStatechart.sendEvent('gotoFile', selectedUrl);
+      //Multivio.mainStatechart.sendEvent('gotoIndex', selectedIndex);
+      Multivio.currentFileNodeController.set('currentIndex', selectedIndex);
     }
   }.observes('selection')
   

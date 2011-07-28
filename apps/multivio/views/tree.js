@@ -65,6 +65,9 @@ Multivio.TreeView = SC.PickerPane.design({
     contentView: SC.SourceListView.design({
       rowHeight: 18,
       rowSpacing: 4,
+      actOnSelect: YES,
+      action: 'userClicked',
+      target: 'Multivio.treeController',
       contentValueKey: 'title',
       contentBinding: 'Multivio.treeController.arrangedObjects',
       selectionBinding: 'Multivio.treeController.selection',

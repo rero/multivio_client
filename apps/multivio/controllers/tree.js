@@ -17,7 +17,6 @@ Multivio.treeController = SC.TreeController.create({
   allowsMultipleSelection: NO,
   currentIndex: null,
   currentIndexBinding: 'Multivio.currentFileNodeController.currentIndex',
-  userSelection: YES,
 
   init:function() {
     sc_super();
@@ -29,14 +28,30 @@ Multivio.treeController = SC.TreeController.create({
       this.set('content', rootNode);
   },
 
+  userClicked: function(pane) {
+    var selection = pane.getPath('selection.firstObject');
+    if(selection) {
+      //var fileIndex = selection.index;
+      SC.Logger.debug('New selection: %@ !== %@'.fmt(selection.get('url'), Multivio.currentFileNodeController.get('url')));
+      var newIndex =  selection.get('index') ? selection.get('index') : 1;
+      Multivio.currentFileNodeController.set('currentIndex', newIndex);
+
+      if(Multivio.currentFileNodeController.get('url') &&
+         (selection.get('url') !== Multivio.currentFileNodeController.get('url'))) {
+        Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
+        Multivio.mainStatechart.sendEvent('fetchNewFile', selection);
+      }
+    }
+  },
+
   currentIndexDidChange: function() {
+    //alert('New currentIndex: %@'.fmt(this.get('currentIndex')));
     var currentIndex = this.get('currentIndex');
     var currentFileNode = Multivio.getPath('currentFileNodeController.content');
     if(currentFileNode && currentIndex) {
       var record = this._getNodeFromIndex(currentIndex, currentFileNode);
-      SC.Logger.debug("To select: %@".fmt(record.get('index')));
+      SC.Logger.debug("To select: %@, current: %@".fmt(record.get('index'), currentFileNode));
       if(record && record !== this.getPath('selection.firstObject')) {
-        this.set('userSelection', NO);
         this.selectObject(record);
       }
     }
@@ -44,7 +59,6 @@ Multivio.treeController = SC.TreeController.create({
 
  _getNodeFromIndex: function(index, rootNode) {
     var children = rootNode.get('treeItemChildren');
-
     var bestIndex = -1;
     if(!SC.none(children)) {
       for(var i=0;i<children.length;i++) {

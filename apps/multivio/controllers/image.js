@@ -45,7 +45,7 @@ Multivio.imageFileController = SC.ObjectController.create(Multivio.DisplayImage,
       this.set('_urls', [this.get('url')]);
     this.set('currentPage',1);
     return "url=%@".fmt(this.get('url'));
-  }.property('url').cacheable(),
+  }.property('url'),
 
   
   nPages:function() {
@@ -53,6 +53,10 @@ Multivio.imageFileController = SC.ObjectController.create(Multivio.DisplayImage,
       return this.get('_urls').length;
     }
     return 0;
-  }.property('_urls').cacheable()
+  }.property('_urls').cacheable(),
+  
+  infoMessage: function() {
+    return "Image";
+  }.property('currentPage', 'nPages')
 
 });

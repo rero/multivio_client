@@ -39,28 +39,18 @@ Multivio.imageThumbnailsController = SC.ArrayController.create(
     return '/' + server + "/document/render?max_width=100&max_height=100";
   }.property('_appOptions').cacheable(),
 
-  _selectionDidChange: function() {
-    var sel = this.get('selection');
-    if(!SC.none(sel) && !SC.none(sel.firstObject())) {
-      var currentPage = this.get('currentPage');
-      if(!SC.none(sel))  {
-        var newPage  = sel.firstObject().get('pageNumber');
-        if(currentPage !== newPage) {
-        SC.Logger.debug('imageThumbnail set current page: ' + currentPage);
-          this.set('currentPage', sel.firstObject().get('pageNumber'));
-        }
-      }
+  userClicked: function(pane) {
+    var selection = pane.getPath('selection.firstObject');
+    if(selection) {
+      this.set('currentPage', selection.get('pageNumber'));
     }
-  }.observes('selection').cacheable(),
-
+  },
+  
   _currentPageDidChange: function() {
     var currentPage = this.get('currentPage');
-    if(!SC.none(currentPage) && currentPage > 0) {
+    if(currentPage) {
       var toSelect = this.objectAt(currentPage - 1);
-      if(toSelect !== this.getPath('selectionfirstObject')){
-        SC.Logger.debug('imageThumbnail select object for current page: ' + currentPage);
         this.selectObject(toSelect);
-      }
     }
   }.observes('currentPage').cacheable(),
 
@@ -117,23 +107,18 @@ Multivio.pdfThumbnailsController = SC.ArrayController.create(
     return '/' + server + "/document/render?max_width=100&max_height=100";
   }.property('_appOptions').cacheable(),
 
-  _selectionDidChange: function() {
-    var sel = this.get('selection');
-    if(!SC.none(sel) && !SC.none(sel.firstObject())) {
-      var currentPage = this.get('currentPage');
-        var newPage  = sel.firstObject().get('pageNumber');
-        if(currentPage != newPage) {
-        SC.Logger.debug('pdfThumbnail set current page: ' + newPage);
-          this.set('currentPage', newPage);
-      }
+  userClicked: function(pane) {
+    var selection = pane.getPath('selection.firstObject');
+    if(selection) {
+      this.set('currentPage', selection.get('pageNumber'));
     }
-  }.observes('selection').cacheable(),
+  },
 
   _currentPageDidChange: function() {
     var currentPage = this.get('currentPage');
-    if(!SC.none(currentPage) && currentPage > 0) {
-      SC.Logger.debug('pdfThumbnails: Select current page: ' + currentPage);
-      this.selectObject(this.objectAt(currentPage - 1));
+    if(currentPage) {
+      var toSelect = this.objectAt(currentPage - 1);
+        this.selectObject(toSelect);
     }
   }.observes('currentPage').cacheable(),
 
