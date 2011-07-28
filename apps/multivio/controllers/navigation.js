@@ -41,7 +41,7 @@ Multivio.navigationController = SC.ArrayController.create(
     }),
     
     SC.Object.create({
-      panel: 'mainPage.mainPdfView.bottomToolbar',
+      panel: 'showBottomToolbar',
       icon: static_url("images/icons/24x24/show_toolbar_light_24x24.png"),
       action: 'showBottomToolbar'
     }),
@@ -86,6 +86,11 @@ Multivio.navigationController = SC.ArrayController.create(
     }
   }.observes('selection'),
 
+  showBottomToolbar: function() {
+    Multivio.getPath('mainPage.mainPane.centerView.contentView.bottomToolbar').displayBar();
+
+  },
+
   performDownload: function() {
     var url = Multivio.getPath('currentFileNodeController.url');
     if (parseInt(SC.browser.msie, 0) === 7) {
@@ -94,7 +99,6 @@ Multivio.navigationController = SC.ArrayController.create(
     else {
       window.open(url);
     }
-    SC.Logger.debug('Download');
   },
 
   download: function() {
