@@ -97,6 +97,7 @@ Multivio.navigationController = SC.ArrayController.create(
   },
 
   download: function() {
+    this.deselectObject(this.findProperty('panel', 'download'));
     SC.AlertPane.info({
       message: "Download current File",
       description: "File size is: %@".fmt(Multivio.getPath('currentFileNodeController.humanReadableFileSize')),
