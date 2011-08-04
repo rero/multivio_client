@@ -18,7 +18,7 @@ Multivio.overviewController = SC.ObjectController.create({
   isPaletteVisible: null,
   isPaletteVisibleBinding: 'Multivio.mainPage.overview.isVisibleInWindow',
   contentBinding: 'Multivio.pdfFileController',
-  imageWidth: 150,
+  imageWidth: 140,
 
   isEnabled: function () {
     return YES;
@@ -52,6 +52,7 @@ Multivio.overviewController = SC.ObjectController.create({
           interval: 0,
           repeat: NO
         });
+        //Multivio.getPath('mainPage.overview').append();
       }
     } else {
       return this.get('isPaletteVisible');

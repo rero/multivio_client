@@ -14,7 +14,7 @@
 */
 Multivio.CenterImage = SC.View.extend({
   layout: {top: 5, right: 5, bottom: 5, left: 5},
-  childViews: ['imageView', 'selectionView', 'infoPanel'],
+  childViews: ['infoPanel', 'imageView', 'selectionView'],
   classNames: "mvo-center-image".w(),
   visibleWidth: 0,
   visibleHeight: 0,
@@ -55,7 +55,6 @@ Multivio.CenterImage = SC.View.extend({
   infoPanel: SC.NavigationBarView.design(SC.Animatable, Multivio.FadeInOut, {
     classNames: "mvo-front-view-transparent".w(),
     layout: { centerX: 0, width: 100, height: 30, top: 16 },
-    acceptsFirstResponder: NO,
     childViews: ['textView'],
     textView: SC.LabelView.design({
       layout: { centerY: 0, centerX: 0, width: 80, height: 20 },
@@ -133,6 +132,13 @@ Multivio.CenterImage = SC.View.extend({
       }
     },
 
+    mouseDown: function (ev) {
+      SC.Logger.debug('Selection: mouseDown');
+      sc_super();
+      //forward event to parents
+      return NO;
+      //Multivio.navigationController.closeAll();
+    },
     exampleView: SC.View.extend(SC.Control, {
       classNames: "mvo-search-results".w(),
       render: function (context) {

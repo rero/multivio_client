@@ -13,7 +13,7 @@ sc_require('views/center_image.js');
 Multivio.mainImageView =  SC.View.design({
   childViews: ['waitingView', 'imageScrollView', 'bottomToolbar'], 
 
-  acceptsFirstResponder: YES,
+  //acceptsFirstResponder: YES,
   keyDown: function (evt) {
     SC.Logger.debug('KeyDown: ' + evt.keyCode);
     if (evt.keyCode === 39) {
@@ -55,7 +55,7 @@ Multivio.mainImageView =  SC.View.design({
     childViews: ['previousButton', 'nextButton', 'rotateRightButton', 'rotateLeftButton', 'nextZoomButton', 'previousZoomButton', 'nextPageButton', 'previousPageButton', 'fitWidthButton', 'fitAllButton'],
     classNames: "mvo-front-view-transparent".w(),
     layout: { centerX: 0, width: 410, height: 48, bottom: 20 },
-    acceptsFirstResponder: NO,
+    //acceptsFirstResponder: NO,
     
     previousButton: SC.ImageButtonView.design({
       image: 'image-button-previous-doc',

@@ -12,7 +12,13 @@
 */
 sc_require('controllers/overview.js');
 
-Multivio.Overview = SC.PickerPane.design({
+Multivio.Overview = SC.PalettePane.design(SC.Animatable, {
+  transitions: {
+    // and add transitions
+    // CSS-transition-only timing function (JavaScript gets linear)
+    opacity: { duration: 0.5, timing: SC.Animatable.TRANSITION_CSS_EASE_IN_OUT }
+    //display: .75 // a bit longer than opacity 
+  },
   layout: {bottom: 115, right: 15, width: 155, height: 155},
   isAnchored: YES,
   isModal: NO,
@@ -73,6 +79,14 @@ Multivio.Overview = SC.PickerPane.design({
         }
       }.observes('imageValue').cacheable()
     })
-  })
+  }),
+
+  /** @private */
+  append: function () {
+    // first, fade this view out
+    this.adjust("opacity", 0);
+    sc_super();
+    this.adjust("opacity", 1);
+  }
 
 });
