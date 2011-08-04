@@ -24,6 +24,7 @@ sc_require('views/title.js');
 sc_require('views/help.js');
 sc_require('views/tree.js');
 sc_require('views/search.js');
+sc_require('views/overview.js');
 
 Multivio.mainPage = SC.Page.design({
   // The main pane is made visible on screen as soon as your app is loaded.
@@ -58,6 +59,7 @@ Multivio.mainPage = SC.Page.design({
   helpPane: Multivio.HelpPane,
   titleView: Multivio.TitleView,
   treeView: Multivio.TreeView,
-  searchView: Multivio.SearchView
+  searchView: Multivio.SearchView,
+  overview: Multivio.Overview
 });
 

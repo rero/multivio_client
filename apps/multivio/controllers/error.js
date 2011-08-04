@@ -13,10 +13,12 @@
 
   @extends SC.Object
 */
-Multivio.errorController = SC.ObjectController.create(
-/** @scope Multivio.errorController.prototype */ {
+
+/* jslint node: true */
+
+Multivio.errorController = SC.ObjectController.create({
 
   // TODO: Add your own code here.
   errorMessage: 'unexpectedError'
 
-}) ;
+});

@@ -12,6 +12,11 @@ proxy '/server',
    :to => 'demo.multivio.org'
 
 # proxy server - test
+proxy '/server.experimental',
+   :url => '/server.experimental',
+   :to => 'demo.multivio.org'
+
+# proxy server - test
 proxy '/server.test',
    :url => '/server.test',
    :to => 'demo.multivio.org'

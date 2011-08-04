@@ -154,25 +154,25 @@ Multivio.CenterImage = SC.View.extend({
 
     //redifined this default method in order remove the defaultBlankImage
     _image_valueDidChange: function() {
-      var value = this.get('imageValue');
-      SC.Logger.debug('New value: %@'.fmt(value));
-      type = this.get('type');
+        var value = this.get('imageValue'),
+          type = this.get('type');
 
-      // check to see if our value has changed
-      if (value !== this._iv_value) {
-        this._iv_value = value;
+        // check to see if our value has changed
+        if (value !== this._iv_value) {
+          this._iv_value = value;
 
-        // While the new image is loading use SC.BLANK_IMAGE as a placeholder
-        //this.set('image', SC.BLANK_IMAGE);
-        this.set('status', SC.IMAGE_STATE_LOADING);
+          //this.set('image', SC.BLANK_IMAGE);
 
-        // order: image cache, normal load
-        if (!this._loadImageUsingCache()) {
-          if (!this._loadImage()) {
-            // CSS class? this will be handled automatically
+          if (type !== SC.IMAGE_TYPE_CSS_CLASS) {
+            // While the new image is loading use SC.BLANK_IMAGE as a placeholder
+            this.set('status', SC.IMAGE_STATE_LOADING);
+
+            // order: image cache, normal load
+            if (!this._loadImageUsingCache()) {
+              this._loadImage();
+            }
           }
         }
-      }
     }.observes('imageValue').cacheable()
   })
 });

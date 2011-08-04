@@ -12,7 +12,6 @@ sc_require('controllers/pdf.js');
 
 Multivio.mainPdfView =  SC.View.design({
   childViews: ['waitingView', 'pdfScrollView', 'bottomToolbar'], 
-
   acceptsFirstResponder: YES,
   keyDown: function(evt) {
     SC.Logger.debug('KeyDown: ' + evt.keyCode );
@@ -61,9 +60,9 @@ Multivio.mainPdfView =  SC.View.design({
 
 
   bottomToolbar: SC.NavigationBarView.design(SC.Animatable, Multivio.FadeInOut, {
-    childViews: ['previousButton', 'nextButton', 'rotateRightButton', 'rotateLeftButton', 'nextZoomButton', 'previousZoomButton', 'nextPageButton', 'pageEntry', 'previousPageButton', 'fitWidthButton', 'fitAllButton', 'hundredPercentButton'],
+    childViews: ['previousButton', 'nextButton', 'rotateRightButton', 'rotateLeftButton', 'nextZoomButton', 'previousZoomButton', 'nextPageButton', 'pageEntry', 'previousPageButton', 'fitWidthButton', 'fitAllButton', 'hundredPercentButton', 'overviewButton'],
     classNames: "mvo-front-view-transparent".w(),
-    layout: { centerX: 0, width: 490, height: 48, bottom: 20 },
+    layout: { centerX: 0, width: 530, height: 48, bottom: 20 },
     acceptsFirstResponder: NO,
     
     previousButton: SC.ImageButtonView.design({
@@ -109,22 +108,23 @@ Multivio.mainPdfView =  SC.View.design({
     pageEntry: SC.TextFieldView.design({
       layout: {centerY: 0,  left: 210, width: 50, height: 24 },
       //acceptsFirstResponder: NO,
-      isTextArea:NO,
+      isTextArea: NO,
       applyImmediately: NO,
       contentBinding: 'Multivio.currentFileNodeController', 
-      contentValueKey:'currentIndex',
+      contentValueKey: 'currentIndex',
       classNames: "mvo-pagenr".w(),
       validator: SC.Validator.PositiveInteger.create({
-        validateKeyDown: function(form, field, charStr) {
-          var isPositiveInt = sc_super();
-          if(isPositiveInt) {
-            var text = field.$input().val();
+        validateKeyDown: function (form, field, charStr) {
+          var isPositiveInt = sc_super(),
+            text = field.$input().val(),
+            value = parseInt(text, 0);
+
+          if (isPositiveInt) {
             if (!text) {
-              text='';
+              text = '';
             }
-            text+=charStr;
-            var value = parseInt(text, 0);
-            if(value > 0 && value <= Multivio.getPath('pdfFileController.nPages')) {
+            text += charStr;
+            if (value > 0 && value <= Multivio.getPath('pdfFileController.nPages')) {
               return YES;
             }
           }
@@ -190,6 +190,16 @@ Multivio.mainPdfView =  SC.View.design({
       keyEquivalent: '=',
       isEnabledBinding: 'Multivio.pdfFileController.hundredPercentZoomEnabled',
       title: 'hundred'
+    }),
+    overviewButton: SC.ImageButtonView.design({
+      layout: {centerY: 0,  left: 490, width: 32, height: 32 },
+      image: 'image-button-overview',
+      buttonBehavior: SC.TOGGLE_BEHAVIOR,
+      toggleOffValue: NO,
+      toggleOnValue: YES,
+      //value: null,
+      valueBinding: 'Multivio.overviewController.showPalette',
+      title: 'overview'
     })
   })
 });
