@@ -9,10 +9,10 @@
 sc_require('mixins/interface.js');
 
 // help
-Multivio.HelpPane = SC.PickerPane.design({
-  isAnchored: YES,
-  isModal: NO,
-  layout: { width: 320, bottom: 100 },
+Multivio.HelpPane = SC.PalettePane.design({
+//  isAnchored: YES,
+//  isModal: NO,
+  layout: { left: 45, top: 15, width: 320, bottom: 100 },
   classNames: 'mvo-palette-pane'.w(),
   contentView: SC.ScrollView.design(Multivio.innerGradientThinTopBottom, {
     layout: { top: 2, bottom: 2, left: 2, right: 2 },

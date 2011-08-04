@@ -49,7 +49,11 @@ Multivio.mainPage = SC.Page.design({
     centerView: SC.ContainerView.design(Multivio.innerGradient, {
       layout: { top: 10, left: 40, bottom: 40, right: 10 },
       classNames: 'mvo-container-view'.w()
-    })
+    }),
+    mouseDown: function (ev) {
+      SC.Logger.debug('MainPane: mouseDown');
+      Multivio.navigationController.closeAll();
+    }
   }),
   mainPdfView: Multivio.mainPdfView,
   mainImageView: Multivio.mainImageView,

@@ -59,8 +59,9 @@ Multivio.overviewController = SC.ObjectController.create({
   }.property('isPaletteVisible'),
 
   openPalette: function () {
-    Multivio.getPath('mainPage.overview').popup(Multivio.getPath('mainPage.mainPane.centerView'), 
-        SC.PICKER_MENU, [5, -200, 3]);
+    //Multivio.getPath('mainPage.overview').popup(Multivio.getPath('mainPage.mainPane.centerView'), 
+    //    SC.PICKER_MENU, [5, -200, 3]);
+    Multivio.getPath('mainPage.overview').append();
   }
 });
 

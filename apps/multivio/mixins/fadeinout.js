@@ -66,7 +66,7 @@ Multivio.FadeInOut = {
     return this._permanent;
   }.property('_permanent'),
 
-  popup: function (anchor) {
+  append: function () {
     if (this.get('permanent')) {
       this.set('permanent', NO);
     } else {

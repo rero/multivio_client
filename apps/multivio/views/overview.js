@@ -13,7 +13,7 @@
 sc_require('controllers/overview.js');
 
 Multivio.Overview = SC.PickerPane.design({
-  layout: {width: 155, height: 155},
+  layout: {bottom: 115, right: 15, width: 155, height: 155},
   isAnchored: YES,
   isModal: NO,
   contentView: SC.View.extend({
