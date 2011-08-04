@@ -25,7 +25,7 @@ Multivio.SearchResultRecord = SC.Record.extend(SC.TreeItemContent, {
   url: null,
   query: null,
 
-  label: function() {
+  label: function () {
     return "%@<b>%@</b>%@ (p.%@)".fmt(this.get('left_context'), this.get('matched'), this.get('right_context'), this.get('page'));
   }.property('left_context', 'matched', 'right_context', 'page').cacheable()
 
@@ -44,12 +44,12 @@ Multivio.SearchRecord = SC.Record.extend(SC.TreeItemContent, {
 
  
   /*****************************************************************************/ 
-  isReady: function() { 
+  isReady: function () { 
     return (this.get('status') & SC.Record.READY) !== 0; 
   }.property('status'),
  
   /*****************************************************************************/ 
-  toString: function() {
+  toString: function () {
     var to_return = "Query: %@\n".fmt(this.get('query'));
     to_return += "Url: %@\n".fmt(this.get('url'));
     to_return += "Max: %@\n".fmt(this.get('max_reached'));
@@ -60,12 +60,12 @@ Multivio.SearchRecord = SC.Record.extend(SC.TreeItemContent, {
 
 
  /*****************************************************************************/ 
-  treeItemChildren: function() {
+  treeItemChildren: function () {
 
     var children = this.get('results');
-    if(children) {
+    if (children) {
       //create children records for both file and indexNode
-      return children.map(function(item, index){
+      return children.map(function (item, index) {
         //guid
         var tmp = Multivio.store.createRecord(Multivio.SearchResultRecord, item);
         tmp.set('url', this.get('url'));
@@ -78,7 +78,7 @@ Multivio.SearchRecord = SC.Record.extend(SC.TreeItemContent, {
 
   }.property('results').cacheable(),
 
-  label: function() {
+  label: function () {
     return "%@ (%@)".fmt(Multivio.store.find(Multivio.FileRecord, this.get('url')).get('title'), this.getPath('results.length'));
   }.property('results', 'url')
   

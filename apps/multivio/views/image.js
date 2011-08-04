@@ -14,12 +14,12 @@ Multivio.mainImageView =  SC.View.design({
   childViews: ['waitingView', 'imageScrollView', 'bottomToolbar'], 
 
   acceptsFirstResponder: YES,
-  keyDown: function(evt) {
-    SC.Logger.debug('KeyDown: ' + evt.keyCode );
-    if(evt.keyCode === 39) {
+  keyDown: function (evt) {
+    SC.Logger.debug('KeyDown: ' + evt.keyCode);
+    if (evt.keyCode === 39) {
       Multivio.mainStatechart.sendEvent('nextFile');
     }
-    if(evt.keyCode === 37) {
+    if (evt.keyCode === 37) {
       Multivio.mainStatechart.sendEvent('previousFile');
     }
     return NO;
@@ -41,7 +41,7 @@ Multivio.mainImageView =  SC.View.design({
     layout: { top: 5, left: 5, bottom: 5, right: 5},
     contentView: Multivio.CenterImage.design({
       layout: { centerX: 0, centerY: 0 },
-      init:function() {
+      init: function () {
         sc_super();
         this.get('imageView').bind('value', 'Multivio.imageFileController.currentUrl');
         this.get('selectionView').bind('nativeSize', 'Multivio.imageFileController.nativeSize');

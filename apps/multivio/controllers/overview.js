@@ -31,7 +31,9 @@ Multivio.overviewController = SC.ObjectController.create({
         var scaleFactor = this.get('_zoomScale')[this.get('_currentZoomIndex')],
           newUrl,
           angle = -this.get('rotationAngle');
-        return "%@max_width=%@&max_height=%@&angle=%@&%@".fmt(this.get('_renderPrefix'), this.get('imageWidth'), this.get('imageWidth'), angle, this.get('_currentUrl'));
+        return "%@max_width=%@&max_height=%@&angle=%@&%@"
+          .fmt(this.get('_renderPrefix'), this.get('imageWidth'), 
+               this.get('imageWidth'), angle, this.get('_currentUrl'));
       }
     } 
     return undefined;
@@ -40,19 +42,16 @@ Multivio.overviewController = SC.ObjectController.create({
   showPalette: function (key, value) {
     SC.Logger.warn("Key: %@, value: %@".fmt(key, value));
     if (!SC.none(value)) {
-      //  Multivio.getPath('mainPage.overview').popup(Multivio.getPath('mainPage.mainPane.leftView'), SC.PICKER_MENU, [5, 5, 0]);
       if (!value) {
         Multivio.getPath('mainPage.overview').remove();
       } else {
-  //      var overview = Multivio.getPath('mainPage.overview');
-        //alert(overview.isClass);
+        //TODO: change this hack!!
         SC.Timer.schedule({
           target: this, 
           action: 'openPalette', 
           interval: 0,
           repeat: NO
         });
-        //Multivio.getPath('mainPage.overview').popup(Multivio.getPath('mainPage.mainPane.leftView'), SC.PICKER_MENU, [5, 5, 0]);
       }
     } else {
       return this.get('isPaletteVisible');
@@ -60,7 +59,8 @@ Multivio.overviewController = SC.ObjectController.create({
   }.property('isPaletteVisible'),
 
   openPalette: function () {
-    Multivio.getPath('mainPage.overview').popup(Multivio.getPath('mainPage.mainPane.centerView'), SC.PICKER_MENU, [5, -200, 3]);
+    Multivio.getPath('mainPage.overview').popup(Multivio.getPath('mainPage.mainPane.centerView'), 
+        SC.PICKER_MENU, [5, -200, 3]);
   }
 });
 

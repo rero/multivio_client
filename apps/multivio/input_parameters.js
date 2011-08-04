@@ -25,7 +25,7 @@ Multivio.inputParameters = SC.Object.create({
 
   options: {},
 
-  read: function(){
+  read: function () {
     this.beginPropertyChanges();
     this.set('options', {});
     var inputUrl = !SC.none(location.hash) ? location.hash.slice(1) : undefined;
@@ -41,12 +41,12 @@ Multivio.inputParameters = SC.Object.create({
 
       //remove all match
       inputParts.shift();
-      var options = {};
+      var options = {}, i;
       
-      var optionsParts = inputParts.pop().slice(0,-1).split('&');
-      for(var i=0;i<optionsParts.length;i++) {
-          var res = optionsParts[i].split('='); 
-          options[res[0]] = res[1];
+      var optionsParts = inputParts.pop().slice(0, -1).split('&');
+      for (i = 0; i < optionsParts.length; i++) {
+        var res = optionsParts[i].split('='); 
+        options[res[0]] = res[1];
       }
       options.url = referer;
       this.set('options', options);

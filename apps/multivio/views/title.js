@@ -12,10 +12,9 @@
 
   @extends SC.View
 */
-Multivio.TitleView = SC.View.extend(
-/** @scope Multivio.TitleView.prototype */ {
+Multivio.TitleView = SC.View.extend({
 
-  layout: { bottom: 0, left: 10, height: 30 , right: 10 },
+  layout: {bottom: 0, left: 10, height: 30, right: 10},
   childViews: 'titleLabel'.w(),
 
   titleLabel: SC.LabelView.design({
@@ -24,6 +23,5 @@ Multivio.TitleView = SC.View.extend(
     contentBinding: 'Multivio.rootNodeController',
     contentValueKey: 'title'
   })
-  // TODO: Add your own code here.
 
 });

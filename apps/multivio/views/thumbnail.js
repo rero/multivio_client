@@ -12,8 +12,7 @@
 
   @extends SC.View
 */
-Multivio.thumbnailView = SC.ListItemView.extend(
-/** @scope Multivio.ThumbnailView.prototype */ {
+Multivio.thumbnailView = SC.ListItemView.extend({
 
   // TODO: Add your own code here.
   //
@@ -37,8 +36,8 @@ Multivio.thumbnailView = SC.ListItemView.extend(
   render: function (context) {
     var content = this.get('content');
 
-    context.push('<img src="',content.get('url'), '"/>');
-    context.push('<p>',content.get('pageNumber'), '</p>');
+    context.push('<img src="', content.get('url'), '"/>');
+    context.push('<p>', content.get('pageNumber'), '</p>');
   },
   update: function (jquery) {
     jquery.find('h1').text(this.get('url'));

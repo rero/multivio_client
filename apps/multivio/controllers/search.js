@@ -16,8 +16,7 @@ Multivio.LOADING_CANCEL = "cancel";
 
 //highlight
 Multivio.currentSearchResultsController = SC.ArrayController.create({
-    allowsMultipleSelection: NO
-
+  allowsMultipleSelection: NO
 });
 
 Multivio.searchTreeController = SC.TreeController.create({
@@ -29,35 +28,34 @@ Multivio.searchTreeController = SC.TreeController.create({
   msgStatus: "",
   loadingStatus: Multivio.LOADING_DONE,
 
-  init:function() {
+  init: function () {
     sc_super();
     var rootNode = SC.Object.create({
       treeItemIsExpanded: YES,
       treeItemChildren: null,
       guid: '0'
     });
-      this.set('content', rootNode);
+    this.set('content', rootNode);
   },
   
-  isLoading: function() {
-    return this.get('loadingStatus') === Multivio.LOADING_LOADING ? YES: NO;
+  isLoading: function () {
+    return this.get('loadingStatus') === Multivio.LOADING_LOADING ? YES : NO;
   }.property('loadingStatus'),
 
-  isEditable: function(){
+  isEditable: function () {
     return this.get('isLoading') ? NO : YES;
   }.property('isLoading'),
-  cancelSearch: function() {
-    //SC.Logger.debug('Canceling...');
-    //alert('Hello');
+
+  cancelSearch: function () {
     Multivio.mainStatechart.sendEvent('cancelSearch');
   },
 
-  userClicked: function(pane) {
+  userClicked: function (pane) {
     var currentSelection = pane.getPath('selection.firstObject');
-    if(currentSelection) {
+    if (currentSelection) {
       var selectedIndex = currentSelection.get('page');
       var selectedUrl = currentSelection.get('url');
-      if(!selectedIndex) {
+      if (!selectedIndex) {
         selectedIndex = 1;
       }
       Multivio.mainStatechart.sendEvent('gotoFile', selectedUrl);

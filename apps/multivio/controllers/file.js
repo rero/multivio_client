@@ -14,44 +14,44 @@
   @extends SC.ArrayController
 */
 
-Multivio.currentFileNodeController = SC.ObjectController.create(
-/** @scope Multivio.fileController.prototype */ {
+Multivio.currentFileNodeController = SC.ObjectController.create({
   currentIndex: null,
- 
-  /*********************************************************************************/ 
-  hasNextIndex: function(){
+
+/*********************************************************************************/
+  hasNextIndex: function () {
     var nPages = this.get('nPages');
     var currentIndex = this.get('currentIndex');
-    if(nPages && currentIndex >= 0){
+
+    if (nPages && currentIndex >= 0) {
       return currentIndex < nPages ? YES : NO;
     }
     return NO;
   }.property('nPages', 'currentIndex').cacheable(),
 
-  hasPreviousIndex: function(){
-    var nPages = this.get('nPages');
-    var currentIndex = this.get('currentIndex');
-    if(nPages && currentIndex > 0){
+  hasPreviousIndex: function () {
+    var nPages = this.get('nPages'),
+      currentIndex = this.get('currentIndex');
+    if (nPages && currentIndex > 0) {
       return currentIndex > 1 ? YES : NO;
     }
     return NO;
   }.property('nPages', 'currentIndex').cacheable(),
 
-  treeItemChildrenObserves: function(){
-    if(this.get('isContent')){
+  treeItemChildrenObserves: function () {
+    if (this.get('isContent')) {
       Multivio.treeController.update();
     }
-      this.set('treeItemIsExpanded', YES);
+    this.set('treeItemIsExpanded', YES);
   }.observes('treeItemChildren')
 
-}) ;
+});
 
-Multivio.rootNodeController = SC.ObjectController.create(
-/** @scope Multivio.fileController.prototype */ {
+Multivio.rootNodeController = SC.ObjectController.create({
 
-  _childrenDidChange:function() {
-    if(this.get('children')){
+  _childrenDidChange: function () {
+    if (this.get('children')) {
       this.set('treeItemIsExpanded', YES);
     }
   }.observes('children')
-}) ;
+
+});

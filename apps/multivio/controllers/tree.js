@@ -18,71 +18,68 @@ Multivio.treeController = SC.TreeController.create({
   currentIndex: null,
   currentIndexBinding: 'Multivio.currentFileNodeController.currentIndex',
 
-  init:function() {
+  init: function () {
     sc_super();
     var rootNode = SC.Object.create({
       treeItemIsExpanded: YES,
       treeItemChildren: null,
       guid: '0'
     });
-      this.set('content', rootNode);
+    this.set('content', rootNode);
   },
 
-  userClicked: function(pane) {
+  userClicked: function (pane) {
     var selection = pane.getPath('selection.firstObject');
-    if(selection) {
-      //var fileIndex = selection.index;
-      SC.Logger.debug('New selection: %@ !== %@'.fmt(selection.get('url'), Multivio.currentFileNodeController.get('url')));
-      var newIndex =  selection.get('index') ? selection.get('index') : 1;
+    if (selection) {
+      var newIndex = selection.get('index') || 1;
       Multivio.currentFileNodeController.set('currentIndex', newIndex);
 
-      if(Multivio.currentFileNodeController.get('url') &&
-         (selection.get('url') !== Multivio.currentFileNodeController.get('url'))) {
+      if (Multivio.currentFileNodeController.get('url') &&
+           (selection.get('url') !== Multivio.currentFileNodeController.get('url'))) {
         Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
         Multivio.mainStatechart.sendEvent('fetchNewFile', selection);
       }
     }
   },
 
-  currentIndexDidChange: function() {
+  currentIndexDidChange: function () {
     //alert('New currentIndex: %@'.fmt(this.get('currentIndex')));
     var currentIndex = this.get('currentIndex');
     var currentFileNode = Multivio.getPath('currentFileNodeController.content');
-    if(currentFileNode && currentIndex) {
+    if (currentFileNode && currentIndex) {
       var record = this._getNodeFromIndex(currentIndex, currentFileNode);
-      SC.Logger.debug("To select: %@, current: %@".fmt(record.get('index'), currentFileNode));
-      if(record && record !== this.getPath('selection.firstObject')) {
+      if (record && record !== this.getPath('selection.firstObject')) {
         this.selectObject(record);
       }
     }
   }.observes('currentIndex'),
 
- _getNodeFromIndex: function(index, rootNode) {
+  _getNodeFromIndex: function (index, rootNode) {
     var children = rootNode.get('treeItemChildren');
     var bestIndex = -1;
-    if(!SC.none(children)) {
-      for(var i=0;i<children.length;i++) {
+    if (!SC.none(children)) {
+      var i;
+      for (i = 0; i < children.length; i++) {
         var childIndex = children[i].get('index');
         SC.Logger.debug('%@ <= %@'.fmt(childIndex, index));
-        if(childIndex <= index) {
+        if (childIndex <= index) {
           bestIndex = i;
         }
       }
-      if(bestIndex >=0) {
+      if (bestIndex >= 0) {
         var bestChild = this._getNodeFromIndex(index, children[bestIndex]);
-        if(!SC.none(bestChild)) {
+        if (!SC.none(bestChild)) {
           return bestChild;
         }
       }
       return rootNode;
     }
-    if(bestIndex < 0) {
+    if (bestIndex < 0) {
       return rootNode;
     }
   },
 
-  update:function(){
-    //SC.Logger.debug("New: %@".fmt(Multivio.getPath('treeController.content.treeItemChildren.firstObject.treeItemChildren')));
+  update: function () {
     this.notifyPropertyChange('content');
   }
 });

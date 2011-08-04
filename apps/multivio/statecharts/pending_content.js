@@ -30,21 +30,21 @@ Multivio.PendingContent = SC.State.extend({
   currentFileNode: null,
   currentFileNodeBinding: 'Multivio.currentFileNodeController',
 
-  _documentTypeDidChange: function() {
+  _documentTypeDidChange: function () {
     var record = this.get('currentFileNode');
     SC.Logger.debug("Mime changed: %@".fmt(record.get('mime')));
-    if(record.get('mime')){
-      if(record.get('isPdf')) {
+    if (record.get('mime')) {
+      if (record.get('isPdf')) {
         SC.Logger.debug("PDF....");
         this.gotoState('displayingPdf');
         return;
       }
-      if(record.get('isImage')) {
+      if (record.get('isImage')) {
         SC.Logger.debug("Image....");
         this.gotoState('displayingImage');
         return;
       }
-      if(record.get('isXml')){
+      if (record.get('isXml')) {
         this.gotoState('getNextDocument', this.get('currentFileNode'));
         return;
       }
@@ -58,15 +58,15 @@ Multivio.PendingContent = SC.State.extend({
   pendingDummy: SC.State,
 
   setDocument: SC.State.design({
-    enterState: function(fromNode) {
+    enterState: function (fromNode) {
       var node;
-      if(fromNode.get('canBeFetched')) {
+      if (fromNode.get('canBeFetched')) {
         node = fromNode;
-      }else{
+      } else {
         node = fromNode.get('fileNode');
       }
       var record = Multivio.store.find(Multivio.FileRecord, node.get('url'));
-      if(!record.get('isReady')){
+      if (!record.get('isReady')) {
         SC.Logger.debug("Append");
         record.set('_ancestorFileNode', node.get('_ancestorFileNode'));
         node.appendChildren([record]);
@@ -77,26 +77,26 @@ Multivio.PendingContent = SC.State.extend({
   }),
 
   getNextDocument: SC.State.design({
-    enterState: function(fromNode) {
+    enterState: function (fromNode) {
       var node;
-      if(fromNode.get('canBeFetched')) {
+      if (fromNode.get('canBeFetched')) {
         node = fromNode;
-      }else{
-        if(fromNode.get('isFileNode')){
+      } else {
+        if (fromNode.get('isFileNode')) {
           var next = fromNode.get('fileNode').get('hasNextFile');
           node = next;
-        }else{
+        } else {
           node = fromNode.get('fileNode');
         }
       }
       var record = Multivio.store.find(Multivio.FileRecord, node.get('url'));
-      if(!record.get('_ancestorFileNode')){
+      if (!record.get('_ancestorFileNode')) {
         SC.Logger.debug("Append");
         record.set('_ancestorFileNode', node.get('_ancestorFileNode'));
         node.appendChildren([record]);
       }
       //alert('set currentFileNode: %@'.fmt(record.get('url')));
-      if(record && record.getPath('storeKey') !== Multivio.currentFileNodeController.get('storeKey')){
+      if (record && record.getPath('storeKey') !== Multivio.currentFileNodeController.get('storeKey')) {
         Multivio.currentFileNodeController.set('content', record);
       }
       Multivio.currentFileNodeController.set('currentIndex', 1);
@@ -104,12 +104,12 @@ Multivio.PendingContent = SC.State.extend({
   }),
 
   getPreviousDocument: SC.State.design({
-    enterState: function(fromNode) {
+    enterState: function (fromNode) {
       var previous = fromNode.get('hasPreviousFile');
       var record = Multivio.store.find(Multivio.FileRecord, previous.get('url'));
       record.set('_ancestorFileNode', previous.get('_ancestorFileNode'));
       SC.Logger.debug("Get Previous: %@".fmt(previous.get('url')));
-      if(record && record.getPath('storeKey') !== Multivio.currentFileNodeController.get('storeKey')){
+      if (record && record.getPath('storeKey') !== Multivio.currentFileNodeController.get('storeKey')) {
         Multivio.currentFileNodeController.set('content', record);
       }
       Multivio.currentFileNodeController.set('currentIndex', 1);

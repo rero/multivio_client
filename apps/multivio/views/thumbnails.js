@@ -41,11 +41,6 @@ Multivio.thumbnailsView = SC.PickerPane.design({
   }),
 
   modalPaneDidClick: function (evt) {
-    if (this.get('canBeClosed')) {
-      return sc_super();
-    }
-    else {
-      return NO;
-    }
+    return this.get('canBeClosed') ? sc_super() : NO;
   }
 });

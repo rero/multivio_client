@@ -19,8 +19,8 @@ sc_require('statecharts/search_ready.js');
 sc_require('statecharts/displaying_content.js');
 sc_require('statecharts/pending_content.js');
 
-Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,{
-  //Multivio.mainStatechart = SC.Statechart.create({
+Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
+  
   initialState: 'main',
   trace: YES,
   autoInitStatechart: NO,
@@ -31,21 +31,21 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,{
     initialSubstate: 'mainDummy',
 
 
-    enterState: function() {
+    enterState: function () {
       Multivio.set('store', SC.Store.create().from('Multivio.DataSource'));
       Multivio.getPath('mainPage.mainPane').append();
       //Multivio.inputParameters.read();
     },
 
-    _inputParametersDidChange: function(){
+    _inputParametersDidChange: function () {
       var options = this.getPath('inputParameters.options');
       var url = this.getPath('inputParameters.options.url');
-      if(!url) {
+      if (!url) {
         return;
       }
       var inputServer = options.server;
 
-      inputServer = inputServer ? inputServer : 'server';
+      inputServer = inputServer || 'server';
       var serverName = Multivio.configurator.get('serverName');
       Multivio.configurator.set('serverName', inputServer);
       
@@ -72,20 +72,20 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,{
     waitingForServer: SC.State.design({
       server: null,
 
-      enterState: function(server) {
+      enterState: function (server) {
         var panel = Multivio.getPath('loadingPage.mainPane');
         panel.append();
 
         this.set('server', server);
       },
 
-      exitState: function() {
+      exitState: function () {
         Multivio.getPath('loadingPage.mainPane').remove();
       },
 
-      _serverDidChange:function() {
+      _serverDidChange: function () {
         var server = this.get('server');
-        if(server && server.get('isOk')){
+        if (server && server.get('isOk')) {
           Multivio.getPath('loadingPage.mainPane').remove();
           this.gotoState('applicationReady'); 
         }
@@ -101,7 +101,7 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,{
     //stateAreConcurrent: YES,
     substatesAreConcurrent: YES,
 
-    serverError: function() {
+    serverError: function () {
       SC.Logger.debug("InitializationError called");
       this.gotoState('error');
     },
@@ -112,7 +112,7 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,{
       currentRootNode: null,
       currentRootNodeBinding: 'Multivio.rootNodeController',
 
-      enterState: function() {
+      enterState: function () {
         Multivio.getPath('mainPage.mainPane').append();
         var url_to_get = Multivio.getPath('inputParameters.options.url');
         var record = Multivio.store.find(Multivio.FileRecord, url_to_get);
@@ -120,13 +120,13 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,{
         Multivio.rootNodeController.set('content', record);
       },
 
-      exitState: function() {
+      exitState: function () {
         Multivio.getPath('mainPage.mainPane').remove();
       },
 
-      _rootNodeDidChange: function() {
+      _rootNodeDidChange: function () {
         var currentRootNode = this.getPath('currentRootNode');
-        if(currentRootNode && currentRootNode.get('isLoaded')) {
+        if (currentRootNode && currentRootNode.get('isLoaded')) {
           Multivio.treeController.get('content').set('treeItemChildren', [currentRootNode]);
           //set current document
           Multivio.currentFileNodeController.set('content', currentRootNode.get('content'));
@@ -144,7 +144,7 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,{
   }),
 
   error: SC.State.design({
-    enterState: function(context) {
+    enterState: function (context) {
       Multivio.errorController.set('errorMessage', context.msg);
       var panel = Multivio.getPath('errorPage.mainPane');
       panel.append();
@@ -153,7 +153,7 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,{
   }),
 
   end: SC.State.design({
-    enterState: function() {
+    enterState: function () {
       SC.Logger.log("Application ended.");
     }
   })

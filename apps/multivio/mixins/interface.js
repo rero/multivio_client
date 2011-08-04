@@ -30,7 +30,8 @@ Multivio.innerGradient = {
         "<div class='top-edge'></div>",
         "<div class='right-edge'></div>",
         "<div class='bottom-edge'></div>",
-        "<div class='left-edge'></div>");
+        "<div class='left-edge'></div>"
+      );
     }
   }
 };
@@ -53,7 +54,8 @@ Multivio.innerGradientThinTopBottom = {
         "<div class='top-edge-thin'></div>",
         "<div class='right-edge-thin'></div>",
         "<div class='bottom-edge-thin'></div>",
-        "<div class='left-edge-thin'></div>");
+        "<div class='left-edge-thin'></div>"
+      );
     }
   }
 };
@@ -92,7 +94,8 @@ Multivio.outerGradient = {
         "<div class='outer-bottom-right-edge'></div>",
         "<div class='outer-bottom-edge'></div>",
         "<div class='outer-bottom-left-edge'></div>",
-        "<div class='outer-left-edge'></div>");
+        "<div class='outer-left-edge'></div>"
+      );
     }
   }
 };

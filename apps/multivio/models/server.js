@@ -12,8 +12,7 @@
   @version 0.1
 */
 
-Multivio.ServerRecord = SC.Record.extend(
-/** @scope MyApp.FileRecord.prototype */ {
+Multivio.ServerRecord = SC.Record.extend({
 
   // TODO: Add your own code here.
   //
@@ -22,24 +21,24 @@ Multivio.ServerRecord = SC.Record.extend(
   version: SC.Record.attr(Number),
   
   serverCompatibility: '0.4.0',
-  isReady: function() { 
+  isReady: function () { 
     return (this.get('status') & SC.Record.READY) !== 0; 
   }.property('status'),
 
-  isOk: function(){
+  isOk: function () {
     var toCompare = this.get('api_version');
-    var version = this.get('serverCompatibility');
+    var version = this.get('serverCompatibility'), i;
 
-    if(SC.none(version) || SC.none(toCompare)) {
+    if (SC.none(version) || SC.none(toCompare)) {
       return NO;
     }
     var vers = version.split(".");
     var toCompareVersion = toCompare.split(".");
-    if(vers.length !== toCompareVersion.length) {
+    if (vers.length !== toCompareVersion.length) {
       return NO;
     }
 
-    for(var i=0;i<3;i++) {
+    for (i = 0; i < 3; i++) {
       if (parseInt(vers[i], 10) < parseInt(toCompareVersion[i], 10)) {
         SC.Logger.debug("i:" + i);
         return NO;

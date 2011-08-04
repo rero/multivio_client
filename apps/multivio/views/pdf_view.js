@@ -13,12 +13,12 @@ sc_require('controllers/pdf.js');
 Multivio.mainPdfView =  SC.View.design({
   childViews: ['waitingView', 'pdfScrollView', 'bottomToolbar'], 
   acceptsFirstResponder: YES,
-  keyDown: function(evt) {
-    SC.Logger.debug('KeyDown: ' + evt.keyCode );
-    if(evt.keyCode === 38) {
+  keyDown: function (evt) {
+    SC.Logger.debug('KeyDown: ' + evt.keyCode);
+    if (evt.keyCode === 38) {
       Multivio.mainStatechart.sendEvent('previousIndex');
     }
-    if(evt.keyCode === 40) {
+    if (evt.keyCode === 40) {
       Multivio.mainStatechart.sendEvent('nextIndex');
     }
     if (evt.keyCode === 39) {

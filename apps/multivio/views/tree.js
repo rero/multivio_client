@@ -16,7 +16,7 @@
 sc_require('mixins/interface.js');
 sc_require('controllers/tree.js');
 
-Multivio.TreeViewItem = SC.ListItemView.extend(SC.AutoResize,{
+Multivio.TreeViewItem = SC.ListItemView.extend(SC.AutoResize, {
 
   // TODO: Add your own code here.
   classNames: ['mvo-toc-entry'],
@@ -25,21 +25,21 @@ Multivio.TreeViewItem = SC.ListItemView.extend(SC.AutoResize,{
   contentIconKey: 'icon',
   contentValueKey: 'title',
   iconWidth: 32,
-  hasContentIcon: function() {
+  hasContentIcon: function () {
     var content = this.get('content');
-    return content.get('icon') ? YES: NO;
+    return content.get('icon') ? YES : NO;
   }.property('content.icon'),
 
 
-  autoResizeText: function() {
+  autoResizeText: function () {
     return this.getPath('content.title');
   }.property('content'),
 
-  autoResizeLayer: function() {
-      return this.get('layer');
+  autoResizeLayer: function () {
+    return this.get('layer');
   }.property(),
 
-  autoResizePadding: function() {
+  autoResizePadding: function () {
     var width = 0;
     width = this.get('iconWidth') + (this.get('outlineLevel') + 1) * this.get('outlineIndent');
     return {width: width, height: 0};
@@ -48,7 +48,7 @@ Multivio.TreeViewItem = SC.ListItemView.extend(SC.AutoResize,{
   _measureSizeDidChange: function () {
     var contentWidth = this.get('measuredSize').width;
     var parentView = this.get('parentView');
-    if(contentWidth > parentView.get('frame').width) {
+    if (contentWidth > parentView.get('frame').width) {
       parentView.adjust('width', contentWidth);
     }
   }.observes('measuredSize')
@@ -76,13 +76,8 @@ Multivio.TreeView = SC.PickerPane.design({
     })
   }),
 
-  modalPaneDidClick: function(evt) {
-    if(this.get('canBeClosed'))
-      {
-        return sc_super();
-      } else {
-        return NO ;
-      }
+  modalPaneDidClick: function (evt) {
+    return this.get('canBeClosed') ? sc_super() : NO;
   }
 
 });

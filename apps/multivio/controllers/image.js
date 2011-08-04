@@ -31,7 +31,7 @@ Multivio.imageFileController = SC.ObjectController.create(Multivio.DisplayImage,
   currentPage: 1,
   //currentPageBinding: 'Multivio.filesController.currentIndex',
 
-  _centerImageStatusBinding: SC.Binding.oneWay('Multivio.mainPage.mainImageView.imageScrollView.contentView.imageView.status'),
+  _centerImageStatusBinding: SC.Binding.oneWay('Multivio.mainPage.mainImageView*imageView.status'),
 
   _appOptionsBinding: SC.Binding.oneWay('Multivio.inputParameters.options'),
 
@@ -40,22 +40,21 @@ Multivio.imageFileController = SC.ObjectController.create(Multivio.DisplayImage,
   _currentZoomIndex: 2,
   _urls: [],
 
-  _currentUrl: function (){
-    SC.Logger.debug("New: url for image: %@".fmt(this.get('url')));
-      this.set('_urls', [this.get('url')]);
-    this.set('currentPage',1);
+  _currentUrl: function () {
+    this.set('_urls', [this.get('url')]);
+    this.set('currentPage', 1);
     return "url=%@".fmt(this.get('url'));
   }.property('url'),
 
   
-  nPages:function() {
-    if(!SC.none(this.get('_urls'))) {
+  nPages: function () {
+    if (!SC.none(this.get('_urls'))) {
       return this.get('_urls').length;
     }
     return 0;
   }.property('_urls').cacheable(),
   
-  infoMessage: function() {
+  infoMessage: function () {
     return "Image";
   }.property('currentPage', 'nPages')
 

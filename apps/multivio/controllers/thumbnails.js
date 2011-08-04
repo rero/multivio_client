@@ -16,8 +16,8 @@ This is the controller create a list of image for the thumbnailView.
 @author jma
 @extends SC.ArrayController
 */
-Multivio.imageThumbnailsController = SC.ArrayController.create(
-  /** @scope Multivio.thumnailsController.prototype */ {
+Multivio.imageThumbnailsController = SC.ArrayController.create({
+
   content: [],
 
   nPages: null,
@@ -33,39 +33,39 @@ Multivio.imageThumbnailsController = SC.ArrayController.create(
 
   _thumbnailPrefix: function () {
     var server = 'server';
-    if(!SC.none(this.get('_appOptions').server)) {
+    if (!SC.none(this.get('_appOptions').server)) {
       server = this.get('_appOptions').server; 
     }
     return '/' + server + "/document/render?max_width=100&max_height=100";
   }.property('_appOptions').cacheable(),
 
-  userClicked: function(pane) {
+  userClicked: function (pane) {
     var selection = pane.getPath('selection.firstObject');
-    if(selection) {
+    if (selection) {
       this.set('currentPage', selection.get('pageNumber'));
     }
   },
-  
-  _currentPageDidChange: function() {
+
+  _currentPageDidChange: function () {
     var currentPage = this.get('currentPage');
-    if(currentPage) {
+    if (currentPage) {
       var toSelect = this.objectAt(currentPage - 1);
-        this.selectObject(toSelect);
+      this.selectObject(toSelect);
     }
   }.observes('currentPage').cacheable(),
 
-  _removeAll: function() {
-    if(this.get('length') > 0) {
+  _removeAll: function () {
+    if (this.get('length') > 0) {
       this.removeAt(0, this.get('length')); 
     }
   },
 
-  _nPagesDidChange: function() {
+  _nPagesDidChange: function () {
     this._removeAll();
     var nP = this.get('nPages');
-    if(!SC.none(nP) && nP >= 0){
-      var pageNr = 1;
-      for(var i=0; i<nP; i++) {
+    if (!SC.none(nP) && nP >= 0) {
+      var pageNr = 1, i;
+      for (i = 0; i < nP; i++) {
         this.pushObject(SC.Object.create({
           url: "%@&url=%@".fmt(this.get('_thumbnailPrefix'), this.get('urls')[i]),
           pageNumber: pageNr
@@ -73,18 +73,12 @@ Multivio.imageThumbnailsController = SC.ArrayController.create(
         pageNr += 1;
       }
     }
-
-    //select current page
-    //var currentPage = this.get('currentPage');
-    //if(!SC.none(currentPage) && currentPage > 0) {
-    //  this.selectObject(this.objectAt(currentPage - 1));
-    //}
   }.observes('nPages', 'urls').cacheable()
 
-}) ;
+});
 
-Multivio.pdfThumbnailsController = SC.ArrayController.create(
-  /** @scope Multivio.thumnailsController.prototype */ {
+Multivio.pdfThumbnailsController = SC.ArrayController.create({
+  
   content: [],
 
   nPages: null,
@@ -101,41 +95,42 @@ Multivio.pdfThumbnailsController = SC.ArrayController.create(
 
   _thumbnailPrefix: function () {
     var server = 'server';
-    if(!SC.none(this.get('_appOptions').server)) {
+    if (!SC.none(this.get('_appOptions').server)) {
       server = this.get('_appOptions').server; 
     }
     return '/' + server + "/document/render?max_width=100&max_height=100";
   }.property('_appOptions').cacheable(),
 
-  userClicked: function(pane) {
+  userClicked: function (pane) {
     var selection = pane.getPath('selection.firstObject');
-    if(selection) {
+    if (selection) {
       this.set('currentPage', selection.get('pageNumber'));
     }
   },
 
-  _currentPageDidChange: function() {
+  _currentPageDidChange: function () {
     var currentPage = this.get('currentPage');
-    if(currentPage) {
+    if (currentPage) {
       var toSelect = this.objectAt(currentPage - 1);
-        this.selectObject(toSelect);
+      this.selectObject(toSelect);
     }
   }.observes('currentPage').cacheable(),
 
-  _removeAll: function() {
-    if(this.get('length') > 0) {
+  _removeAll: function () {
+    if (this.get('length') > 0) {
       this.removeAt(0, this.get('length')); 
     }
   },
 
-  _nPagesDidChange: function() {
+  _nPagesDidChange: function () {
     this._removeAll();
     var nP = this.get('nPages');
-    if(!SC.none(nP) && nP >= 0){
-      var pageNr = 1;
-      for(var i=0; i<nP; i++) {
+    if (!SC.none(nP) && nP >= 0) {
+      var pageNr = 1, i;
+      for (i = 0; i < nP; i++) {
         this.pushObject(SC.Object.create({
-          url: "%@&page_nr=%@&url=%@".fmt(this.get('_thumbnailPrefix'), pageNr, this.get('url')),
+          url: "%@&page_nr=%@&url=%@"
+              .fmt(this.get('_thumbnailPrefix'), pageNr, this.get('url')),
           pageNumber: pageNr
         }));
         pageNr += 1;
@@ -143,4 +138,4 @@ Multivio.pdfThumbnailsController = SC.ArrayController.create(
     }
   }.observes('nPages', 'url').cacheable()
 
-}) ;
+});

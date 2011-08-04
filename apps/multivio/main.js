@@ -13,11 +13,12 @@
 // As you develop your application you will probably want to override this.
 // See comments for some pointers on what to do next.
 //
-Multivio.reload = function() {
+Multivio.reload = function () {
   SC.Logger.debug('New input');
  // Multivio.mainStatechart.sendEvent('main');
   Multivio.inputParameters.read();
 };
+
 Multivio.main = function main() {
 
   Multivio.changeTheme(SC.Object.create({

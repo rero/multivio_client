@@ -27,10 +27,8 @@ Multivio.pdfFileController = SC.ObjectController.create(Multivio.DisplayImage, {
   _centerViewWidthBinding: SC.Binding.oneWay('Multivio.mainPage.mainPdfView.pdfScrollView.contentView.visibleWidth'),
 
   _centerViewHeightBinding: SC.Binding.oneWay('Multivio.mainPage.mainPdfView.pdfScrollView.contentView.visibleHeight'),
+  
   centerImageBinding: SC.Binding.oneWay('Multivio.mainPage.mainPdfView.pdfScrollView.contentView.image'),
-
-  //currentPage: null,
-  //currentPageBinding: 'Multivio.currentFileNodeController.currentIndex',
 
   _centerImageStatusBinding: SC.Binding.oneWay('Multivio.mainPage.mainPdfView.pdfScrollView.contentView.imageView.status'),
 
@@ -40,24 +38,25 @@ Multivio.pdfFileController = SC.ObjectController.create(Multivio.DisplayImage, {
   _currentZoomIndex: 7,
   mimeRegExp: '.*?/pdf',
 
-  _currentUrl: function (){
+  _currentUrl: function () {
     return "page_nr=%@&url=%@".fmt(this.get('currentPage'), this.get('url'));
   }.property('url', 'currentPage').cacheable(),
 
-  infoMessage: function() {
+  infoMessage: function () {
     return "Page: %@/%@".fmt(this.get('currentPage'), this.get('nPages'));
   }.property('currentPage', 'nPages'),
 
-  hundredPercentZoom: function() {
+  hundredPercentZoom: function () {
     this.setIfChanged('_currentZoomIndex', 7);
     this.setIfChanged('mode', Multivio.ZOOM_MODE);
   },
 
-  hundredPercentZoomEnabled: function() {
-    if (this.get('_currentZoomIndex') !== 7 || this.get('mode') !== Multivio.ZOOM_MODE) {
+  hundredPercentZoomEnabled: function () {
+    if (this.get('_currentZoomIndex') !== 7 || 
+        this.get('mode') !== Multivio.ZOOM_MODE) {
       return YES;
     }
     return NO;
-  }.property('_currentZoomIndex','mode').cacheable()
+  }.property('_currentZoomIndex', 'mode').cacheable()
   
 });

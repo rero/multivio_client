@@ -10,7 +10,7 @@ Multivio.unsupportedDocumentView =  SC.View.design({
   childViews: ['titleView', 'previousButton', 'nextButton'],
 
   titleView: SC.View.design({
-    layout: { top: 0, left: 0, bottom: 0 , right: 0 },
+    layout: { top: 0, left: 0, bottom: 0, right: 0 },
     childViews: 'titleLabel'.w(),
 
     titleLabel: SC.LabelView.design({

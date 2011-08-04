@@ -12,8 +12,7 @@
   
   @extends SC.Object
 */
-Multivio = SC.Application.create(
-  /** @scope Multivio.prototype */ {
+Multivio = SC.Application.create({
 
   NAMESPACE: 'Multivio',
   VERSION: '1.0.0',
@@ -41,14 +40,14 @@ Multivio = SC.Application.create(
   @param {SC.Object} caller the object that called this method (usually an SC.View);
 */
 Multivio.changeTheme = function (caller) {
-  var currentTheme = Multivio.get('currentTheme');
+  var currentTheme = Multivio.get('currentTheme'),
+    newTheme = caller.get('newTheme');
   if (!SC.none(caller)) {
-    var newTheme = caller.get('newTheme');
     if (!SC.none(newTheme) && newTheme !== currentTheme) {
       SC.Logger.debug('Changing theme from %@ to %@'.fmt(currentTheme, newTheme));
       SC.$('body')
-          .addClass('mvo-%@-theme'.fmt(newTheme))
-          .removeClass('mvo-%@-theme'.fmt(currentTheme));
+        .addClass('mvo-%@-theme'.fmt(newTheme))
+        .removeClass('mvo-%@-theme'.fmt(currentTheme));
     }
     Multivio.set('currentTheme', newTheme);
   }

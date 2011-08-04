@@ -12,18 +12,18 @@ sc_require('mixins/interface.js');
 Multivio.HelpPane = SC.PickerPane.design({
   isAnchored: YES,
   isModal: NO,
-    layout: { width: 320, bottom: 100 },
-    classNames: 'mvo-palette-pane'.w(),
-    contentView: SC.ScrollView.design(Multivio.innerGradientThinTopBottom, {
-      layout: { top: 2, bottom: 2, left: 2, right: 2 },
-      borderStyle: SC.BORDER_NONE,
-      hasHorizontalScroller: NO,
-      //contentView: SC.StaticContentView.design({
-      contentView: SC.StaticContentView.design({
-        //layout: {top: 2, width:300},
-        classNames: "help-panel".w(),
-        //escapeHTML: NO,
-        content : '<h1>' + '_helpTitle'.loc() + '</h1>'
+  layout: { width: 320, bottom: 100 },
+  classNames: 'mvo-palette-pane'.w(),
+  contentView: SC.ScrollView.design(Multivio.innerGradientThinTopBottom, {
+    layout: { top: 2, bottom: 2, left: 2, right: 2 },
+    borderStyle: SC.BORDER_NONE,
+    hasHorizontalScroller: NO,
+    //contentView: SC.StaticContentView.design({
+    contentView: SC.StaticContentView.design({
+      //layout: {top: 2, width:300},
+      classNames: "help-panel".w(),
+      //escapeHTML: NO,
+      content : '<h1>' + '_helpTitle'.loc() + '</h1>'
         + '_helpIntro'.loc()
         + '<h4>' + '_helpVerticalBar'.loc() + '</h4>'
         + '<p>' + '<img class="" style= "" src="' + sc_static("images/icons/24x24/tree_dark_24x24.png") + '"/>' + '_helpToc'.loc() + '</p>'
@@ -51,9 +51,9 @@ Multivio.HelpPane = SC.PickerPane.design({
         + '<p>' + '_mouseActions'.loc('<img class="" style= "" src="' + sc_static("images/icons/24x24/pan_dark_24x24.png") + '"/>') + '</p>'
         + '<h4>' + '_keyShortcutsTitle'.loc() + '</h4>'
         + '<p>' + '_keyShortcuts'.loc() + '</p>',
-        isTextSelectable: YES
+      isTextSelectable: YES
 
-      })
     })
+  })
 });
 

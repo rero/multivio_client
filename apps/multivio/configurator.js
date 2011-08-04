@@ -15,8 +15,8 @@
   @extends SC.Object
   @since 0.1.0
 */
-Multivio.configurator = SC.Object.create(
-/** @scope Multivio.configurator.prototype */ {
+
+Multivio.configurator = SC.Object.create({
   
   /**
     The support address
@@ -57,6 +57,5 @@ Multivio.configurator = SC.Object.create(
     The theme to be used
   */
   initialTheme: 'mvo-white-theme'
-  
 
 });

@@ -12,8 +12,7 @@
 
   @extends SC.View
 */
-Multivio.NavigationItem = SC.ListItemView.extend(
-/** @scope Multivio.NavigationItem.prototype */ {
+Multivio.NavigationItem = SC.ListItemView.extend({
 
   // TODO: Add your own code here.
   displayProperties: ['icon', 'panel'],
@@ -33,7 +32,7 @@ Multivio.NavigationItem = SC.ListItemView.extend(
   render: function (context) {
     var content = this.get('content');
 
-    context.push('<img src="',content.get('icon'), '"/>');
+    context.push('<img src="', content.get('icon'), '"/>');
     //context.push('<p>',content.get('panel'), '</p>');
   },
   update: function (jquery) {

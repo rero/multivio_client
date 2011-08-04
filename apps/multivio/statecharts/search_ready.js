@@ -31,36 +31,36 @@ Multivio.SearchReadyState = SC.State.extend({
   currentSearchingFile: null,
 
   /************** Methods *************************/
-  selectionsUpdate : function() {
+  selectionsUpdate : function () {
     this.updateEnlightening();
   }.observes('*currentFileNode.currentIndex'),
 
-  updateEnlightening: function() {
-     var currentIndex = this.getPath('currentFileNode.currentIndex');
-     var current = this.getPath('searchController.currentQuery');
-     if(this.getPath('currentFileNode.isSearchable') && currentIndex > 0) {
-        var query =  SC.Query.local(Multivio.SearchResultRecord, "query={query} AND url={url} AND page={page}", { 
-          query: current,
-          url: this.getPath('currentFileNode.url'),
-          page: this.getPath('currentFileNode.currentIndex')
-        });
-        Multivio.currentSearchResultsController.set('content', Multivio.store.find(query));
-     }else{
-        Multivio.currentSearchResultsController.set('content', null);
-     }
+  updateEnlightening: function () {
+    var currentIndex = this.getPath('currentFileNode.currentIndex');
+    var current = this.getPath('searchController.currentQuery');
+    if (this.getPath('currentFileNode.isSearchable') && currentIndex > 0) {
+      var query =  SC.Query.local(Multivio.SearchResultRecord, "query={query} AND url={url} AND page={page}", { 
+        query: current,
+        url: this.getPath('currentFileNode.url'),
+        page: this.getPath('currentFileNode.currentIndex')
+      });
+      Multivio.currentSearchResultsController.set('content', Multivio.store.find(query));
+    } else {
+      Multivio.currentSearchResultsController.set('content', null);
+    }
   },
   
   /*****************************************************************************/ 
-  currentQueryStore: function() {
+  currentQueryStore: function () {
     var current = this.getPath('searchController.currentQuery');
-    if(current && current !== "") {
+    if (current && current !== "") {
       var searchInAll = this.getPath('searchController.searchInAll');
-      if(!searchInAll && this.getPath('currentFileNode.isContent')){
-        return  SC.Query.local(Multivio.SearchRecord, "query={query} AND url={url}", { 
+      if (!searchInAll && this.getPath('currentFileNode.isContent')) {
+        return SC.Query.local(Multivio.SearchRecord, "query={query} AND url={url}", { 
           query: current,
           url: this.getPath('currentFileNode.url')
         });
-      }else{
+      } else {
         return SC.Query.local(Multivio.SearchRecord, "query={query}", { 
           query: current
         });
@@ -71,12 +71,13 @@ Multivio.SearchReadyState = SC.State.extend({
   }.property('*searchController.currentQuery', '*searchController.searchInAll', '*currentFileNode.url'),
 
   /*****************************************************************************/ 
-  _currentQueryStoreDidChange: function() {
+  _currentQueryStoreDidChange: function () {
     var query = this.get('currentQueryStore');
-    if(query) {
+    if (query) {
       this.getPath('searchController.content').set('treeItemChildren', Multivio.store.find(query));
       var searchInAll = this.getPath('searchController.searchInAll');
-      if(searchInAll) {
+      if (searchInAll) {
+        SC.Logger.debug('Search in all...');
         this.get('searchController').set("msgStatus", "Searching in all...");
         this.get('searchController').set("loadingStatus", Multivio.LOADING_LOADING);
         this.set('currentSearchingFile', Multivio.rootNodeController.get('content'));
@@ -86,7 +87,7 @@ Multivio.SearchReadyState = SC.State.extend({
   }.observes('*searchController.currentQuery', '*searchController.searchInAll', '*currentFileNode.url'),
 
   /*****************************************************************************/ 
-  cancelSearch: function() {
+  cancelSearch: function () {
     this.get('searchController').set("msgStatus", "Aborted...");
     this.get('searchController').set("loadingStatus", Multivio.LOADING_CANCEL);
     this.set('currentSearchingFile', null);
@@ -94,10 +95,10 @@ Multivio.SearchReadyState = SC.State.extend({
   },
 
   /*****************************************************************************/ 
-  _currentFileNodeDidChange: function() {
+  _currentFileNodeDidChange: function () {
     var currentFileNode = this.get('currentFileNode');
     var currentQuery = this.get('searchController.currentQuery');
-    if(currentFileNode && currentFileNode.get('isSearchable') && currentQuery){
+    if (currentFileNode && currentFileNode.get('isSearchable') && currentQuery) {
       var query = SC.Query.local(Multivio.SearchRecord, "query={query} AND url={url}", { 
         query: this.getPath('searchController.currentQuery'),
         url: this.getPath('currentSearchingFile.url')
@@ -108,10 +109,10 @@ Multivio.SearchReadyState = SC.State.extend({
   }.observes('*currentFileNode.url'),
 
   /*****************************************************************************/ 
-  _documentTypeDidChange: function() {
+  _documentTypeDidChange: function () {
     var record = this.get('currentSearchingFile');
-    if(record && record.get('mime')){
-      if(record.get('isSearchable')) {
+    if (record && record.get('mime')) {
+      if (record.get('isSearchable')) {
         this.get('searchController').set("msgStatus", "Searching in: %@".fmt(this.getPath('currentSearchingFile.url')));
 
         var query = SC.Query.local(Multivio.SearchRecord, "query={query} AND url={url}", { 
@@ -119,20 +120,20 @@ Multivio.SearchReadyState = SC.State.extend({
           url: this.getPath('currentSearchingFile.url')
         });
         this.set('currentSearchResults', Multivio.store.find(query));
-      }else{
+      } else {
         this._next();
       }
     }
   }.observes('*currentSearchingFile.mime'),
 
   /*****************************************************************************/ 
-  _next: function() {
+  _next: function () {
     var next = this.getPath('currentSearchingFile.hasNextFile');
-    if(next) {
+    if (next) {
       this.gotoState('getNextSearchingResult', this.get('currentSearchingFile'));
-    }
-    else{
+    } else {
       Multivio.searchTreeController.set("msgStatus", "Done");
+      SC.Logger.debug('Done');
       this.get('searchController').set("loadingStatus", Multivio.LOADING_DONE);
       this.set('currentSearchingFile', null);
       this.set('currentSearchResults', null);
@@ -141,10 +142,10 @@ Multivio.SearchReadyState = SC.State.extend({
   },
 
   /*****************************************************************************/ 
-  statusString: function(status) {
-    var ret = [];
-    for(var prop in SC.Record) {
-      if(prop.match(/[A-Z_]$/) && SC.Record[prop]===status) {
+  statusString: function (status) {
+    var ret = [], prop;
+    for (prop in SC.Record) {
+      if (prop.match(/[A-Z_]$/) && SC.Record[prop]===status) {
         ret.push(prop);
       }
     }
@@ -152,8 +153,8 @@ Multivio.SearchReadyState = SC.State.extend({
   },
 
   /*****************************************************************************/ 
-  _currentSearchingResultsDidChange: function() {
-    if(this.getPath('currentSearchResults.status') & SC.Record.READY){
+  _currentSearchingResultsDidChange: function () {
+    if (this.getPath('currentSearchResults.status') & SC.Record.READY) {
       this._next();
     }
   }.observes('*currentSearchResults.status'),
@@ -164,20 +165,20 @@ Multivio.SearchReadyState = SC.State.extend({
 
   /*****************************************************************************/ 
   getNextSearchingResult: SC.State.design({
-    enterState: function(fromNode) {
+    enterState: function (fromNode) {
       var node;
-      if(fromNode.get('canBeFetched')) {
+      if (fromNode.get('canBeFetched')) {
         node = fromNode;
-      }else{
-        if(fromNode.get('isFileNode')){
+      } else {
+        if (fromNode.get('isFileNode')) {
           var next = fromNode.get('fileNode').get('hasNextFile');
           node = next;
-        }else{
+        } else {
           node = fromNode.get('fileNode');
         }
       }
       var record = Multivio.store.find(Multivio.FileRecord, node.get('url'));
-      if(!record.get('_ancestorFileNode')){
+      if (!record.get('_ancestorFileNode')) {
         record.set('_ancestorFileNode', node.get('_ancestorFileNode'));
         node.appendChildren([record]);
       }
