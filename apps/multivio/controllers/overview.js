@@ -24,6 +24,8 @@ Multivio.overviewController = SC.ObjectController.create({
     return YES;
   }.property(),
 
+  showPalette: null,
+
   currentUrl: function () {
     if (this.get('isContent')) {
       //pdf check
@@ -39,31 +41,14 @@ Multivio.overviewController = SC.ObjectController.create({
     return undefined;
   }.property('rotationAngle', '_currentUrl'),
 
-  showPalette: function (key, value) {
-    SC.Logger.warn("Key: %@, value: %@".fmt(key, value));
-    if (!SC.none(value)) {
-      if (!value) {
-        Multivio.getPath('mainPage.overview').remove();
-      } else {
-        //TODO: change this hack!!
-        SC.Timer.schedule({
-          target: this, 
-          action: 'openPalette', 
-          interval: 0,
-          repeat: NO
-        });
-        //Multivio.getPath('mainPage.overview').append();
-      }
+  showPaletteDidChanged: function () {
+    var showPalette = this.get('showPalette');
+    if (showPalette) {
+      Multivio.getPath('mainPage.overview').open();
     } else {
-      return this.get('isPaletteVisible');
+      Multivio.getPath('mainPage.overview').close();
     }
-  }.property('isPaletteVisible'),
-
-  openPalette: function () {
-    //Multivio.getPath('mainPage.overview').popup(Multivio.getPath('mainPage.mainPane.centerView'), 
-    //    SC.PICKER_MENU, [5, -200, 3]);
-    Multivio.getPath('mainPage.overview').append();
-  }
+  }.observes('showPalette')
 });
 
 

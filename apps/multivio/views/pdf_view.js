@@ -107,7 +107,7 @@ Multivio.mainPdfView =  SC.View.design({
 
     pageEntry: SC.TextFieldView.design({
       layout: {centerY: 0,  left: 210, width: 50, height: 24 },
-      //acceptsFirstResponder: NO,
+      acceptsFirstResponder: NO,
       isTextArea: NO,
       applyImmediately: NO,
       contentBinding: 'Multivio.currentFileNodeController', 

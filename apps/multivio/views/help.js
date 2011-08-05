@@ -10,7 +10,7 @@ sc_require('mixins/interface.js');
 
 // help
 Multivio.HelpPane = SC.PalettePane.design({
-//  isAnchored: YES,
+  isAnchored: YES,
 //  isModal: NO,
   layout: { left: 45, top: 15, width: 320, bottom: 100 },
   classNames: 'mvo-palette-pane'.w(),
