@@ -15,21 +15,28 @@ sc_require('controllers/image.js');
 /**
   @class
 
-  One of the application states: becomes active when the application is ready
-  for user interaction
+  STATE
+  
+  Becomes active when the application is ready for user interaction
 
   @author maj
   @extends SC.State
   @since 1.0
 */
+Multivio.PendingContent = SC.State.extend(
+  /** @scope Multivio.PendingContent.prototype */{
 
-Multivio.PendingContent = SC.State.extend({
-
+  /**
+  */
   initialSubstate: 'pendingDummy',
 
+  /**
+  */
   currentFileNode: null,
   currentFileNodeBinding: 'Multivio.currentFileNodeController',
 
+  /**
+  */
   _documentTypeDidChange: function () {
     var record = this.get('currentFileNode');
     SC.Logger.debug("Mime changed: %@".fmt(record.get('mime')));
@@ -45,7 +52,7 @@ Multivio.PendingContent = SC.State.extend({
         return;
       }
       if (record.get('isXml')) {
-        this.gotoState('getNextDocument', this.get('currentFileNode'));
+        this.gotoState('gettingNextDocument', this.get('currentFileNode'));
         return;
       }
       this.gotoState('displayingUnsupported');
@@ -55,9 +62,13 @@ Multivio.PendingContent = SC.State.extend({
 
 
   /************** SubStates *************************/
+
+  /**
+    STATE
+  */
   pendingDummy: SC.State,
 
-  setDocument: SC.State.design({
+  settingDocument: SC.State.design({
     enterState: function (fromNode) {
       var node;
       if (fromNode.get('canBeFetched')) {
@@ -76,7 +87,7 @@ Multivio.PendingContent = SC.State.extend({
     }
   }),
 
-  getNextDocument: SC.State.design({
+  gettingNextDocument: SC.State.design({
     enterState: function (fromNode) {
       var node;
       if (fromNode.get('canBeFetched')) {
@@ -103,7 +114,7 @@ Multivio.PendingContent = SC.State.extend({
     }
   }),
 
-  getPreviousDocument: SC.State.design({
+  gettingPreviousDocument: SC.State.design({
     enterState: function (fromNode) {
       var previous = fromNode.get('hasPreviousFile');
       var record = Multivio.store.find(Multivio.FileRecord, previous.get('url'));

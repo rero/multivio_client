@@ -25,6 +25,9 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
   trace: YES,
   autoInitStatechart: NO,
 
+  /**
+    STATE
+  */
   main: SC.State.design({
     inputParameters: null,
     inputParametersBinding: 'Multivio.inputParameters',
@@ -67,8 +70,14 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
       this.gotoState('waitingForServer', server);
     }.observes('*inputParameters.options'),
     
+    /**
+      STATE
+    */
     mainDummy: SC.State,
 
+    /**
+      STATE
+    */
     waitingForServer: SC.State.design({
       server: null,
 
@@ -97,6 +106,9 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
     })
   }),
 
+  /**
+    STATE
+  */
   applicationReady: SC.State.design({
     //stateAreConcurrent: YES,
     substatesAreConcurrent: YES,
@@ -106,6 +118,9 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
       this.gotoState('error');
     },
 
+    /**
+      STATE
+    */
     content: SC.State.design({
       initialSubstate: 'pendingContent',
 
@@ -135,14 +150,26 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
         }
       }.observes('*currentRootNode.url'),
 
+      /**
+        STATE
+      */
       pendingContent: SC.State.plugin('Multivio.PendingContent'),
 
+      /**
+        STATE
+      */
       displayingContent: SC.State.plugin('Multivio.DisplayingContent')
 
     }),
+    /**
+      STATE
+    */
     search: SC.State.plugin('Multivio.SearchReadyState')
   }),
 
+  /**
+    STATE
+  */
   error: SC.State.design({
     enterState: function (context) {
       Multivio.errorController.set('errorMessage', context.msg);
@@ -152,6 +179,9 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
     }
   }),
 
+  /**
+    STATE
+  */
   end: SC.State.design({
     enterState: function () {
       SC.Logger.log("Application ended.");

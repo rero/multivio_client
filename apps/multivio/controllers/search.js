@@ -58,7 +58,7 @@ Multivio.searchTreeController = SC.TreeController.create({
       if (!selectedIndex) {
         selectedIndex = 1;
       }
-      Multivio.mainStatechart.sendEvent('gotoFile', selectedUrl);
+      Multivio.mainStatechart.sendEvent('goToFile', selectedUrl);
       //Multivio.mainStatechart.sendEvent('gotoIndex', selectedIndex);
       Multivio.currentFileNodeController.set('currentIndex', selectedIndex);
     }

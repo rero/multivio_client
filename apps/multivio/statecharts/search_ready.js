@@ -8,16 +8,17 @@
 
 
 /**
-@class
+  @class
 
   One of the application states: becomes active when the application is ready
   for user interaction
 
   @author maj
   @extends SC.State
-  @since 1.0
+  @since 1.1
 */
-Multivio.SearchReadyState = SC.State.extend({
+Multivio.SearchReadyState = SC.State.extend(
+/** @scope Multivio.SearchReadyState.prototype */{
 
   initialSubstate: 'searchDummy',
   searchController: null,
@@ -130,7 +131,7 @@ Multivio.SearchReadyState = SC.State.extend({
   _next: function () {
     var next = this.getPath('currentSearchingFile.hasNextFile');
     if (next) {
-      this.gotoState('getNextSearchingResult', this.get('currentSearchingFile'));
+      this.gotoState('gettingNextSearchResult', this.get('currentSearchingFile'));
     } else {
       Multivio.searchTreeController.set("msgStatus", "Done");
       SC.Logger.debug('Done');
@@ -145,7 +146,7 @@ Multivio.SearchReadyState = SC.State.extend({
   statusString: function (status) {
     var ret = [], prop;
     for (prop in SC.Record) {
-      if (prop.match(/[A-Z_]$/) && SC.Record[prop]===status) {
+      if (prop.match(/[A-Z_]$/) && SC.Record[prop] === status) {
         ret.push(prop);
       }
     }
@@ -164,7 +165,7 @@ Multivio.SearchReadyState = SC.State.extend({
   searchDummy: SC.State,
 
   /*****************************************************************************/ 
-  getNextSearchingResult: SC.State.design({
+  gettingNextSearchResult: SC.State.design({
     enterState: function (fromNode) {
       var node;
       if (fromNode.get('canBeFetched')) {

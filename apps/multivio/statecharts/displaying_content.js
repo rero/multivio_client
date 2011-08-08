@@ -1,5 +1,26 @@
+/**
+==============================================================================
+  Project:    Multivio - https://www.multivio.org/
+  Copyright:  (c) 2009-2011 RERO
+  License:    See file COPYING
+==============================================================================
+*/
 
-Multivio.DisplayingContent = SC.State.extend({
+
+/**
+  @class
+  
+  STATE DEFINITION
+
+  Becomes active when the application is showing content. Its different
+  substates handle different kinds of content.
+
+  @author maj
+  @extends SC.State
+  @since 1.0
+*/
+Multivio.DisplayingContent = SC.State.extend(
+  /** @scope Multivio.DisplayingContent.prototype */{
 
   initialSubstate: 'displayingDummy',
   
@@ -9,11 +30,24 @@ Multivio.DisplayingContent = SC.State.extend({
   currentFileNode: null,
   currentFileNodeBinding: 'Multivio.currentFileNodeController',
   
+  /**
+    STATE EVENT
+    
+    Goes fetching the file corresponding to the given record object
+    
+    @param {FileRecord} the record of the destination file
+  */
   fetchNewFile: function (record) {
-    this.gotoState('setDocument', record);
+    // STATE TRANSITION
+    this.gotoState('settingDocument', record);
   },
 
-  gotoFile: function (url) {
+  /**
+    Goes to the file indicated in the URL
+    
+    @param {String} url The URL of the destination file
+  */
+  goToFile: function (url) {
     var currentUrl = Multivio.getPath('currentFileNodeController.url');
     if (url !== currentUrl) {
       var record = Multivio.store.find(Multivio.FileRecord, url);
@@ -21,30 +55,52 @@ Multivio.DisplayingContent = SC.State.extend({
     }
   },
 
+  /**
+    Goes to the next file in the document structure
+  */
   nextFile: function () {
     if (Multivio.currentFileNodeController.get('hasNextFile')) {
       Multivio.currentFileNodeController.set('currentIndex', 1);
       Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
-      this.gotoState('getNextDocument', Multivio.currentFileNodeController);
+      this.gotoState('gettingNextDocument', Multivio.currentFileNodeController);
     }
   },
 
+  /**
+    Goes to the previous file in the document structure
+  */
   previousFile: function () {
     if (Multivio.currentFileNodeController.get('hasPreviousFile')) {
       Multivio.currentFileNodeController.set('currentIndex', 1);
       Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
-      this.gotoState('getPreviousDocument', Multivio.currentFileNodeController);
+      this.gotoState('gettingPreviousDocument', Multivio.currentFileNodeController);
     }
   },
   
-  /*displaying content */
+  /**
+    STATE DECLARATION
+    
+    Dummy state used as initial substate
+  */
   displayingDummy: SC.State.design({}),
 
+  /**
+    STATE DECLARATION
+    
+    Is active while the application is showing PDF content
+  */
   displayingPdf: SC.State.design({
 
+    /**
+      Binds to the currently selected index in currentFileNodeController, that
+      holds the currently displayed file
+    */
     currentPage: null,
     currentPageBinding: 'Multivio.currentFileNodeController.currentIndex',
 
+    /**
+      STATE EVENT
+    */
     enterState: function () {
       var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
       if (viewToChange.get('nowShowing') !== 'mainPdfView') {
@@ -66,26 +122,43 @@ Multivio.DisplayingContent = SC.State.extend({
       }
     },
 
+    /**
+      STATE EVENT
+    */
     exitState: function () {
       Multivio.pdfFileController.set('content', null);
-      //Multivio.pdfFileController.set('currentPage', null);
     },
 
+    /**
+      Increments the current file index
+    */
     nextIndex: function () {
       if (Multivio.currentFileNodeController.get('hasNextIndex')) {
-        Multivio.currentFileNodeController.set('currentIndex', Multivio.currentFileNodeController.get('currentIndex') + 1);
-        return YES;
-      } 
-      return NO;
-    },
-    previousIndex: function () {
-      if (Multivio.currentFileNodeController.get('hasPreviousIndex')) {
-        Multivio.currentFileNodeController.set('currentIndex', Multivio.currentFileNodeController.get('currentIndex') - 1);
+        Multivio.currentFileNodeController.set('currentIndex',
+            Multivio.currentFileNodeController.get('currentIndex') + 1);
         return YES;
       } 
       return NO;
     },
 
+    /**
+      Decrements the current file index
+    */
+    previousIndex: function () {
+      if (Multivio.currentFileNodeController.get('hasPreviousIndex')) {
+        Multivio.currentFileNodeController.set('currentIndex',
+            Multivio.currentFileNodeController.get('currentIndex') - 1);
+        return YES;
+      } 
+      return NO;
+    },
+
+    /**
+      Observes changes in the current page and forwards them to the PDF
+      controller
+      
+      @private
+    */
     _currentPageDidChange: function () {
       var currentPage = this.get('currentPage');
       if (currentPage && currentPage !== Multivio.pdfFileController.get('currentPage')) {
@@ -95,7 +168,16 @@ Multivio.DisplayingContent = SC.State.extend({
     }.observes('currentPage')
   }),
 
+  /**
+    STATE DECLARATION
+  
+    Is active while the application is showing image content
+  */
   displayingImage: SC.State.design({
+
+    /**
+      STATE EVENT
+    */
     enterState: function () {
       var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
       if (viewToChange.get('nowShowing') !== 'mainImageView') {
@@ -113,12 +195,21 @@ Multivio.DisplayingContent = SC.State.extend({
         Multivio.treeController.selectObject(Multivio.currentFileNodeController.get('content'));
       }
     },
+
+    /**
+      STATE EVENT
+    */
     exitState: function () {
       Multivio.imageFileController.set('content', null);
-      //Multivio.imageFileController.set('currentPage', null);
     }
   }),
 
+  /**
+    STATE DECLARATION
+  
+    Is active while the application is showing unsupported content - a message
+    error is shown in that case
+  */
   displayingUnsupported: SC.State.design({
     enterState: function () {
       var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
