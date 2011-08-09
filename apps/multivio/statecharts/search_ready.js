@@ -18,7 +18,7 @@
   @since 1.1
 */
 Multivio.SearchReadyState = SC.State.extend(
-/** @scope Multivio.SearchReadyState.prototype */{
+  /** @scope Multivio.SearchReadyState.prototype */{
 
   initialSubstate: 'searchDummy',
   searchController: null,
@@ -168,14 +168,14 @@ Multivio.SearchReadyState = SC.State.extend(
   gettingNextSearchResult: SC.State.design({
     enterState: function (fromNode) {
       var node;
-      if (fromNode.get('canBeFetched')) {
+      if (fromNode.get('isFetchable')) {
         node = fromNode;
       } else {
-        if (fromNode.get('isFileNode')) {
-          var next = fromNode.get('fileNode').get('hasNextFile');
+        if (fromNode.get('isFile')) {
+          var next = fromNode.get('nearestFileNode').get('hasNextFile');
           node = next;
         } else {
-          node = fromNode.get('fileNode');
+          node = fromNode.get('nearestFileNode');
         }
       }
       var record = Multivio.store.find(Multivio.FileRecord, node.get('url'));

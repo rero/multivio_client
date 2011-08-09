@@ -4,43 +4,131 @@
 // ==========================================================================
 /*globals Multivio */
 
-/** @class
+/**
+  @class
 
-  (Document your Model here)
+  The core data model of Multivio is a hierarchical (tree) structure that
+  contains a representation of the document being presented. Each node in the
+  tree is represented by a URL. These nodes can be of different types:
+  
+  - **file** nodes, of two kinds:
+    - **content** file nodes: correspond to files with content (e.g. PDF, images...)
+    - **structural** file nodes: correspond to files whose purpose (with regard to
+      Multivio) is to group other files (e.g. XML Dublin Core, XML MARC, XML
+      MODS, XML METS...)
+  - **position** nodes: they represent a specific location in the contents of
+    a **content** file node, usually an entry in its table of contents; in
+    this case the node has the same URL as its nearest ancestor file node
+
+  Besides, some nodes play a special role in the tree:
+
+  - **root** node: the one corresponding to the top-level URL given as input to
+    the application
+  - **final** nodes: they lie in the bottom of the tree in its final state, i.e.
+    they have no children, and will never have
+  - **fetchable** nodes: these are (temporarily) leaf nodes which are
+    descendant of a **structural** file node; the fact that they are fetchable
+    means that they link to file nodes that have not yet been loaded into the
+    tree, and can thus be fetched; for example, a node corresponding to an XML
+    DC file contains children that point each to a **content** file (e.g.
+    PDFs), that will only be loaded later into the tree;
 
   @extends SC.Record
   @version 0.1
 */
 
-Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent, {
+Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent,
+  /** @scope Multivio.FileRecord.prototype */ {
 
-  // TODO: Add your own code here.
-  creator: SC.Record.attr(String),
+  /**
+    URL of the node
+    @type String
+  */
   url: SC.Record.attr(String),
+  
+  /**
+    This is used in **position** nodes and corresponds to a location (e.g. a
+    page number)
+    @type Number
+  */
   index: SC.Record.attr(Number),
-  fileSize: SC.Record.attr(Number),
+  
+  /**
+    Descriptive metadata of file content
+    @type String
+  */
   title: SC.Record.attr(String),
+  /**
+    Descriptive metadata of file content
+    @type String
+  */
+  creator: SC.Record.attr(String),
+
+  /** @type Number */
+  fileSize: SC.Record.attr(Number),
+  /** @type String */
   mime: SC.Record.attr(String),
+  /** @type Number */
   nPages: SC.Record.attr(Number),
-  nativeSizes: SC.Record.attr(Object),
+  /**
+    The default page size of a PDF or the native size of an image. It's an
+    array with two elements: [width, height]
+    @type Array
+  */
   defaultNativeSize: SC.Record.attr(Array),
+  /**
+    The list of exceptions to the default native size. It's an array of
+    objects like ["2": [ 594.0, 843.0 ]]
+    @type Array
+  */
+  nativeSizes: SC.Record.attr(Object),
+  /**
+    Child nodes
+    @type Array
+  */
   children: SC.Record.attr(Array, {lazilyInstantiate: YES}),
 
+  /**
+    @field
+    @private
+    @type FileRecord
+  */
   _parentNode: null,
+
+  /**
+    The nearest ancestor that is a **file** node
+    @field
+    @private
+    @type FileRecord
+  */
   _ancestorFileNode: null,
+
+  /**
+    @field
+    @private
+    @type Array
+  */
   _children: null,
- 
-  /*****************************************************************************/ 
+
+
+  /** */
   init: function () {
     sc_super();
     this.set('treeItemIsExpanded', this.get('treeItemIsExpandedDefault'));
   },
 
+  /**
+    @field
+    @type Boolean
+  */
   isReady: function () { 
     return ((this.get('status') & SC.Record.READY) !== 0);
   }.property('status'),
  
-  /*****************************************************************************/ 
+  /**
+    @field
+    @type String
+  */
   toString: function () {
     var to_return = "Creator: %@\n".fmt(this.get('creator'));
     to_return += "FileSize: %@\n".fmt(this.get('fileSize'));
@@ -55,7 +143,10 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent, {
     return to_return;
   },
 
- /*****************************************************************************/ 
+  /**
+    @field
+    @type String
+  */
   humanReadableFileSize: function () {
     var size = this.get('fileSize');
     if (!size) {
@@ -70,75 +161,112 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent, {
     return size.toFixed(1) + ' ' + units[i];
   }.property('fileSize'),
 
- /*****************************************************************************/ 
-  isFileNode: function () {
+  /**
+    @field
+    @type Boolean
+  */
+  isFile: function () {
     return this.get('mime') ? YES : NO;
   }.property('mime').cacheable(),
 
- /*****************************************************************************/ 
-  fileNode: function () {
-    return this.get('isFileNode') ? this : this.get('_ancestorFileNode');
-  }.property('isFileNode', '_ancestorFileNode').cacheable(),
+  /**
+    Returns the node itself, if it's a file node, or the nearest ancestor node
+    higher up in the hierarchy
+    @field
+    @type FileRecord
+  */
+  nearestFileNode: function () {
+    return this.get('isFile') ? this : this.get('_ancestorFileNode');
+  }.property('isFile', '_ancestorFileNode').cacheable(),
   
- /*****************************************************************************/ 
+  /**
+    @field
+    @type Boolean
+  */
   isContent: function () {
-    if (this.get('isFileNode')) {
+    if (this.get('isFile')) {
       return this.get('mime').match(/xml/) ? NO : YES;
     }
     return NO;
   }.property('mime').cacheable(),
 
- /*****************************************************************************/ 
-  isPdf: function () {
+  /**
+    @field
+    @type Boolean
+  */
+  isPDF: function () {
     if (!this.get('mime')) {
       return NO;
     }
-    if (this.get('isFileNode')) {
+    if (this.get('isFile')) {
       return this.get('mime').match(/pdf/) ? YES: NO;
     }
     return NO;
   }.property('mime').cacheable(),
 
- /*****************************************************************************/ 
+  /**
+    True if it's a content file node whose contents are searchable (e.g. a PDF)
+    @field
+    @type Boolean
+  */
   isSearchable: function () {
-    return this.get('isPdf') ? YES : NO;
-  }.property('isPdf'),
+    return this.get('isPDF') ? YES : NO;
+  }.property('isPDF'),
   
- /*****************************************************************************/ 
+  /**
+    @field
+    @type Boolean
+  */
   isImage: function () {
     if (!this.get('mime')) {
       return NO;
     }
-    if (this.get('isFileNode')) {
+    if (this.get('isFile')) {
       return this.get('mime').match(/image/) ? YES : NO;
     }
     return NO;
   }.property('mime').cacheable(),
 
- /*****************************************************************************/ 
-  isXml: function () {
+  /**
+    @field
+    @type Boolean
+  */
+  isXML: function () {
     if (!this.get('mime')) {
       return NO;
     }
     return this.get('mime').match(/xml/) ? YES : NO;
   }.property('mime'),
 
- /*****************************************************************************/ 
+  /**
+    See SC.TreeItemContent.treeItemIsExpanded
+    @field
+    @type Boolean
+  */
   treeItemIsExpandedDefault: function () {
     return this.get('children') ? YES : NO;
   }.property('children').cacheable(),
 
- /*****************************************************************************/ 
+  /**
+    @field
+    @type String
+  */
   icon: function () {
-    return this.get('canBeFetched') ? 'sc-icon-document-16' : null;
-  }.property('canBeFetched').cacheable(),
+    return this.get('isFetchable') ? 'sc-icon-document-16' : null;
+  }.property('isFetchable').cacheable(),
 
- /*****************************************************************************/ 
-  canBeFetched: function () {
-    return (!this.get('isFileNode') && !this.get('isFinalNode') && !this.get('children')) ? YES : NO;
-  }.property('isFileNode', 'isFinalNode', 'children').cacheable(),
+  /**
+    @field
+    @type Boolean
+  */
+  isFetchable: function () {
+    return (!this.get('isFile') && !this.get('isFinal') && !this.get('children')) ? YES : NO;
+  }.property('isFile', 'isFinal', 'children').cacheable(),
 
- /*****************************************************************************/ 
+  /**
+    @param Array children
+    @returns Boolean
+  */
   appendChildren: function (children) {
     if (!this.get('_children')) {
       this.set('_children', children);
@@ -148,13 +276,17 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent, {
     }
     return NO;
   },
- /*****************************************************************************/ 
-  isFinalNode: function () {
+
+  /**
+    @field
+    @type Boolean
+  */
+  isFinal: function () {
     if (this.get('children')) {
       return NO;
     }
     //is fileNode and has no children
-    if (this.get('isFileNode')) {
+    if (this.get('isFile')) {
       return YES;
     }
     //ancestoreFileNode alreay in the tree
@@ -163,40 +295,50 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent, {
       return YES;
     }
     return NO;
-  }.property('children', 'isFileNode', '_ancestorFileNode', 'url').cacheable(),
+  }.property('children', 'isFile', '_ancestorFileNode', 'url').cacheable(),
 
- /*****************************************************************************/ 
-  canBeFetchedNodes: function () {
-    if (this.get('isContent') || !this.get('isFileNode')) {
+  /**
+    @field
+    @type Array
+  */
+  fetchableNodes: function () {
+    if (this.get('isContent') || !this.get('isFile')) {
       return null;
     }
-    return this._getCanBeFechedNodes(this.get('treeItemChildren'));
-  }.property('treeItemChildren', 'isContent', 'isFileNode'),
+    return this._getFetchableNodes(this.get('treeItemChildren'));
+  }.property('treeItemChildren', 'isContent', 'isFile'),
 
- /*****************************************************************************/ 
-  _getCanBeFechedNodes: function (children) {
+  /**
+    @private
+    @param Array children
+    @returns Array
+  */
+  _getFetchableNodes: function (children) {
     if (!children) {
       return [];
     }
     var toReturn = [];
     children.forEach(function (item) {
       //SC.Logger.debug(item.statusString());
-      if (item.get('canBeFetched')) {
+      if (item.get('isFetchable')) {
         toReturn.pushObject(item);
       } else {
-        var toAdd = this._getCanBeFechedNodes(item.get('treeItemChildren'));
+        var toAdd = this._getFetchableNodes(item.get('treeItemChildren'));
         toReturn.pushObjects(toAdd);
       }
     }, this);
     return toReturn;
   },
 
- /*****************************************************************************/ 
+  /**
+    See SC.TreeItemContent.treeItemChildren
+    @field
+    @type Array
+  */
   treeItemChildren: function () {
 
-
     //is a final leaf in the tree?
-    if (this.get('isFinalNode')) {
+    if (this.get('isFinal')) {
       return null;
     }
 
@@ -210,7 +352,7 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent, {
 
         var tmp = Multivio.store.createRecord(Multivio.FileRecord, item);
 
-        if (this.get('isFileNode')) {
+        if (this.get('isFile')) {
           tmp.set('_ancestorFileNode', this);
         } else {
           tmp.set('_ancestorFileNode', this.get('_ancestorFileNode'));
@@ -230,10 +372,12 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent, {
   }.property('children', '_children').cacheable(),
   
 
- /*****************************************************************************/ 
+  /**
+    @private
+  */
   _nextFile: function (fileRecord, childRecord) {
 
-    var children = fileRecord.get('canBeFetchedNodes');
+    var children = fileRecord.get('fetchableNodes');
     if (!childRecord) {
       if (children && children.get('length') > 0) {
         return children[0];
@@ -260,9 +404,11 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent, {
     return this._nextFile(fileRecord.get('_ancestorFileNode'), fileRecord);
   },
 
- /*****************************************************************************/ 
+  /**
+    @private
+  */
   _previousFile: function (fileRecord, childRecord) {
-    var children = fileRecord.get('canBeFetchedNodes');
+    var children = fileRecord.get('fetchableNodes');
     if (!childRecord) {
       if (children && children.get('length') > 0) {
         return children[0];
@@ -285,10 +431,13 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent, {
     return this._previousFile(fileRecord.get('_ancestorFileNode'), fileRecord);
   },
 
- /*****************************************************************************/ 
+  /**
+    @field
+    @type Boolean
+  */
   hasNextFile: function () {
     
-    if (!this.get('isFileNode')) {
+    if (!this.get('isFile')) {
       return NO;
     }
 
@@ -298,9 +447,12 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent, {
   }.property('isContent', '_ancestorFileNode', 'treeItemChildren'),
 
 
- /*****************************************************************************/ 
+  /**
+    @field
+    @type Boolean
+  */
   hasPreviousFile: function () {
-    if (!this.get('isFileNode')) {
+    if (!this.get('isFile')) {
       return NO;
     }
 

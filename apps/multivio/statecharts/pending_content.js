@@ -41,7 +41,7 @@ Multivio.PendingContent = SC.State.extend(
     var record = this.get('currentFileNode');
     SC.Logger.debug("Mime changed: %@".fmt(record.get('mime')));
     if (record.get('mime')) {
-      if (record.get('isPdf')) {
+      if (record.get('isPDF')) {
         SC.Logger.debug("PDF....");
         this.gotoState('displayingPdf');
         return;
@@ -51,7 +51,7 @@ Multivio.PendingContent = SC.State.extend(
         this.gotoState('displayingImage');
         return;
       }
-      if (record.get('isXml')) {
+      if (record.get('isXML')) {
         this.gotoState('gettingNextDocument', this.get('currentFileNode'));
         return;
       }
@@ -71,10 +71,10 @@ Multivio.PendingContent = SC.State.extend(
   settingDocument: SC.State.design({
     enterState: function (fromNode) {
       var node;
-      if (fromNode.get('canBeFetched')) {
+      if (fromNode.get('isFetchable')) {
         node = fromNode;
       } else {
-        node = fromNode.get('fileNode');
+        node = fromNode.get('nearestFileNode');
       }
       var record = Multivio.store.find(Multivio.FileRecord, node.get('url'));
       if (!record.get('isReady')) {
@@ -90,14 +90,14 @@ Multivio.PendingContent = SC.State.extend(
   gettingNextDocument: SC.State.design({
     enterState: function (fromNode) {
       var node;
-      if (fromNode.get('canBeFetched')) {
+      if (fromNode.get('isFetchable')) {
         node = fromNode;
       } else {
-        if (fromNode.get('isFileNode')) {
-          var next = fromNode.get('fileNode').get('hasNextFile');
+        if (fromNode.get('isFile')) {
+          var next = fromNode.get('nearestFileNode').get('hasNextFile');
           node = next;
         } else {
-          node = fromNode.get('fileNode');
+          node = fromNode.get('nearestFileNode');
         }
       }
       var record = Multivio.store.find(Multivio.FileRecord, node.get('url'));

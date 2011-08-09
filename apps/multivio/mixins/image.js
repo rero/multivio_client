@@ -26,7 +26,7 @@ Multivio.DisplayImage = {
     if (this.get('isContent')) {
       
       //pdf check
-      if (this.get('isPdf') || this.get('isImage')) {
+      if (this.get('isPDF') || this.get('isImage')) {
 
         var scaleFactor = this.get('_zoomScale')[this.get('_currentZoomIndex')];
         var newUrl, newWidth, newHeight;
