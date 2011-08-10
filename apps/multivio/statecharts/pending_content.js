@@ -15,7 +15,7 @@ sc_require('controllers/image.js');
 /**
   @class
 
-  STATE
+  STATE DEFINITION
   
   Becomes active when the application is ready for user interaction
 
@@ -36,6 +36,7 @@ Multivio.PendingContent = SC.State.extend(
   currentFileNodeBinding: 'Multivio.currentFileNodeController',
 
   /**
+    STATE EVENT
   */
   _documentTypeDidChange: function () {
     var record = this.get('currentFileNode');
@@ -43,18 +44,22 @@ Multivio.PendingContent = SC.State.extend(
     if (record.get('mime')) {
       if (record.get('isPDF')) {
         SC.Logger.debug("PDF....");
-        this.gotoState('displayingPdf');
+        // STATE TRANSITION
+        this.gotoState('displayingPDF');
         return;
       }
       if (record.get('isImage')) {
         SC.Logger.debug("Image....");
+        // STATE TRANSITION
         this.gotoState('displayingImage');
         return;
       }
       if (record.get('isXML')) {
+        // STATE TRANSITION
         this.gotoState('gettingNextDocument', this.get('currentFileNode'));
         return;
       }
+      // STATE TRANSITION
       this.gotoState('displayingUnsupported');
     }
   }.observes('*currentFileNode.mime'),
@@ -64,11 +69,16 @@ Multivio.PendingContent = SC.State.extend(
   /************** SubStates *************************/
 
   /**
-    STATE
+    SUBSTATE DECLARATION
   */
   pendingDummy: SC.State,
 
+  /**
+    SUBSTATE DECLARATION
+  */
   settingDocument: SC.State.design({
+    
+    /** */
     enterState: function (fromNode) {
       var node;
       if (fromNode.get('isFetchable')) {
@@ -87,7 +97,12 @@ Multivio.PendingContent = SC.State.extend(
     }
   }),
 
+  /**
+    SUBSTATE DECLARATION
+  */
   gettingNextDocument: SC.State.design({
+    
+    /** */
     enterState: function (fromNode) {
       var node;
       if (fromNode.get('isFetchable')) {
@@ -114,7 +129,12 @@ Multivio.PendingContent = SC.State.extend(
     }
   }),
 
+  /**
+    SUBSTATE DECLARATION
+  */
   gettingPreviousDocument: SC.State.design({
+    
+    /** */
     enterState: function (fromNode) {
       var previous = fromNode.get('hasPreviousFile');
       var record = Multivio.store.find(Multivio.FileRecord, previous.get('url'));

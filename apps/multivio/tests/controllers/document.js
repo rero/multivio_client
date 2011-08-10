@@ -124,7 +124,7 @@ test('check getNext', function() {
   SC.RunLoop.end();
 
   SC.RunLoop.begin();
-  Multivio.filesController.nextFile();
+  Multivio.filesController.goToNextFile();
   SC.RunLoop.end();
 
   equals(Multivio.filesController.get('currentSelection').url, refUrl, refUrl + ': should next to ' + newUrl);
@@ -152,7 +152,7 @@ test('check getPrevious', function() {
   SC.RunLoop.end();
 
   SC.RunLoop.begin();
-  Multivio.filesController.previousFile();
+  Multivio.filesController.goToPreviousFile();
   SC.RunLoop.end();
 
   equals(Multivio.filesController.get('currentSelection').url, refUrl, refUrl + ': should next to ' + newUrl);

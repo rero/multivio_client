@@ -9,6 +9,8 @@
 
 /**
   @class
+  
+  STATE DEFINITION
 
   One of the application states: becomes active when the application is ready
   for user interaction
@@ -20,22 +22,30 @@
 Multivio.SearchReadyState = SC.State.extend(
   /** @scope Multivio.SearchReadyState.prototype */{
 
+  /** @default searchDummy */
   initialSubstate: 'searchDummy',
+
+  /** TODO */
   searchController: null,
   searchControllerBinding: 'Multivio.searchTreeController',
 
+  /** TODO */
   currentFileNode: null,
   currentFileNodeBinding: 'Multivio.currentFileNodeController',
 
+  /** TODO */
   currentSearchResults: null,
 
+  /** TODO */
   currentSearchingFile: null,
 
   /************** Methods *************************/
+
   selectionsUpdate : function () {
     this.updateEnlightening();
   }.observes('*currentFileNode.currentIndex'),
 
+  /** */
   updateEnlightening: function () {
     var currentIndex = this.getPath('currentFileNode.currentIndex');
     var current = this.getPath('searchController.currentQuery');
@@ -51,7 +61,10 @@ Multivio.SearchReadyState = SC.State.extend(
     }
   },
   
-  /*****************************************************************************/ 
+  /**
+    @field
+    @type Array
+  */
   currentQueryStore: function () {
     var current = this.getPath('searchController.currentQuery');
     if (current && current !== "") {
@@ -71,7 +84,8 @@ Multivio.SearchReadyState = SC.State.extend(
 
   }.property('*searchController.currentQuery', '*searchController.searchInAll', '*currentFileNode.url'),
 
-  /*****************************************************************************/ 
+  /**
+  */ 
   _currentQueryStoreDidChange: function () {
     var query = this.get('currentQueryStore');
     if (query) {
@@ -87,7 +101,8 @@ Multivio.SearchReadyState = SC.State.extend(
     this.updateEnlightening();
   }.observes('*searchController.currentQuery', '*searchController.searchInAll', '*currentFileNode.url'),
 
-  /*****************************************************************************/ 
+  /**
+  */ 
   cancelSearch: function () {
     this.get('searchController').set("msgStatus", "Aborted...");
     this.get('searchController').set("loadingStatus", Multivio.LOADING_CANCEL);
@@ -95,7 +110,8 @@ Multivio.SearchReadyState = SC.State.extend(
     this.set('currentSearchResults', null);
   },
 
-  /*****************************************************************************/ 
+  /**
+  */ 
   _currentFileNodeDidChange: function () {
     var currentFileNode = this.get('currentFileNode');
     var currentQuery = this.get('searchController.currentQuery');
@@ -109,7 +125,9 @@ Multivio.SearchReadyState = SC.State.extend(
     }
   }.observes('*currentFileNode.url'),
 
-  /*****************************************************************************/ 
+  /**
+    STATE EVENT
+  */ 
   _documentTypeDidChange: function () {
     var record = this.get('currentSearchingFile');
     if (record && record.get('mime')) {
@@ -127,10 +145,13 @@ Multivio.SearchReadyState = SC.State.extend(
     }
   }.observes('*currentSearchingFile.mime'),
 
-  /*****************************************************************************/ 
+  /**
+    @private
+  */ 
   _next: function () {
     var next = this.getPath('currentSearchingFile.hasNextFile');
     if (next) {
+      // STATE TRANSITION
       this.gotoState('gettingNextSearchResult', this.get('currentSearchingFile'));
     } else {
       Multivio.searchTreeController.set("msgStatus", "Done");
@@ -142,7 +163,10 @@ Multivio.SearchReadyState = SC.State.extend(
     }
   },
 
-  /*****************************************************************************/ 
+  /**
+    @param String status
+    @returns String
+  */ 
   statusString: function (status) {
     var ret = [], prop;
     for (prop in SC.Record) {
@@ -153,19 +177,35 @@ Multivio.SearchReadyState = SC.State.extend(
     return ret.join(" ");
   },
 
-  /*****************************************************************************/ 
-  _currentSearchingResultsDidChange: function () {
+  /**
+    STATE EVENT
+
+    @private
+  */
+  _currentSearchResultsDidChange: function () {
     if (this.getPath('currentSearchResults.status') & SC.Record.READY) {
       this._next();
     }
   }.observes('*currentSearchResults.status'),
 
+
   /************** SubStates *************************/
-  /*****************************************************************************/ 
+  
+  /**
+    SUBSTATE DECLARATION
+
+    Dummy state used as initial substate
+  */
   searchDummy: SC.State,
 
-  /*****************************************************************************/ 
+  /**
+    SUBSTATE DECLARATION
+    
+    Is active while the application is getting the next search result
+  */
   gettingNextSearchResult: SC.State.design({
+    
+    /** */
     enterState: function (fromNode) {
       var node;
       if (fromNode.get('isFetchable')) {

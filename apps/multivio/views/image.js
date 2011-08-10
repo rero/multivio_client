@@ -17,10 +17,10 @@ Multivio.mainImageView =  SC.View.design({
   keyDown: function (evt) {
     SC.Logger.debug('KeyDown: ' + evt.keyCode);
     if (evt.keyCode === 39) {
-      Multivio.mainStatechart.sendEvent('nextFile');
+      Multivio.mainStatechart.sendEvent('goToNextFile');
     }
     if (evt.keyCode === 37) {
-      Multivio.mainStatechart.sendEvent('previousFile');
+      Multivio.mainStatechart.sendEvent('goToPreviousFile');
     }
     return NO;
   }, 
@@ -60,7 +60,7 @@ Multivio.mainImageView =  SC.View.design({
     previousButton: SC.ImageButtonView.design({
       image: 'image-button-previous-doc',
       layout: {centerY: 0,  left: 10, width: 32, height: 32 },
-      action: 'previousFile',
+      action: 'goToPreviousFile',
       title: '<<',
       isEnabledBinding: "Multivio.currentFileNodeController.hasPreviousFile"
     }),
@@ -68,7 +68,7 @@ Multivio.mainImageView =  SC.View.design({
     nextButton: SC.ImageButtonView.design({
       layout: {centerY: 0,  left: 40, width: 32,  height: 32 },
       image: 'image-button-next-doc',
-      action: 'nextFile',
+      action: 'goToNextFile',
       isEnabledBinding: "Multivio.currentFileNodeController.hasNextFile",
       title: '>>'
     }),
@@ -91,7 +91,7 @@ Multivio.mainImageView =  SC.View.design({
     previousPageButton: SC.ImageButtonView.design({
       layout: {centerY: 0,  left: 180, width: 32, height: 32 },
       image: 'image-button-previous-page',
-      action: 'previousIndex',
+      action: 'goToPreviousIndex',
       isEnabledBinding: 'Multivio.currentFileNodeController.hasPreviousIndex',
       title: '<'
     }),
@@ -99,7 +99,7 @@ Multivio.mainImageView =  SC.View.design({
     nextPageButton: SC.ImageButtonView.design({
       layout: {centerY: 0,  left: 210, width: 32, height: 32 },
       image: 'image-button-next-page',
-      action: 'nextIndex',
+      action: 'goToNextIndex',
       isEnabledBinding: 'Multivio.currentFileNodeController.hasNextIndex',
       title: '>'
     }),

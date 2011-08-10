@@ -6,7 +6,6 @@
 ==============================================================================
 */
 
-
 /**
   @class
   
@@ -22,14 +21,11 @@
 Multivio.DisplayingContent = SC.State.extend(
   /** @scope Multivio.DisplayingContent.prototype */{
 
+  /**
+    @default SC.State displayingDummy
+  */
   initialSubstate: 'displayingDummy',
-  
-  treeController: null,
-  treeControllerBinding: 'Multivio.treeController',
-  
-  currentFileNode: null,
-  currentFileNodeBinding: 'Multivio.currentFileNodeController',
-  
+
   /**
     STATE EVENT
     
@@ -56,51 +52,59 @@ Multivio.DisplayingContent = SC.State.extend(
   },
 
   /**
+    STATE EVENT
+
     Goes to the next file in the document structure
   */
-  nextFile: function () {
+  goToNextFile: function () {
     if (Multivio.currentFileNodeController.get('hasNextFile')) {
       Multivio.currentFileNodeController.set('currentIndex', 1);
       Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
+      // STATE TRANSITION
       this.gotoState('gettingNextDocument', Multivio.currentFileNodeController);
     }
   },
 
   /**
+    STATE EVENT
+
     Goes to the previous file in the document structure
   */
-  previousFile: function () {
+  goToPreviousFile: function () {
     if (Multivio.currentFileNodeController.get('hasPreviousFile')) {
       Multivio.currentFileNodeController.set('currentIndex', 1);
       Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
+      // STATE TRANSITION
       this.gotoState('gettingPreviousDocument', Multivio.currentFileNodeController);
     }
   },
   
   /**
-    STATE DECLARATION
+    SUBSTATE DECLARATION
     
     Dummy state used as initial substate
   */
-  displayingDummy: SC.State.design({}),
+  displayingDummy: SC.State.design(
+    /** @scope Multivio.DisplayingContent.displayingDummy.prototype */{
+  }),
 
   /**
-    STATE DECLARATION
+    SUBSTATE DECLARATION
     
     Is active while the application is showing PDF content
   */
-  displayingPdf: SC.State.design({
+  displayingPDF: SC.State.design(
+    /** @scope Multivio.DisplayingContent.displayingPDF.prototype */{
 
     /**
       Binds to the currently selected index in currentFileNodeController, that
-      holds the currently displayed file
+      holds the currently displayed content file
+      @type Number
     */
     currentPage: null,
     currentPageBinding: 'Multivio.currentFileNodeController.currentIndex',
 
-    /**
-      STATE EVENT
-    */
+    /** */
     enterState: function () {
       var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
       if (viewToChange.get('nowShowing') !== 'mainPdfView') {
@@ -122,17 +126,16 @@ Multivio.DisplayingContent = SC.State.extend(
       }
     },
 
-    /**
-      STATE EVENT
-    */
+    /** */
     exitState: function () {
       Multivio.pdfFileController.set('content', null);
     },
 
     /**
-      Increments the current file index
+      Goes to the next page, image, ... in the current sequence
+      @returns Boolean YES if successful
     */
-    nextIndex: function () {
+    goToNextIndex: function () {
       if (Multivio.currentFileNodeController.get('hasNextIndex')) {
         Multivio.currentFileNodeController.set('currentIndex',
             Multivio.currentFileNodeController.get('currentIndex') + 1);
@@ -142,9 +145,10 @@ Multivio.DisplayingContent = SC.State.extend(
     },
 
     /**
-      Decrements the current file index
+      Goes to the previous page, image, ... in the current sequence
+      @returns Boolean YES if successful
     */
-    previousIndex: function () {
+    goToPreviousIndex: function () {
       if (Multivio.currentFileNodeController.get('hasPreviousIndex')) {
         Multivio.currentFileNodeController.set('currentIndex',
             Multivio.currentFileNodeController.get('currentIndex') - 1);
@@ -156,7 +160,6 @@ Multivio.DisplayingContent = SC.State.extend(
     /**
       Observes changes in the current page and forwards them to the PDF
       controller
-      
       @private
     */
     _currentPageDidChange: function () {
@@ -169,15 +172,14 @@ Multivio.DisplayingContent = SC.State.extend(
   }),
 
   /**
-    STATE DECLARATION
+    SUBSTATE DECLARATION
   
     Is active while the application is showing image content
   */
-  displayingImage: SC.State.design({
+  displayingImage: SC.State.design(
+    /** @scope Multivio.DisplayingContent.displayingImage.prototype */{
 
-    /**
-      STATE EVENT
-    */
+    /** */
     enterState: function () {
       var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
       if (viewToChange.get('nowShowing') !== 'mainImageView') {
@@ -196,21 +198,22 @@ Multivio.DisplayingContent = SC.State.extend(
       }
     },
 
-    /**
-      STATE EVENT
-    */
+    /** */
     exitState: function () {
       Multivio.imageFileController.set('content', null);
     }
   }),
 
   /**
-    STATE DECLARATION
+    SUBSTATE DECLARATION
   
     Is active while the application is showing unsupported content - a message
     error is shown in that case
   */
-  displayingUnsupported: SC.State.design({
+  displayingUnsupported: SC.State.design(
+    /** @scope Multivio.DisplayingContent.displayingUnsupported.prototype */{
+
+    /** */
     enterState: function () {
       var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
       if (viewToChange.get('nowShowing') !== 'unsupportedDocumentView') {

@@ -16,9 +16,11 @@
     - **structural** file nodes: correspond to files whose purpose (with regard to
       Multivio) is to group other files (e.g. XML Dublin Core, XML MARC, XML
       MODS, XML METS...)
-  - **position** nodes: they represent a specific location in the contents of
-    a **content** file node, usually an entry in its table of contents; in
-    this case the node has the same URL as its nearest ancestor file node
+  - **logical** nodes: they do not correspond to actual files; they represent
+    a specific location in the contents of a **content** file node, usually an
+    entry in its table of contents; the node has the same URL as its nearest
+    ancestor file node, and the `index` property determines the corresponding
+    location
 
   Besides, some nodes play a special role in the tree:
 
@@ -47,7 +49,7 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent,
   url: SC.Record.attr(String),
   
   /**
-    This is used in **position** nodes and corresponds to a location (e.g. a
+    This is used in **logical** nodes and corresponds to a location (e.g. a
     page number)
     @type Number
   */
@@ -127,7 +129,7 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent,
  
   /**
     @field
-    @type String
+    @returns String
   */
   toString: function () {
     var to_return = "Creator: %@\n".fmt(this.get('creator'));
