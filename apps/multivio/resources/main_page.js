@@ -58,7 +58,7 @@ Multivio.mainPage = SC.Page.design({
   }),
   mainPdfView: Multivio.mainPdfView,
   mainImageView: Multivio.mainImageView,
-  unsupportedDocumentView: Multivio.unsupportedDocumentView,
+  unsupportedFileView: Multivio.unsupportedFileView,
   thumbnailsView: Multivio.thumbnailsView,
   navigationBar: Multivio.NavigationBar,
   helpPane: Multivio.HelpPane,

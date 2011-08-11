@@ -11,15 +11,16 @@
   
   STATE DEFINITION
 
-  Becomes active when the application is showing content. Its different
-  substates handle different kinds of content.
+  Becomes active when the application is showing content and is ready for user
+  interaction on that content. Its different substates handle different kinds
+  of content.
 
   @author maj
   @extends SC.State
   @since 1.0
 */
-Multivio.DisplayingContent = SC.State.extend(
-  /** @scope Multivio.DisplayingContent.prototype */{
+Multivio.DisplayingContent = SC.State.extend({
+  /** @scope Multivio.DisplayingContent.prototype */
 
   /**
     @default SC.State displayingDummy
@@ -33,9 +34,9 @@ Multivio.DisplayingContent = SC.State.extend(
     
     @param {FileRecord} the record of the destination file
   */
-  fetchNewFile: function (record) {
+  fetchFile: function (record) {
     // STATE TRANSITION
-    this.gotoState('settingDocument', record);
+    this.gotoState('settingFile', record);
   },
 
   /**
@@ -61,21 +62,21 @@ Multivio.DisplayingContent = SC.State.extend(
       Multivio.currentFileNodeController.set('currentIndex', 1);
       Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
       // STATE TRANSITION
-      this.gotoState('gettingNextDocument', Multivio.currentFileNodeController);
+      this.gotoState('gettingNextFile', Multivio.currentFileNodeController);
     }
   },
 
   /**
     STATE EVENT
 
-    Goes to the previous file in the document structure
+    Goes to the previous file in the file structure
   */
   goToPreviousFile: function () {
     if (Multivio.currentFileNodeController.get('hasPreviousFile')) {
       Multivio.currentFileNodeController.set('currentIndex', 1);
       Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
       // STATE TRANSITION
-      this.gotoState('gettingPreviousDocument', Multivio.currentFileNodeController);
+      this.gotoState('gettingPreviousFile', Multivio.currentFileNodeController);
     }
   },
   
@@ -83,22 +84,22 @@ Multivio.DisplayingContent = SC.State.extend(
     SUBSTATE DECLARATION
     
     Dummy state used as initial substate
+    @type SC.State
   */
-  displayingDummy: SC.State.design(
-    /** @scope Multivio.DisplayingContent.displayingDummy.prototype */{
-  }),
+  displayingDummy: SC.State.design({}),
 
   /**
     SUBSTATE DECLARATION
     
     Is active while the application is showing PDF content
+    @type SC.State
   */
-  displayingPDF: SC.State.design(
-    /** @scope Multivio.DisplayingContent.displayingPDF.prototype */{
+  displayingPDF: SC.State.design({
 
     /**
-      Binds to the currently selected index in currentFileNodeController, that
-      holds the currently displayed content file
+      Binds to the currently selected index in currentFileNodeController,
+      which means the part of the content (page, image, ...) that is currently
+      displayed on screen
       @type Number
     */
     currentPage: null,
@@ -175,9 +176,10 @@ Multivio.DisplayingContent = SC.State.extend(
     SUBSTATE DECLARATION
   
     Is active while the application is showing image content
+    @type SC.State
   */
-  displayingImage: SC.State.design(
-    /** @scope Multivio.DisplayingContent.displayingImage.prototype */{
+  displayingImage: SC.State.design({
+    /** @scope Multivio.DisplayingContent.displayingImage.prototype */
 
     /** */
     enterState: function () {
@@ -209,16 +211,17 @@ Multivio.DisplayingContent = SC.State.extend(
   
     Is active while the application is showing unsupported content - a message
     error is shown in that case
+    @type SC.State
   */
-  displayingUnsupported: SC.State.design(
-    /** @scope Multivio.DisplayingContent.displayingUnsupported.prototype */{
+  displayingUnsupported: SC.State.design({
+    /** @scope Multivio.DisplayingContent.displayingUnsupported.prototype */
 
     /** */
     enterState: function () {
       var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
-      if (viewToChange.get('nowShowing') !== 'unsupportedDocumentView') {
-        viewToChange.set('nowShowing', 'unsupportedDocumentView');
-        viewToChange.set('nowShowing', 'unsupportedDocumentView');
+      if (viewToChange.get('nowShowing') !== 'unsupportedFileView') {
+        viewToChange.set('nowShowing', 'unsupportedFileView');
+        viewToChange.set('nowShowing', 'unsupportedFileView');
       }
     }
   })

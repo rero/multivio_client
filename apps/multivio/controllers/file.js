@@ -11,7 +11,7 @@
   This is the controller is the single selection of the Multivio.filesController.
 
   @author jma
-  @extends SC.ArrayController
+  @extends SC.ObjectController
 */
 
 Multivio.currentFileNodeController = SC.ObjectController.create({

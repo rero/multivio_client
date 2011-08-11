@@ -12,50 +12,62 @@
   
   STATE DEFINITION
 
-  One of the application states: becomes active when the application is ready
-  for user interaction
+  Is active when the search functionality is ready for use after application
+  setup
 
   @author maj
   @extends SC.State
   @since 1.1
 */
-Multivio.SearchReadyState = SC.State.extend(
-  /** @scope Multivio.SearchReadyState.prototype */{
+Multivio.SearchOperationalState = SC.State.extend({
+  /** @scope Multivio.SearchOperationalState.prototype */
 
   /** @default searchDummy */
   initialSubstate: 'searchDummy',
 
-  /** TODO */
+  /**
+    Binds to the root node of the search results tree (through its controller)
+    @type Multivio.FileRecord
+  */
   searchController: null,
   searchControllerBinding: 'Multivio.searchTreeController',
 
-  /** TODO */
+  /**
+    Binds to the current file node (through its controller)
+    @type Multivio.FileRecord
+  */
   currentFileNode: null,
   currentFileNodeBinding: 'Multivio.currentFileNodeController',
 
-  /** TODO */
+  /**
+    @type SC.RecordArray
+  */
   currentSearchResults: null,
 
-  /** TODO */
-  currentSearchingFile: null,
+  /**
+    @type Multivio.FileRecord
+  */
+  currentSearchedFile: null,
 
-  /************** Methods *************************/
-
-  selectionsUpdate : function () {
-    this.updateEnlightening();
+  /** @private */
+  _selectionsUpdate : function () {
+    this.updateHighlighting();
   }.observes('*currentFileNode.currentIndex'),
 
-  /** */
-  updateEnlightening: function () {
+  /**
+    Update the highlighting of search results in the displayed content
+  */
+  updateHighlighting: function () {
     var currentIndex = this.getPath('currentFileNode.currentIndex');
-    var current = this.getPath('searchController.currentQuery');
+    var currentUserQuery = this.getPath('searchController.currentUserQuery');
     if (this.getPath('currentFileNode.isSearchable') && currentIndex > 0) {
-      var query =  SC.Query.local(Multivio.SearchResultRecord, "query={query} AND url={url} AND page={page}", { 
-        query: current,
-        url: this.getPath('currentFileNode.url'),
-        page: this.getPath('currentFileNode.currentIndex')
-      });
-      Multivio.currentSearchResultsController.set('content', Multivio.store.find(query));
+      var query = SC.Query.local(Multivio.SearchResultRecord, "query={query} AND url={url} AND page={page}", {
+          query: currentUserQuery,
+          url: this.getPath('currentFileNode.url'),
+          page: this.getPath('currentFileNode.currentIndex')
+        });
+      Multivio.currentSearchResultsController.set('content',
+          Multivio.store.find(query));
     } else {
       Multivio.currentSearchResultsController.set('content', null);
     }
@@ -63,62 +75,68 @@ Multivio.SearchReadyState = SC.State.extend(
   
   /**
     @field
-    @type Array
+    @type SC.Query
   */
-  currentQueryStore: function () {
-    var current = this.getPath('searchController.currentQuery');
-    if (current && current !== "") {
-      var searchInAll = this.getPath('searchController.searchInAll');
-      if (!searchInAll && this.getPath('currentFileNode.isContent')) {
+  storeQueryForCurrentUserQuery: function () {
+    var currentUserQuery = this.getPath('searchController.currentUserQuery');
+    if (currentUserQuery && currentUserQuery !== "") {
+      var searchInAllFiles = this.getPath('searchController.searchInAllFiles');
+      if (!searchInAllFiles && this.getPath('currentFileNode.isContent')) {
         return SC.Query.local(Multivio.SearchRecord, "query={query} AND url={url}", { 
-          query: current,
+          query: currentUserQuery,
           url: this.getPath('currentFileNode.url')
         });
       } else {
         return SC.Query.local(Multivio.SearchRecord, "query={query}", { 
-          query: current
+          query: currentUserQuery
         });
       } 
     }
     return null;
 
-  }.property('*searchController.currentQuery', '*searchController.searchInAll', '*currentFileNode.url'),
+  }.property(
+      '*searchController.currentUserQuery',
+      '*searchController.searchInAllFiles',
+      '*currentFileNode.url'),
 
   /**
   */ 
-  _currentQueryStoreDidChange: function () {
-    var query = this.get('currentQueryStore');
-    if (query) {
-      this.getPath('searchController.content').set('treeItemChildren', Multivio.store.find(query));
-      var searchInAll = this.getPath('searchController.searchInAll');
-      if (searchInAll) {
+  _currentSearchQueryDidChange: function () {
+    var storeQuery = this.get('storeQueryForCurrentUserQuery');
+    if (storeQuery) {
+      this.getPath('searchController.content').set('treeItemChildren', Multivio.store.find(storeQuery));
+      var searchInAllFiles = this.getPath('searchController.searchInAllFiles');
+      if (searchInAllFiles) {
         SC.Logger.debug('Search in all...');
         this.get('searchController').set("msgStatus", "Searching in all...");
         this.get('searchController').set("loadingStatus", Multivio.LOADING_LOADING);
-        this.set('currentSearchingFile', Multivio.rootNodeController.get('content'));
+        this.set('currentSearchedFile', Multivio.rootNodeController.get('content'));
       }
     }
-    this.updateEnlightening();
-  }.observes('*searchController.currentQuery', '*searchController.searchInAll', '*currentFileNode.url'),
+    this.updateHighlighting();
+  }.observes('*searchController.currentUserQuery', '*searchController.searchInAllFiles', '*currentFileNode.url'),
 
   /**
+    STATE EVENT
   */ 
   cancelSearch: function () {
     this.get('searchController').set("msgStatus", "Aborted...");
     this.get('searchController').set("loadingStatus", Multivio.LOADING_CANCEL);
-    this.set('currentSearchingFile', null);
+    this.set('currentSearchedFile', null);
     this.set('currentSearchResults', null);
+    // STATE TRANSITION
+    this.gotoState('searchOperational');
   },
 
   /**
   */ 
   _currentFileNodeDidChange: function () {
     var currentFileNode = this.get('currentFileNode');
-    var currentQuery = this.get('searchController.currentQuery');
-    if (currentFileNode && currentFileNode.get('isSearchable') && currentQuery) {
+    var currentUserQuery = this.get('searchController.currentUserQuery');
+    if (currentFileNode && currentFileNode.get('isSearchable') && currentUserQuery) {
       var query = SC.Query.local(Multivio.SearchRecord, "query={query} AND url={url}", { 
-        query: this.getPath('searchController.currentQuery'),
-        url: this.getPath('currentSearchingFile.url')
+        query: this.getPath('searchController.currentUserQuery'),
+        url: this.getPath('currentSearchedFile.url')
       });
       //query:set('orderBy', 'guid');
       Multivio.searchResultsController.set('content', Multivio.store.find(query));
@@ -128,38 +146,40 @@ Multivio.SearchReadyState = SC.State.extend(
   /**
     STATE EVENT
   */ 
-  _documentTypeDidChange: function () {
-    var record = this.get('currentSearchingFile');
+  _fileTypeDidChange: function () {
+    var record = this.get('currentSearchedFile');
     if (record && record.get('mime')) {
       if (record.get('isSearchable')) {
-        this.get('searchController').set("msgStatus", "Searching in: %@".fmt(this.getPath('currentSearchingFile.url')));
+        this.get('searchController').set("msgStatus", "Searching in: %@".fmt(this.getPath('currentSearchedFile.url')));
 
         var query = SC.Query.local(Multivio.SearchRecord, "query={query} AND url={url}", { 
-          query: this.getPath('searchController.currentQuery'),
-          url: this.getPath('currentSearchingFile.url')
+          query: this.getPath('searchController.currentUserQuery'),
+          url: this.getPath('currentSearchedFile.url')
         });
         this.set('currentSearchResults', Multivio.store.find(query));
       } else {
         this._next();
       }
     }
-  }.observes('*currentSearchingFile.mime'),
+  }.observes('*currentSearchedFile.mime'),
 
   /**
     @private
   */ 
   _next: function () {
-    var next = this.getPath('currentSearchingFile.hasNextFile');
+    var next = this.getPath('currentSearchedFile.hasNextFile');
     if (next) {
       // STATE TRANSITION
-      this.gotoState('gettingNextSearchResult', this.get('currentSearchingFile'));
+      this.gotoState('gettingNextSearchResult', this.get('currentSearchedFile'));
     } else {
       Multivio.searchTreeController.set("msgStatus", "Done");
       SC.Logger.debug('Done');
       this.get('searchController').set("loadingStatus", Multivio.LOADING_DONE);
-      this.set('currentSearchingFile', null);
+      this.set('currentSearchedFile', null);
       this.set('currentSearchResults', null);
-      this.updateEnlightening();
+      this.updateHighlighting();
+      // STATE TRANSITION
+      this.gotoState('searchOperational');
     }
   },
 
@@ -201,9 +221,13 @@ Multivio.SearchReadyState = SC.State.extend(
   /**
     SUBSTATE DECLARATION
     
-    Is active while the application is getting the next search result
+    Is active while the application is getting the search results for the next
+    searchable file. This is used only when searching in all files.
+    
+    @type SC.State
   */
   gettingNextSearchResult: SC.State.design({
+    /** @lends Multivio.SearchOperationalState.prototype */
     
     /** */
     enterState: function (fromNode) {
@@ -223,7 +247,7 @@ Multivio.SearchReadyState = SC.State.extend(
         record.set('_ancestorFileNode', node.get('_ancestorFileNode'));
         node.appendChildren([record]);
       }
-      this.get('parentState').set('currentSearchingFile', record);
+      this.get('parentState').set('currentSearchedFile', record);
     }
   })
 });

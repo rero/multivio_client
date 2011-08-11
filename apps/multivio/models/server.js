@@ -4,7 +4,8 @@
 // ==========================================================================
 /*globals MyApp */
 
-/** @class
+/**
+  @class
 
   (Document your Model here)
 
@@ -13,6 +14,7 @@
 */
 
 Multivio.ServerRecord = SC.Record.extend({
+  /** @scope Multivio.ServerRecord.prototype */
 
   // TODO: Add your own code here.
   //
@@ -25,6 +27,14 @@ Multivio.ServerRecord = SC.Record.extend({
     return (this.get('status') & SC.Record.READY) !== 0; 
   }.property('status'),
 
+  /**
+    Checks that the server is fully functional:
+    
+    - API is compatible
+    - ... (TODO: add other checks)
+    
+    @returns Boolean
+  */
   isOk: function () {
     var toCompare = this.get('api_version');
     var version = this.get('serverCompatibility'), i;

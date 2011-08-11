@@ -6,6 +6,10 @@
 ==============================================================================
 */
 
+sc_require('statecharts/search_ready.js');
+sc_require('statecharts/displaying_content.js');
+sc_require('statecharts/fetching_content.js');
+
 /**
   @namespace
 
@@ -15,12 +19,8 @@
   @extends SC.Statechart
   @since 1.0
 */
-sc_require('statecharts/search_ready.js');
-sc_require('statecharts/displaying_content.js');
-sc_require('statecharts/pending_content.js');
-
-Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,
-  /** @scope Multivio.mainStatechart.prototype */ {
+Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
+  /** @scope Multivio.mainStatechart.prototype */
   
   initialState: 'main',
   trace: YES,
@@ -30,6 +30,7 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,
     STATE DECLARATION
   */
   main: SC.State.design({
+    /** @scope Multivio.mainStatechart.main.prototype */
 
     inputParameters: null,
     inputParametersBinding: 'Multivio.inputParameters',
@@ -84,6 +85,7 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,
       SUBSTATE DECLARATION
 
       Dummy state used as initial substate
+      @type SC.State
     */
     mainDummy: SC.State,
 
@@ -91,8 +93,12 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,
       SUBSTATE DECLARATION
       
       Is active while the application is waiting for a server response
+      @type SC.State
     */
     waitingForServer: SC.State.design({
+      /** @scope Multivio.mainStatechart.waitingForServer.prototype */
+
+      /** */
       server: null,
 
       /** */
@@ -134,8 +140,10 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,
     
     The major application state. It is active while the application is ready
     to interact with the user, that is, nearly always.
+    @type SC.State
   */
   applicationReady: SC.State.design({
+    /** @scope Multivio.mainStatechart.applicationReady.prototype */
 
     /** @default YES */
     substatesAreConcurrent: YES,
@@ -151,9 +159,12 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,
 
     /**
       SUBSTATE DECLARATION
+      @type SC.State
     */
-    contentReady: SC.State.design({
-      initialSubstate: 'pendingContent',
+    contentOperational: SC.State.design({
+      /** @scope Multivio.mainStatechart.applicationReady.contentOperational.prototype */
+
+      initialSubstate: 'fetchingContent',
 
       /**
         Binds to the root node object. Its URL must be observed for changes
@@ -167,7 +178,7 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,
         Multivio.getPath('mainPage.mainPane').append();
         var url_to_get = Multivio.getPath('inputParameters.options.url');
         var record = Multivio.store.find(Multivio.FileRecord, url_to_get);
-        //set root document
+        //set root file
         //Multivio.rootNodeController.set('content', record); TODO mom 10.08.2011 remove if next line does the job
         this.get('currentRootNode').set('content', record);
       },
@@ -186,7 +197,7 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,
         if (currentRootNode && currentRootNode.get('isLoaded')) {
           Multivio.treeController.get('content').set('treeItemChildren',
               [currentRootNode]);
-          //set current document
+          //set current file
           Multivio.currentFileNodeController.set('content',
               currentRootNode.get('content'));
         }
@@ -195,14 +206,16 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,
       /**
         SUBSTATE DECLARATION
         
-        See Multivio#PendingContent
+        See Multivio#FetchingContent
+        @type Multivio.FetchingContent
       */
-      pendingContent: SC.State.plugin('Multivio.PendingContent'),
+      fetchingContent: SC.State.plugin('Multivio.FetchingContent'),
 
       /**
         SUBSTATE DECLARATION
 
         See Multivio#DisplayingContent
+        @type Multivio.DisplayingContent
       */
       displayingContent: SC.State.plugin('Multivio.DisplayingContent')
 
@@ -210,9 +223,10 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,
     /**
       SUBSTATE DECLARATION
 
-      See Multivio#SearchReadyState
+      See Multivio#SearchOperationalState
+      @type Multivio.SearchOperationalState
     */
-    searchReady: SC.State.plugin('Multivio.SearchReadyState')
+    searchOperational: SC.State.plugin('Multivio.SearchOperationalState')
   }),
 
   /**
@@ -220,8 +234,10 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,
     
     Transitional state - it is used for handling fatal errors and then
     transition to the end state
+    @type SC.State
   */
   error: SC.State.design({
+    /** @scope Multivio.mainStatechart.error.prototype */
 
     /**
       STATE EVENT
@@ -239,8 +255,11 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager,
 
   /**
     SUBSTATE DECLARATION
+
+    @type SC.State
   */
   end: SC.State.design({
+    /** @scope Multivio.mainStatechart.end.prototype */
     
     /** */
     enterState: function () {

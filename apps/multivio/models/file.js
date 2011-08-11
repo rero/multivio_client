@@ -39,8 +39,8 @@
   @version 0.1
 */
 
-Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent,
-  /** @scope Multivio.FileRecord.prototype */ {
+Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent, {
+  /** @scope Multivio.FileRecord.prototype */
 
   /**
     URL of the node

@@ -6,7 +6,7 @@
 ==============================================================================
 */
 
-Multivio.unsupportedDocumentView =  SC.View.design({
+Multivio.unsupportedFileView =  SC.View.design({
   childViews: ['titleView', 'previousButton', 'nextButton'],
 
   titleView: SC.View.design({
@@ -15,7 +15,7 @@ Multivio.unsupportedDocumentView =  SC.View.design({
 
     titleLabel: SC.LabelView.design({
       layout: { width: 500, height: 18 },
-      value: "Unsupported document!"
+      value: "Unsupported file type!"
     })
   }),
   previousButton: SC.ButtonView.design({

@@ -68,7 +68,7 @@ Multivio.SearchView = SC.PalettePane.design({
       layout: { top: 0, left: 0, right: 0, height: 24 },
       applyImmediately: NO,
       hintBinding: 'Multivio.searchTreeController.defaultQueryMessage',
-      valueBinding: 'Multivio.searchTreeController.currentQuery',
+      valueBinding: 'Multivio.searchTreeController.currentUserQuery',
       //TODO: to change to isEditable when sproutcore will be solved the
       //      problem.
       isEnabledBinding: 'Multivio.searchTreeController.isEditable',
@@ -110,7 +110,7 @@ Multivio.SearchView = SC.PalettePane.design({
       toggleOffValue: NO,
       toggleOnValue: YES,
       isEnabledBinding: SC.Binding.oneWay('Multivio.searchTreeController.isLoading').not(),
-      valueBinding: 'Multivio.searchTreeController.searchInAll'
+      valueBinding: 'Multivio.searchTreeController.searchInAllFiles'
     }),
 
     labelView: SC.LabelView.design({

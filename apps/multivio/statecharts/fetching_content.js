@@ -17,18 +17,18 @@ sc_require('controllers/image.js');
 
   STATE DEFINITION
   
-  Becomes active when the application is ready for user interaction
+  Becomes active when the application is fetching content to be displayed
 
   @author maj
   @extends SC.State
   @since 1.0
 */
-Multivio.PendingContent = SC.State.extend(
-  /** @scope Multivio.PendingContent.prototype */{
+Multivio.FetchingContent = SC.State.extend({
+  /** @scope Multivio.FetchingContent.prototype */
 
   /**
   */
-  initialSubstate: 'pendingDummy',
+  initialSubstate: 'fetchingDummy',
 
   /**
   */
@@ -38,7 +38,7 @@ Multivio.PendingContent = SC.State.extend(
   /**
     STATE EVENT
   */
-  _documentTypeDidChange: function () {
+  _fileTypeDidChange: function () {
     var record = this.get('currentFileNode');
     SC.Logger.debug("Mime changed: %@".fmt(record.get('mime')));
     if (record.get('mime')) {
@@ -56,7 +56,7 @@ Multivio.PendingContent = SC.State.extend(
       }
       if (record.get('isXML')) {
         // STATE TRANSITION
-        this.gotoState('gettingNextDocument', this.get('currentFileNode'));
+        this.gotoState('gettingNextFile', this.get('currentFileNode'));
         return;
       }
       // STATE TRANSITION
@@ -70,13 +70,17 @@ Multivio.PendingContent = SC.State.extend(
 
   /**
     SUBSTATE DECLARATION
+
+    @type SC.State
   */
-  pendingDummy: SC.State,
+  fetchingDummy: SC.State,
 
   /**
     SUBSTATE DECLARATION
+
+    @type SC.State
   */
-  settingDocument: SC.State.design({
+  settingFile: SC.State.design({
     
     /** */
     enterState: function (fromNode) {
@@ -99,8 +103,10 @@ Multivio.PendingContent = SC.State.extend(
 
   /**
     SUBSTATE DECLARATION
+
+    @type SC.State
   */
-  gettingNextDocument: SC.State.design({
+  gettingNextFile: SC.State.design({
     
     /** */
     enterState: function (fromNode) {
@@ -131,8 +137,10 @@ Multivio.PendingContent = SC.State.extend(
 
   /**
     SUBSTATE DECLARATION
+
+    @type SC.State
   */
-  gettingPreviousDocument: SC.State.design({
+  gettingPreviousFile: SC.State.design({
     
     /** */
     enterState: function (fromNode) {

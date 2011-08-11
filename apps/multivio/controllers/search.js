@@ -22,9 +22,9 @@ Multivio.currentSearchResultsController = SC.ArrayController.create({
 Multivio.searchTreeController = SC.TreeController.create({
 
   allowsMultipleSelection: NO,
-  currentQuery: null,
+  currentUserQuery: null,
   defaultQueryMessage: 'Enter...',
-  searchInAll: null,
+  searchInAllFiles: null,
   msgStatus: "",
   loadingStatus: Multivio.LOADING_DONE,
 
