@@ -6,49 +6,84 @@
 
 /** @class
 
-  (Document your Model here)
+  A single search result
 
   @extends SC.Record
   @version 0.1
 */
-
 Multivio.SearchResultRecord = SC.Record.extend(SC.TreeItemContent, {
+  /** @scope Multivio.SearchResultRecord.prototype */
+  
+  /** @type String */
   left_context: SC.Record.attr(String),
+  /** @type String */
   right_context: SC.Record.attr(String),
+  /** @type String */
   matched: SC.Record.attr(String),
+  /** @type Number */
   y2: SC.Record.attr(Number), 
+  /** @type Number */
   x2: SC.Record.attr(Number), 
+  /** @type Number */
   y1: SC.Record.attr(Number), 
+  /** @type Number */
   x1: SC.Record.attr(Number), 
+  /** @type Number */
   page: SC.Record.attr(Number),
+  /** @type Array */
   treeItemChildren: null,
+  /** @type String */
   url: null,
+  /** @type String */
   query: null,
 
+  /**
+    @field
+    @type String
+  */
   label: function () {
-    return "%@<b>%@</b>%@ (p.%@)".fmt(this.get('left_context'), this.get('matched'), this.get('right_context'), this.get('page'));
+    return "%@<b>%@</b>%@ (p.%@)".fmt(this.get('left_context'),
+        this.get('matched'), this.get('right_context'), this.get('page'));
   }.property('left_context', 'matched', 'right_context', 'page').cacheable()
 
 });
 
-Multivio.SearchRecord = SC.Record.extend(SC.TreeItemContent, {
+/** @class
 
-  // TODO: Add your own code here.
+  The top-level data structure of a set of search results. It includes a set
+  of Multivio.SearchResultRecord objects
+
+  @extends SC.Record
+  @version 0.1
+*/
+Multivio.SearchRecord = SC.Record.extend(SC.TreeItemContent, 
+  /** @scope Multivio.SearchRecord.prototype */ {
+
+  /** @type String */
   query: SC.Record.attr(String),
+  /** @type Number */
   url: SC.Record.attr(String),
+  /** @type Number */
   max_reached: SC.Record.attr(Number),
+  /** @type String */
   context_type: SC.Record.attr(String),
+  /** @type Array */
   results: SC.Record.attr(Array, {lazilyInstantiate: YES}),
-
+  /** @type Boolean */
   treeItemIsExpanded: NO,
-
  
-  /*****************************************************************************/ 
+  /**
+    @field
+    @type Boolean
+  */ 
   isReady: function () { 
     return (this.get('status') & SC.Record.READY) !== 0; 
   }.property('status'),
  
-  /*****************************************************************************/ 
+  /**
+    @field
+    @type String
+  */ 
   toString: function () {
     var to_return = "Query: %@\n".fmt(this.get('query'));
     to_return += "Url: %@\n".fmt(this.get('url'));
@@ -58,10 +93,11 @@ Multivio.SearchRecord = SC.Record.extend(SC.TreeItemContent, {
     return to_return;
   },
 
-
- /*****************************************************************************/ 
+  /**
+    @field
+    @type Array
+  */ 
   treeItemChildren: function () {
-
     var children = this.get('results');
     if (children) {
       //create children records for both file and indexNode
@@ -73,13 +109,16 @@ Multivio.SearchRecord = SC.Record.extend(SC.TreeItemContent, {
         return tmp;
       }, this);
     }
-
     return null;
-
   }.property('results').cacheable(),
 
+  /**
+    @field
+    @type String
+  */ 
   label: function () {
-    return "%@ (%@)".fmt(Multivio.store.find(Multivio.FileRecord, this.get('url')).get('title'), this.getPath('results.length'));
+    return "%@ (%@)".fmt(Multivio.store.find(Multivio.FileRecord,
+        this.get('url')).get('title'), this.getPath('results.length'));
   }.property('results', 'url')
   
 });

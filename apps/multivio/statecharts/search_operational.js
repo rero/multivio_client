@@ -7,8 +7,7 @@
 */
 
 
-/**
-  @class
+/** @class
   
   STATE DEFINITION
 
@@ -22,8 +21,8 @@
 Multivio.SearchOperationalState = SC.State.extend({
   /** @scope Multivio.SearchOperationalState.prototype */
 
-  /** @default searchDummy */
-  initialSubstate: 'searchDummy',
+  /** @default searchIdle */
+  initialSubstate: 'searchIdle',
 
   /**
     Binds to the root node of the search results tree (through its controller)
@@ -49,19 +48,103 @@ Multivio.SearchOperationalState = SC.State.extend({
   */
   currentSearchedFile: null,
 
+  /** */
+  enterState: function () {
+    // reset search interface
+    Multivio.searchTreeController.resetSearchInterface();
+  },
+
+  /**
+    STATE EVENT
+  */ 
+  _fileTypeDidChange: function () {
+    var record = this.get('currentSearchedFile');
+    if (record && record.get('mime')) {
+      if (record.get('isSearchable')) {
+        this.get('searchController').set("msgStatus",
+          "Searching in: %@".fmt(this.getPath('currentSearchedFile.url')));
+        var query = SC.Query.local(Multivio.SearchRecord, "query={query} AND url={url}", {
+          query: this.getPath('searchController.currentUserQuery'),
+          url: this.getPath('currentSearchedFile.url')
+        });
+        this.set('currentSearchResults', Multivio.store.find(query));
+      } else {
+        this._proceedSearchWithNextFile();
+      }
+    }
+  }.observes('*currentSearchedFile.mime'),
+
+  /**
+    This function starts or resumes the search process. The events that may
+    cause this to happen are:
+
+    - the user started a new search, either using the search button or by
+      hitting "enter" in the search query field
+    - the user checked or unchecked the "Search in all files" box
+    - the current file did change
+    @private
+  */
+  _resumeSearch: function () {
+    var storeQuery = this.get('_storeQueryForCurrentContext');
+    if (storeQuery) {
+      this.getPath('searchController.content').set('treeItemChildren',
+          Multivio.store.find(storeQuery));
+      var searchInAllFiles = this.getPath('searchController.searchInAllFiles');
+      if (searchInAllFiles) {
+        SC.Logger.debug('Searching in all files...');
+        this.get('searchController').set("msgStatus", "Searching in all files...");
+        this.get('searchController').set("loadingStatus", Multivio.LOADING_LOADING);
+        this.set('currentSearchedFile', Multivio.rootNodeController.get('content'));
+      }
+      else {
+        SC.Logger.debug('Searching in current file...');
+        this.get('searchController').set("msgStatus", "Searching in current file...");
+      }
+    }
+    this._updateHighlighting();
+  }.observes(
+      '*searchController.currentUserQuery',
+      '*searchController.searchInAllFiles',
+      '*currentFileNode.url'),
+
+  /**
+    STATE EVENT
+  */ 
+  cancelSearch: function () {
+    this._concludeSearchProcess("Aborted", Multivio.LOADING_CANCEL);
+  },
+
+  /**
+    STATE EVENT
+
+    @private
+  */
+  _currentSearchResultsDidChange: function () {
+    if (this.getPath('currentSearchResults.status') & SC.Record.READY) {
+      this._proceedSearchWithNextFile();
+    }
+  }.observes('*currentSearchResults.status'),
+
+
   /** @private */
-  _selectionsUpdate : function () {
-    this.updateHighlighting();
+  _currentFileIndexDidChange : function () {
+    this._updateHighlighting();
   }.observes('*currentFileNode.currentIndex'),
 
   /**
     Update the highlighting of search results in the displayed content
+    @private
   */
-  updateHighlighting: function () {
+  _updateHighlighting: function () {
     var currentIndex = this.getPath('currentFileNode.currentIndex');
     var currentUserQuery = this.getPath('searchController.currentUserQuery');
     if (this.getPath('currentFileNode.isSearchable') && currentIndex > 0) {
-      var query = SC.Query.local(Multivio.SearchResultRecord, "query={query} AND url={url} AND page={page}", {
+      // take the search query that corresponds to searching in the current
+      // page and pass it to the search results controller, so that the
+      // corresponding results are propagated to the highlight view
+      var query = SC.Query.local(
+          Multivio.SearchResultRecord,
+          "query={query} AND url={url} AND page={page}", {
           query: currentUserQuery,
           url: this.getPath('currentFileNode.url'),
           page: this.getPath('currentFileNode.currentIndex')
@@ -75,14 +158,19 @@ Multivio.SearchOperationalState = SC.State.extend({
   
   /**
     @field
+    Returns the store query that corresponds to the current context, taking
+    into account the current user query and the 'search in all files' selection
+
     @type SC.Query
+    @private
   */
-  storeQueryForCurrentUserQuery: function () {
+  _storeQueryForCurrentContext: function () {
     var currentUserQuery = this.getPath('searchController.currentUserQuery');
     if (currentUserQuery && currentUserQuery !== "") {
       var searchInAllFiles = this.getPath('searchController.searchInAllFiles');
       if (!searchInAllFiles && this.getPath('currentFileNode.isContent')) {
-        return SC.Query.local(Multivio.SearchRecord, "query={query} AND url={url}", { 
+        return SC.Query.local(Multivio.SearchRecord,
+          "query={query} AND url={url}", { 
           query: currentUserQuery,
           url: this.getPath('currentFileNode.url')
         });
@@ -93,40 +181,10 @@ Multivio.SearchOperationalState = SC.State.extend({
       } 
     }
     return null;
-
   }.property(
       '*searchController.currentUserQuery',
       '*searchController.searchInAllFiles',
       '*currentFileNode.url'),
-
-  /**
-  */ 
-  _currentSearchQueryDidChange: function () {
-    var storeQuery = this.get('storeQueryForCurrentUserQuery');
-    if (storeQuery) {
-      this.getPath('searchController.content').set('treeItemChildren', Multivio.store.find(storeQuery));
-      var searchInAllFiles = this.getPath('searchController.searchInAllFiles');
-      if (searchInAllFiles) {
-        SC.Logger.debug('Search in all...');
-        this.get('searchController').set("msgStatus", "Searching in all...");
-        this.get('searchController').set("loadingStatus", Multivio.LOADING_LOADING);
-        this.set('currentSearchedFile', Multivio.rootNodeController.get('content'));
-      }
-    }
-    this.updateHighlighting();
-  }.observes('*searchController.currentUserQuery', '*searchController.searchInAllFiles', '*currentFileNode.url'),
-
-  /**
-    STATE EVENT
-  */ 
-  cancelSearch: function () {
-    this.get('searchController').set("msgStatus", "Aborted...");
-    this.get('searchController').set("loadingStatus", Multivio.LOADING_CANCEL);
-    this.set('currentSearchedFile', null);
-    this.set('currentSearchResults', null);
-    // STATE TRANSITION
-    this.gotoState('searchOperational');
-  },
 
   /**
   */ 
@@ -144,49 +202,42 @@ Multivio.SearchOperationalState = SC.State.extend({
   }.observes('*currentFileNode.url'),
 
   /**
-    STATE EVENT
-  */ 
-  _fileTypeDidChange: function () {
-    var record = this.get('currentSearchedFile');
-    if (record && record.get('mime')) {
-      if (record.get('isSearchable')) {
-        this.get('searchController').set("msgStatus", "Searching in: %@".fmt(this.getPath('currentSearchedFile.url')));
-
-        var query = SC.Query.local(Multivio.SearchRecord, "query={query} AND url={url}", { 
-          query: this.getPath('searchController.currentUserQuery'),
-          url: this.getPath('currentSearchedFile.url')
-        });
-        this.set('currentSearchResults', Multivio.store.find(query));
-      } else {
-        this._next();
-      }
-    }
-  }.observes('*currentSearchedFile.mime'),
-
-  /**
+    Continue search with the next file, if present, otherwise set search
+    process as done
     @private
   */ 
-  _next: function () {
+  _proceedSearchWithNextFile: function () {
     var next = this.getPath('currentSearchedFile.hasNextFile');
     if (next) {
       // STATE TRANSITION
       this.gotoState('gettingNextSearchResult', this.get('currentSearchedFile'));
     } else {
-      Multivio.searchTreeController.set("msgStatus", "Done");
-      SC.Logger.debug('Done');
-      this.get('searchController').set("loadingStatus", Multivio.LOADING_DONE);
-      this.set('currentSearchedFile', null);
-      this.set('currentSearchResults', null);
-      this.updateHighlighting();
-      // STATE TRANSITION
-      this.gotoState('searchOperational');
+      this._updateHighlighting();
+      this._concludeSearchProcess("Done", Multivio.LOADING_DONE);
     }
+  },
+
+  /**
+    @param String statusMessage
+    @param String statusCode See Multivio.currentSearchResultsController for
+    the list of admitted codes
+    @private
+  */
+  _concludeSearchProcess: function (statusMessage, statusCode) {
+    this.get('searchController').set("msgStatus", statusMessage);
+    SC.Logger.debug(statusMessage);
+    this.get('searchController').set("loadingStatus", statusCode);
+    this.set('currentSearchedFile', null);
+    this.set('currentSearchResults', null);
+    // STATE TRANSITION
+    this.gotoState('searchIdle');
   },
 
   /**
     @param String status
     @returns String
-  */ 
+  */
+  /* 
   statusString: function (status) {
     var ret = [], prop;
     for (prop in SC.Record) {
@@ -196,17 +247,7 @@ Multivio.SearchOperationalState = SC.State.extend({
     }
     return ret.join(" ");
   },
-
-  /**
-    STATE EVENT
-
-    @private
   */
-  _currentSearchResultsDidChange: function () {
-    if (this.getPath('currentSearchResults.status') & SC.Record.READY) {
-      this._next();
-    }
-  }.observes('*currentSearchResults.status'),
 
 
   /************** SubStates *************************/
@@ -214,9 +255,9 @@ Multivio.SearchOperationalState = SC.State.extend({
   /**
     SUBSTATE DECLARATION
 
-    Dummy state used as initial substate
+    @type SC.State
   */
-  searchDummy: SC.State,
+  searchIdle: SC.State,
 
   /**
     SUBSTATE DECLARATION

@@ -4,22 +4,31 @@
 // ==========================================================================
 /*globals Multivio */
 
-/** @class
-
-(Document Your Controller Here)
-
-@extends SC.Object
-*/
 Multivio.LOADING_DONE = "done";
 Multivio.LOADING_LOADING = "loading";
 Multivio.LOADING_CANCEL = "cancel";
 
-//highlight
-Multivio.currentSearchResultsController = SC.ArrayController.create({
+/** @namespace
+
+  TODO
+
+  @extends SC.Object
+*/
+Multivio.currentSearchResultsController = SC.ArrayController.create(
+  /** @scope Multivio.currentSearchResultsController.prototype */ {
+
+  /** */
   allowsMultipleSelection: NO
 });
 
-Multivio.searchTreeController = SC.TreeController.create({
+/** @namespace
+
+  TODO
+
+  @extends SC.Object
+*/
+Multivio.searchTreeController = SC.TreeController.create(
+  /** @scope Multivio.searchTreeController.prototype */ {
 
   allowsMultipleSelection: NO,
   currentUserQuery: null,
@@ -36,6 +45,15 @@ Multivio.searchTreeController = SC.TreeController.create({
       guid: '0'
     });
     this.set('content', rootNode);
+    this.resetSearchInterface();
+  },
+
+  /** */
+  resetSearchInterface: function () {
+    this.set('currentUserQuery', '');
+    this.set('searchInAllFiles', NO);
+    this.set('msgStatus', '');
+    this.set('loadingStatus', Multivio.LOADING_DONE);
   },
   
   isLoading: function () {
