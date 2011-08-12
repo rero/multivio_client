@@ -18,12 +18,12 @@ sc_require('views/tree.js');
 sc_require('views/search.js');
 Multivio.navigationController = SC.ArrayController.create({
 
-  currentOpenedPanel: undefined,
+  currentOpenPanel: undefined,
 
   content: [
     SC.Object.create({
-      panel: 'mainPage.helpPane',
-      icon: static_url("images/icons/24x24/help_light_24x24.png")
+      panel: 'mainPage.searchView',
+      icon: static_url("images/icons/24x24/search_light_24x24.png")
     }),
     
     SC.Object.create({
@@ -35,9 +35,11 @@ Multivio.navigationController = SC.ArrayController.create({
       panel: 'mainPage.thumbnailsView',
       icon: static_url("images/icons/24x24/thumbnails_light_24x24.png")
     }),
+
     SC.Object.create({
-      panel: 'mainPage.searchView',
-      icon: static_url("images/icons/24x24/search_light_24x24.png")
+      panel: 'download',
+      icon: static_url("images/icons/24x24/download_light_24x24.png"),
+      action: 'download'
     }),
     
     SC.Object.create({
@@ -47,9 +49,8 @@ Multivio.navigationController = SC.ArrayController.create({
     }),
 
     SC.Object.create({
-      panel: 'download',
-      icon: static_url("images/icons/24x24/download_light_24x24.png"),
-      action: 'download'
+      panel: 'mainPage.helpPane',
+      icon: static_url("images/icons/24x24/help_light_24x24.png")
     })
   ],
 
@@ -59,31 +60,35 @@ Multivio.navigationController = SC.ArrayController.create({
     SC.Logger.debug('navigationBar: selection changed! ' + sel.length());
     if (!SC.none(sel) && sel.length() > 0) {
       panelName = sel.firstObject().get('panel');
-      action = sel.firstObject().get('action');
-      oldPanelName = this.get('currentOpenedPanel');
+      var action = sel.firstObject().get('action');
+      var oldPanelName = this.get('currentOpenPanel');
       if (!SC.none(oldPanelName) && panelName !== oldPanelName) {
         if (Multivio.getPath(oldPanelName).remove) {
           Multivio.getPath(oldPanelName).remove();
         }
       }
-      this.set('currentOpenedPanel', panelName);
+      this.set('currentOpenPanel', panelName);
       SC.Logger.debug('Panel Name: ' + panelName);
       if (Multivio.getPath(panelName)) {
         Multivio.getPath(panelName).append();
       } else {
-        eval("this."+action+"()");
+        eval("this." + action + "()");
       }
     }
     if (sel.length() === 0) {
-      panelName = this.get('currentOpenedPanel');
+      panelName = this.get('currentOpenPanel');
       if (!SC.none(panelName)) {
         if (Multivio.getPath(panelName)) {
           Multivio.getPath(panelName).remove();
         }
       }
-      this.set('currentOpenedPanel', undefined);
+      this.set('currentOpenPanel', undefined);
     }
   }.observes('selection'),
+
+  /**
+    Close all palettes
+  */
   closeAll: function () {
     this.deselectObjects(this.get('selection'));
   },

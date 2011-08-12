@@ -20,7 +20,7 @@ Multivio.NavigationBar = SC.SourceListView.design({
   useToggleSelection: YES,
   acceptsFirstResponder: NO,
   selectOnMouseDown: YES,
-  layout: { top: 10, left: 0, bottom: 40, width: 40},
+  layout: { top: 12, left: 2, bottom: 40, width: 40},
   layerId: 'mvo-navigation-bar',
   contentValueKey: 'panel',
   contentIconKey: 'icon',
@@ -48,7 +48,7 @@ Multivio.NavigationBar = SC.SourceListView.design({
           if (this.get('allowDeselectAll')) {
             this.select(null, false);
           }
-          return YES ;
+          return YES;
         }
       }
     }

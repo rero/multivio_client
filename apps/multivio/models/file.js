@@ -4,8 +4,7 @@
 // ==========================================================================
 /*globals Multivio */
 
-/**
-  @class
+/** @class
 
   The core data model of Multivio is a hierarchical (tree) structure that
   contains a representation of the document being presented. Each node in the

@@ -12,8 +12,7 @@ sc_require('controllers/tree.js');
 sc_require('controllers/pdf.js');
 sc_require('controllers/image.js');
 
-/**
-  @class
+/** @class
 
   STATE DEFINITION
   

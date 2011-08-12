@@ -6,19 +6,11 @@
 ==============================================================================
 */
 
-/** 
-@class
+/** @class
 
-  CDM (Core Document Model) is the global model of the application. 
-  The CDM consists of 4 objects.
-
-  CDM can return as response:
-    -1: the response is not on the client-side but 
-        the request has been transmitted to the server
-    {Object}: the response of the request. The response can be 'null'
+  TODO...
 
 @extends SC.Object
-@version 0.2.0
 */
 
 Multivio.inputParameters = SC.Object.create({

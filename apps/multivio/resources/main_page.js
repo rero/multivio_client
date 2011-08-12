@@ -48,7 +48,7 @@ Multivio.mainPage = SC.Page.design({
 
     //topLeftView: Multivio.navigationBar,
     centerView: SC.ContainerView.design(Multivio.innerGradient, {
-      layout: { top: 10, left: 40, bottom: 40, right: 10 },
+      layout: { top: 5, left: 40, bottom: 40, right: 5 },
       classNames: 'mvo-container-view'.w()
     }),
     mouseDown: function (ev) {

@@ -6,7 +6,7 @@
 ==============================================================================
 */
 
-sc_require('statecharts/search_ready.js');
+sc_require('statecharts/search_operational.js');
 sc_require('statecharts/displaying_content.js');
 sc_require('statecharts/fetching_content.js');
 
