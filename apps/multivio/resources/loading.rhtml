@@ -6,6 +6,33 @@
 ==============================================================================
 -->
 
+<% content_for('page_styles') do %>
+
+<style type="text/css">
+    #loading {
+      background: none repeat scroll 0 0 #fff;
+    }
+
+    #mvo-splash-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      height: 170px;
+      width: 231px;
+      background: none;
+      margin: -85px 0px 0px -116px;
+      font: 18px "Lucida Grande","Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
+    }
+
+    #mvo-splash-content img {
+      display: block;
+      clear: both;
+      margin: 20px auto 5px auto;
+    }
+</style>
+
+<% end %>
+
 <% content_for :loading do %>
 <% # Any HTML in this file will be visible on screen while your page loads
    # its application JavaScript.  SproutCore applications are optimized for 
