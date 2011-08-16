@@ -16,15 +16,14 @@
   @extends SC.State
   @since 1.0
 */
-Multivio.FetchingContent = SC.State.extend({
+Multivio.FetchingContent = SC.State.extend(/** @scope Multivio.FetchingContent.prototype */{
   initialSubstate: 'fetchingDummy',
   fetchingDummy: SC.State,
 
   fetchingNextContent: SC.State.extend({
-    /** @scope Multivio.FetchingContent.prototype */
 
     /**
-*/
+    */
     currentFetchingFileNode: null,
 
     /** */

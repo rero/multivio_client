@@ -258,7 +258,7 @@ Multivio.FileRecord = SC.Record.extend({
     @type String
   */
   icon: function () {
-    return this.get('isFetchable') || this.get('isContent') ? 'sc-icon-document-16' : null;
+    return this.get('isFetchable') || this.get('isContent') ? 'icon-fethchable-file' : null;
   }.property('isFetchable', 'isContent').cacheable(),
 
   /**
@@ -296,7 +296,7 @@ Multivio.FileRecord = SC.Record.extend({
     if (this.get('isFile')) {
       return YES;
     }
-    //ancestoreFileNode alreay in the tree
+    // ancestor FileNode already in the tree
     var _ancestorFileNode = this.get('_ancestorFileNode');
     if (_ancestorFileNode && (_ancestorFileNode.get('url') === this.get('url'))) {
       return YES;

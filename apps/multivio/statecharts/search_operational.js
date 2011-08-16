@@ -47,7 +47,6 @@ Multivio.SearchOperationalState = SC.State.extend({
 
   /**
     Update the highlighting of search results in the displayed content
-    @private
   */
   updateHighlighting: function () {
     var currentIndex = this.getPath('currentFileNode.currentIndex');
@@ -58,7 +57,7 @@ Multivio.SearchOperationalState = SC.State.extend({
       // corresponding results are propagated to the highlight view
       var query = SC.Query.local(
           Multivio.SearchResultRecord,
-          "query={query} AND url={url} AND page={page}", 
+          "query={query} AND url={url} AND page={page}",
           {
             query: currentUserQuery,
             url: this.getPath('currentFileNode.url'),
@@ -104,9 +103,9 @@ Multivio.SearchOperationalState = SC.State.extend({
     }
   }.observes('*searchTreeController.searchInAllFiles'),
 
-  
 
   /************** SubStates *************************/
+
   /**
     SUBSTATE DECLARATION
 
@@ -199,12 +198,19 @@ Multivio.SearchOperationalState = SC.State.extend({
   */
   searchInAllIdle: SC.State.design({
 
+    /**
+      @param String currentUserQuery if provided, the search process is
+      automatically launched upon entering this state
+    */
     enterState: function (currentUserQuery) {
       if (currentUserQuery && currentUserQuery !== "") {
         this.updateSearch(currentUserQuery);
       }
     },
 
+    /**
+      STATE EVENT
+    */
     searchInCurrentFile: function () {
       var currentUserQuery = Multivio.getPath('searchTreeController.currentUserQuery');
       this.gotoState('searchInCurrentFileIdle', currentUserQuery);
@@ -212,6 +218,8 @@ Multivio.SearchOperationalState = SC.State.extend({
     
     /**
       STATE EVENT
+      
+      @param String currentUserQuery
       @private
     */
     updateSearch: function (currentUserQuery) {
@@ -225,6 +233,7 @@ Multivio.SearchOperationalState = SC.State.extend({
       //});
       Multivio.setPath('searchTreeController.content.searchTreeItemChildren',
         [Multivio.getPath('rootNodeController.content')]);
+      // launch the search process from the root node of the document tree
       this.gotoState('gettingNextSearchResult', Multivio.getPath('rootNodeController.hasNextFile'));
     }
   }),
@@ -233,12 +242,12 @@ Multivio.SearchOperationalState = SC.State.extend({
   /**
     SUBSTATE DECLARATION
     
-    Is active while the application is getting the search results for the next
+    Is active while the application is getting the search results for a
     searchable file. This is used only when searching in all files.
     
     @type SC.State
   */
-  gettingNextSearchResult: SC.State.design({
+  gettingSearchResultsForFile: SC.State.design({
     /** @lends Multivio.SearchOperationalState.prototype */
     /**
       @type Multivio.FileRecord
@@ -250,7 +259,11 @@ Multivio.SearchOperationalState = SC.State.extend({
     */
     currentFetchingFileNode: null,
     
-    /** */
+    /**
+      @param FileRecord fromNode the node where to start the search. It may be
+      necessary to find the nearest file node before starting the search, if
+      fromNode is not searchable itself
+    */
     enterState: function (fromNode) {
       var currentNode;
       var fileNode;
@@ -268,7 +281,6 @@ Multivio.SearchOperationalState = SC.State.extend({
       }
       this.set('currentFetchingFileNode', fileNode);
     },
-
 
     /**
       STATE EVENT
@@ -293,7 +305,11 @@ Multivio.SearchOperationalState = SC.State.extend({
       }
     },
     
-    //callback for tree structure walking
+    /**
+      Callback for tree structure walking. Observes the arrival of the search
+      results for the current searched file and jumps to the next.
+      @private
+    */
     _currentSearchResultsDidChange: function () {
       if (this.getPath('currentSearchResults.status') & SC.Record.READY) {
         Multivio.mainStatechart.sendEvent('updateHighlighting');
@@ -304,6 +320,10 @@ Multivio.SearchOperationalState = SC.State.extend({
 
     /**
       STATE EVENT
+      
+      While traversing the tree for multi-file searching, if the current
+      searched file has a different MIME type than the previous, check if it's
+      searchable and launch the search, otherwise proceed to the next file
     */ 
     _currentFetchingFileNodeDidChange: function () {
       var fileNode = this.get('currentFetchingFileNode');

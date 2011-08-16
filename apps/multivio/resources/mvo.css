@@ -187,6 +187,11 @@ label {
   filter : alpha(opacity=3);
 }
 
+.icon-fethchable-file {
+  width: 16px;
+  height: 16px;
+  background-image: sc_static("images/icons/file.png");
+}
 
 /*
 -----------------------------
