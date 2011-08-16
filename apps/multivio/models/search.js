@@ -56,8 +56,7 @@ Multivio.SearchResultRecord = SC.Record.extend(SC.TreeItemContent, {
   @extends SC.Record
   @version 0.1
 */
-Multivio.SearchRecord = SC.Record.extend(SC.TreeItemContent, 
-  /** @scope Multivio.SearchRecord.prototype */ {
+Multivio.SearchRecord = SC.Record.extend(SC.TreeItemContent, /** @scope Multivio.SearchRecord.prototype */ {
 
   /** @type String */
   query: SC.Record.attr(String),
@@ -117,8 +116,11 @@ Multivio.SearchRecord = SC.Record.extend(SC.TreeItemContent,
     @type String
   */ 
   label: function () {
-    return "%@ (%@)".fmt(Multivio.store.find(Multivio.FileRecord,
+    if (this.get('url')) {
+      return "%@ (%@)".fmt(Multivio.store.find(Multivio.FileRecord,
         this.get('url')).get('title'), this.getPath('results.length'));
+    }
+    return null;
   }.property('results', 'url')
   
 });
