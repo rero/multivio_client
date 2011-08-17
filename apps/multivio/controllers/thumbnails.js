@@ -84,7 +84,7 @@ Multivio.pdfThumbnailsController = SC.ArrayController.create({
   nPages: null,
   nPagesBinding: SC.Binding.oneWay('Multivio.pdfFileController.nPages'),
 
-  currentPage: null,
+  currentPage: 1,
   currentPageBinding: 'Multivio.pdfFileController.currentPage',
 
   url: null,

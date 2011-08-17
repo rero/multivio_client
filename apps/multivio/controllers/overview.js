@@ -13,19 +13,29 @@
 sc_require('views/overview.js');
 Multivio.overviewController = SC.ObjectController.create({
 
-  // TODO: Add your own code here.
-  //contentBinding: 'Multivio.currentFileNodeController',
   isPaletteVisible: null,
   isPaletteVisibleBinding: 'Multivio.mainPage.overview.isVisibleInWindow',
   contentBinding: 'Multivio.pdfFileController',
   imageWidth: 140,
 
+  /**
+    @field
+    @type Boolean
+  */
   isEnabled: function () {
     return YES;
   }.property(),
 
+  /**
+    @field
+    @type Boolean
+  */
   showPalette: null,
 
+  /**
+    @field
+    @type String
+  */
   currentUrl: function () {
     if (this.get('isContent')) {
       //pdf check
@@ -41,7 +51,8 @@ Multivio.overviewController = SC.ObjectController.create({
     return undefined;
   }.property('rotationAngle', '_currentUrl'),
 
-  showPaletteDidChanged: function () {
+  /** @private */
+  _showPaletteDidChange: function () {
     var showPalette = this.get('showPalette');
     if (showPalette) {
       Multivio.getPath('mainPage.overview').open();

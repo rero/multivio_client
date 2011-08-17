@@ -16,15 +16,19 @@ Multivio.mainPdfView =  SC.View.design({
   keyDown: function (evt) {
     SC.Logger.debug('KeyDown: ' + evt.keyCode);
     if (evt.keyCode === 38) {
+      // STATECHART EVENT TRIGGER
       Multivio.mainStatechart.sendEvent('goToPreviousIndex');
     }
     if (evt.keyCode === 40) {
+      // STATECHART EVENT TRIGGER
       Multivio.mainStatechart.sendEvent('goToNextIndex');
     }
     if (evt.keyCode === 39) {
+      // STATECHART EVENT TRIGGER
       Multivio.mainStatechart.sendEvent('goToNextFile');
     }
     if (evt.keyCode === 37) {
+      // STATECHART EVENT TRIGGER
       Multivio.mainStatechart.sendEvent('goToPreviousFile');
     }
     return NO;
@@ -70,14 +74,14 @@ Multivio.mainPdfView =  SC.View.design({
       layout: {centerY: 0,  left: 10, width: 32, height: 32 },
       action: 'goToPreviousFile',
       title: '<<',
-      isEnabledBinding: "Multivio.currentFileNodeController.hasPreviousFile"
+      isEnabledBinding: "Multivio.pdfFileController.hasPreviousFile"
     }),
 
     nextButton: SC.ImageButtonView.design({
       layout: {centerY: 0,  left: 40, width: 32,  height: 32 },
       image: 'image-button-next-doc',
       action: 'goToNextFile',
-      isEnabledBinding: "Multivio.currentFileNodeController.hasNextFile",
+      isEnabledBinding: "Multivio.pdfFileController.hasNextFile",
       title: '>>'
     }),
     
@@ -101,7 +105,7 @@ Multivio.mainPdfView =  SC.View.design({
       image: 'image-button-previous-page',
       //target: 'Multivio.pdfFileController',
       action: 'goToPreviousIndex',
-      isEnabledBinding: 'Multivio.currentFileNodeController.hasPreviousIndex',
+      isEnabledBinding: 'Multivio.pdfFileController.hasPreviousIndex',
       title: '<'
     }),
 
@@ -110,8 +114,8 @@ Multivio.mainPdfView =  SC.View.design({
       acceptsFirstResponder: NO,
       isTextArea: NO,
       applyImmediately: NO,
-      contentBinding: 'Multivio.currentFileNodeController', 
-      contentValueKey: 'currentIndex',
+      contentBinding: 'Multivio.pdfFileController', 
+      contentValueKey: 'currentPage',
       classNames: "mvo-pagenr".w(),
       validator: SC.Validator.PositiveInteger.create({
         validateKeyDown: function (form, field, charStr) {
@@ -138,7 +142,7 @@ Multivio.mainPdfView =  SC.View.design({
       image: 'image-button-next-page',
       //target: 'Multivio.pdfFileController',
       action: 'goToNextIndex',
-      isEnabledBinding: 'Multivio.currentFileNodeController.hasNextIndex',
+      isEnabledBinding: 'Multivio.pdfFileController.hasNextIndex',
       title: '>'
     }),
 

@@ -15,7 +15,8 @@
 //
 Multivio.reload = function () {
   SC.Logger.debug('New input');
- // Multivio.mainStatechart.sendEvent('main');
+  // STATECHART EVENT TRIGGER
+  // Multivio.mainStatechart.sendEvent('main');
   Multivio.inputParameters.read();
 };
 

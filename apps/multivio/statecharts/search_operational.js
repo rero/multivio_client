@@ -71,34 +71,45 @@ Multivio.SearchOperationalState = SC.State.extend({
     }
   },
 
-  /** @private */
+  /**
+    If the file index (e.g. the page) changes, update the result highlighting
+    according to the current search query
+    @private
+  */
   _currentFileIndexDidChange : function () {
+    // STATECHART EVENT TRIGGER
     Multivio.mainStatechart.sendEvent('updateHighlighting');
   }.observes('*currentFileNode.currentIndex'),
 
-  /** */
+  /** @private */
   _currentFileNodeDidChange : function () {
+    // if the "searching in all files" mode is active, and a user search query
+    // exists, launch the search process immediately upon file node transition
     if (!Multivio.getPath('searchTreeController.searchInAllFiles')) {
       var currentUserQuery = this.getPath('searchTreeController.currentUserQuery');
       if (currentUserQuery && currentUserQuery !== "") {
+        // STATECHART EVENT TRIGGER
         Multivio.mainStatechart.sendEvent('updateSearch', currentUserQuery);
       }
     }
   }.observes('*currentFileNode.url'),
 
-  /** */
+  /** @private */
   _currentUserSearchQueyDidChange : function () {
     var currentUserQuery = this.getPath('searchTreeController.currentUserQuery');
     if (currentUserQuery && currentUserQuery !== "") {
+      // STATECHART EVENT TRIGGER
       Multivio.mainStatechart.sendEvent('updateSearch', currentUserQuery);
     }
   }.observes('*searchTreeController.currentUserQuery'),
   
-  /** */
-  _searchInAllDidChange : function () {
+  /** @private */
+  _searchInAllFilesDidChange : function () {
     if (Multivio.getPath('searchTreeController.searchInAllFiles')) {
+      // STATECHART EVENT TRIGGER
       Multivio.mainStatechart.sendEvent('searchInAllFiles');
     } else {
+      // STATECHART EVENT TRIGGER
       Multivio.mainStatechart.sendEvent('searchInCurrentFile');
     }
   }.observes('*searchTreeController.searchInAllFiles'),
@@ -117,31 +128,43 @@ Multivio.SearchOperationalState = SC.State.extend({
     */
     currentSearchResults: null,
     currentFetchingFileNode: null,
-    
+
+    /**
+      @param String currentUserQuery if provided, the search process is
+      automatically launched upon entering this state
+    */
     enterState: function (currentUserQuery) {
       if (currentUserQuery && currentUserQuery !== "") {
+        // STATECHART EVENT TRIGGER
         Multivio.mainStatechart.sendEvent('updateSearch', currentUserQuery);
       }
     },
     
-    /** */
+    /**
+      STATE EVENT
+
+      Changes the search mode
+    */
     searchInAllFiles: function () {
       var currentUserQuery = Multivio.getPath('searchTreeController.currentUserQuery');
-      this.gotoState('searchInAllIdle', currentUserQuery);
+      // STATE TRANSITION
+      this.gotoState('searchInAllFilesIdle', currentUserQuery);
     },
 
     /**
-      This function starts or resumes the search process. The events that may
-      cause this to happen are:
+      STATE EVENT
+    
+      This function starts or resumes the search process in the current file.
+      It usually results from one of the following events:
 
       - the user started a new search, either using the search button or by
         hitting "enter" in the search query field
-      - the user checked or unchecked the "Search in all files" box
-      - the current file did change
-      @private
+      - the user unchecked the "Search in all files" box
+      - the currently displayed file did change
     */
     updateSearch: function (currentUserQuery) {
       var currentFetchingFileNode = Multivio.getPath('currentFileNodeController.content');
+      // search only if the current file is searchable
       if (currentFetchingFileNode.get('isContent')) {
         //reset seachResult and counters
         this.set('currentFetchingFileNode', currentFetchingFileNode);
@@ -162,7 +185,7 @@ Multivio.SearchOperationalState = SC.State.extend({
       }
     },
     
-    /** */
+    /** @private */
     _currentSearchResultsDidChange: function () {
       if (this.getPath('currentSearchResults.status') & SC.Record.READY) {
         Multivio.mainStatechart.sendEvent('updateHighlighting');
@@ -170,6 +193,7 @@ Multivio.SearchOperationalState = SC.State.extend({
       }
     }.observes('*currentSearchResults.status'),
 
+    /** @private */
     _concludeSearchProcess: function (statusMessage, statusCode) {
       var currentSearchResults = this.get('currentSearchResults');
       var currentFetchingFileNode = this.get('currentFetchingFileNode');
@@ -196,7 +220,7 @@ Multivio.SearchOperationalState = SC.State.extend({
 
     @type SC.State
   */
-  searchInAllIdle: SC.State.design({
+  searchInAllFilesIdle: SC.State.design({
 
     /**
       @param String currentUserQuery if provided, the search process is
@@ -210,17 +234,38 @@ Multivio.SearchOperationalState = SC.State.extend({
 
     /**
       STATE EVENT
+      
+      Changes the search mode
     */
     searchInCurrentFile: function () {
       var currentUserQuery = Multivio.getPath('searchTreeController.currentUserQuery');
+      // STATE TRANSITION
       this.gotoState('searchInCurrentFileIdle', currentUserQuery);
     },
     
     /**
       STATE EVENT
+
+      This function starts or resumes the search process in the all the files
+      of the current document. Each time it is called, it starts the search
+      process from the document root node and traverses the whole tree,
+      getting search results for each content node and storing them in the
+      store.
       
+      If a search operation has already been executed earlier for the current
+      document, the search results, or a part of them, if the process was
+      interrupted by the user, are already cached in the store. In that case,
+      the outcome of the process will be the addition of the possible missing
+      results to the store.
+
+      Besides, the following events may also cause a search update:
+
+      - the user started a new search, either using the search button or by
+        hitting "enter" in the search query field
+      - the user checked the "Search in all files" box
+      - the currently displayed file did change
+
       @param String currentUserQuery
-      @private
     */
     updateSearch: function (currentUserQuery) {
       Multivio.store.find(Multivio.FileRecord).setEach('numberOfSearchResults', 0);
@@ -234,7 +279,9 @@ Multivio.SearchOperationalState = SC.State.extend({
       Multivio.setPath('searchTreeController.content.searchTreeItemChildren',
         [Multivio.getPath('rootNodeController.content')]);
       // launch the search process from the root node of the document tree
-      this.gotoState('gettingNextSearchResult', Multivio.getPath('rootNodeController.hasNextFile'));
+      // STATE TRANSITION
+      this.gotoState('gettingNextSearchResult',
+          Multivio.getPath('rootNodeController.hasNextFile'));
     }
   }),
 
@@ -244,6 +291,10 @@ Multivio.SearchOperationalState = SC.State.extend({
     
     Is active while the application is getting the search results for a
     searchable file. This is used only when searching in all files.
+    
+    During the search process, this state is visited iteratively, once per
+    file node in the document tree. The state transitions to itself, once per
+    file node, until they have all been visited.
     
     @type SC.State
   */
@@ -260,9 +311,8 @@ Multivio.SearchOperationalState = SC.State.extend({
     currentFetchingFileNode: null,
     
     /**
-      @param FileRecord fromNode the node where to start the search. It may be
-      necessary to find the nearest file node before starting the search, if
-      fromNode is not searchable itself
+      @param FileRecord fromNode the node from which to start the search. The
+      node itself is not searched.
     */
     enterState: function (fromNode) {
       var currentNode;
@@ -284,24 +334,19 @@ Multivio.SearchOperationalState = SC.State.extend({
 
     /**
       STATE EVENT
-    */ 
-    cancelSearch: function () {
-      this._concludeSearchProcess("Aborted", Multivio.LOADING_CANCEL);
-    },
 
-    /**
       Continue search with the next file, if present, otherwise set search
       process as done
       @private
-    */ 
+    */
     _proceedSearchWithNextFile: function () {
       var next = this.getPath('currentFetchingFileNode.hasNextFile');
       if (next) {
         // STATE TRANSITION
         this.gotoState('gettingNextSearchResult', next);
       } else {
+        // STATE TRANSITION (will be executed inside the called function)
         this._concludeSearchProcess("Done", Multivio.LOADING_DONE);
-        //this.gotoState('searchInAllIdle');
       }
     },
     
@@ -367,7 +412,7 @@ Multivio.SearchOperationalState = SC.State.extend({
       this.set('currentFetchingFileNode', null);
       this.set('currentSearchResults', null);
       // STATE TRANSITION
-      this.gotoState('searchInAllIdle');
+      this.gotoState('searchInAllFilesIdle');
     }
   })
 });

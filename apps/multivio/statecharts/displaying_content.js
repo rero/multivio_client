@@ -257,7 +257,6 @@ Multivio.DisplayingContent = SC.State.extend({
       var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
       if (viewToChange.get('nowShowing') !== 'unsupportedFileView') {
         viewToChange.set('nowShowing', 'unsupportedFileView');
-        viewToChange.set('nowShowing', 'unsupportedFileView');
       }
     }
   })

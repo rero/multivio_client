@@ -23,6 +23,7 @@ Multivio.pdfFileController = SC.ObjectController.create(Multivio.DisplayImage, {
 
   //Bindings 
   //contentBinding: SC.Binding.oneWay('Multivio.currentFileNodeController'),
+  currentPage: 1,
 
   _centerViewWidthBinding: SC.Binding.oneWay('Multivio.mainPage.mainPdfView.pdfScrollView.contentView.visibleWidth'),
 

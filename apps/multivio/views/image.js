@@ -17,9 +17,11 @@ Multivio.mainImageView =  SC.View.design({
   keyDown: function (evt) {
     SC.Logger.debug('KeyDown: ' + evt.keyCode);
     if (evt.keyCode === 39) {
+      // STATECHART EVENT TRIGGER
       Multivio.mainStatechart.sendEvent('goToNextFile');
     }
     if (evt.keyCode === 37) {
+      // STATECHART EVENT TRIGGER
       Multivio.mainStatechart.sendEvent('goToPreviousFile');
     }
     return NO;

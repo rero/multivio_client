@@ -186,6 +186,7 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
       exitState: function () {
         Multivio.getPath('mainPage.mainPane').remove();
       },
+<<<<<<< HEAD
       
       _currentFetchingRootNode: function () {
         var currentFetchingRootNode = this.get('currentFetchingRootNode');
@@ -198,6 +199,23 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
           } else {
             this.gotoState('fetchingNextContent', currentFetchingRootNode.getPath('hasNextFile')); 
           }
+=======
+
+      /**
+        Initialize the tree with the root node
+        @private
+      */
+      _rootNodeDidChange: function () {
+        var currentRootNode = this.getPath('currentRootNode');
+        if (currentRootNode && currentRootNode.get('isLoaded')) {
+          Multivio.treeController.get('content').set('treeItemChildren',
+              [currentRootNode]);
+          //set current file
+          Multivio.currentFileNodeController.set('currentIndex', 1);
+          
+          Multivio.currentFileNodeController.set('content',
+              currentRootNode.get('content'));
+>>>>>>> Code review - search statechart (in progress)
         }
       }.observes('*currentFetchingRootNode.mime'),
 
