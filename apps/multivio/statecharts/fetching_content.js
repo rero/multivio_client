@@ -18,54 +18,7 @@
 */
 Multivio.FetchingContent = SC.State.extend(/** @scope Multivio.FetchingContent.prototype */{
   initialSubstate: 'fetchingDummy',
-<<<<<<< HEAD
-=======
 
-  /**
-  */
-  currentFileNode: null,
-  currentFileNodeBinding: 'Multivio.currentFileNodeController',
-
-  /**
-    STATE EVENT
-  */
-  _fileTypeDidChange: function () {
-    var record = this.get('currentFileNode');
-    SC.Logger.debug("Mime changed: %@".fmt(record.get('mime')));
-    if (record.get('mime')) {
-      if (record.get('isPDF')) {
-        SC.Logger.debug("PDF....");
-        Multivio.currentFileNodeController.set('currentIndex', 1);
-        // STATE TRANSITION
-        this.gotoState('displayingPDF');
-        return;
-      }
-      if (record.get('isImage')) {
-        SC.Logger.debug("Image....");
-        // STATE TRANSITION
-        this.gotoState('displayingImage');
-        return;
-      }
-      if (record.get('isXML')) {
-        // STATE TRANSITION
-        this.gotoState('gettingNextFile', this.get('currentFileNode'));
-        return;
-      }
-      // STATE TRANSITION
-      this.gotoState('displayingUnsupported');
-    }
-  }.observes('*currentFileNode.mime'),
-
-
-
-  /************** SubStates *************************/
-
-  /**
-    SUBSTATE DECLARATION
-
-    @type SC.State
-  */
->>>>>>> Code review - search statechart (in progress)
   fetchingDummy: SC.State,
 
   fetchingNextContent: SC.State.extend({

@@ -235,6 +235,12 @@ Button images
 .mvo-default-theme .sc-image-button-view .image-button-overview {
    background-image: sc_static("images/icons/24x24/loupe_dark_24x24.png");
 }
+.mvo-default-theme .sc-image-button-view .thumbnail_list_mode {
+  background-image: sc_static("images/icons/24x24/thumbnail_list_dark_24x24.png");
+}
+.mvo-default-theme .sc-image-button-view .thumbnail_grid_mode {
+  background-image: sc_static("images/icons/24x24/thumbnail_grid_dark_24x24.png");
+}
 
 .mvo-default-theme .sc-image-button-view .image-button-search-16 {
   background-image: sc_static("images/icons/16x16/search_dark_16x16.png");

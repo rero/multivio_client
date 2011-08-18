@@ -154,9 +154,10 @@ Multivio.DisplayingContent = SC.State.extend({
         Multivio.getPath('mainPage.mainPdfView').becomeFirstResponder();
 
         // add bindings only after the current file is determined
-        Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('content', 'Multivio.pdfThumbnailsController.arrangedObjects');
-        Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('selection', 'Multivio.pdfThumbnailsController.selection');
-        Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('target', 'Multivio.pdfThumbnailsController');
+        var tv = Multivio.getPath('mainPage.thumbnailsView.contentView.thumbnailScrollView.contentView');
+        tv.bind('content', 'Multivio.pdfThumbnailsController.arrangedObjects');
+        tv.bind('selection', 'Multivio.pdfThumbnailsController.selection');
+        tv.bind('target', 'Multivio.pdfThumbnailsController');
         // TODO: unbind these afterwards
         
         // display toolbar
@@ -226,7 +227,6 @@ Multivio.DisplayingContent = SC.State.extend({
       if (viewToChange.get('nowShowing') !== 'mainImageView') {
         viewToChange.set('nowShowing', 'mainImageView');
         Multivio.getPath('mainPage.mainImageView').becomeFirstResponder();
-
         Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('content', 'Multivio.imageThumbnailsController.arrangedObjects');
         Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('selection', 'Multivio.imageThumbnailsController.selection');
         Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('target', 'Multivio.imageThumbnailsController');

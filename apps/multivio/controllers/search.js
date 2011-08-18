@@ -78,12 +78,7 @@ Multivio.searchTreeController = SC.TreeController.create( /** @scope Multivio.se
       if (!selectedIndex) {
         selectedIndex = 1;
       }
-<<<<<<< HEAD
       Multivio.setPath('currentFileNodeController.content', currentSelection.get('_ancestorFileNode'));
-=======
-      // STATECHART EVENT TRIGGER
-      Multivio.mainStatechart.sendEvent('goToFile', selectedUrl);
->>>>>>> Code review - search statechart (in progress)
       Multivio.currentFileNodeController.set('currentIndex', selectedIndex);
     }
   }.observes('selection'),
