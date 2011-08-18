@@ -24,7 +24,7 @@ Multivio.DisplayingContent = SC.State.extend({
   /**
     @default SC.State displayingDummy
   */
-  initialSubstate: 'displayingDummy',
+  initialSubstate: 'dispatchingContent',
 
   /**
     STATE EVENT
@@ -33,9 +33,9 @@ Multivio.DisplayingContent = SC.State.extend({
     
     @param {FileRecord} the record of the destination file
   */
-  fetchFile: function (record) {
+  fetchFile: function (node) {
     // STATE TRANSITION
-    this.gotoState('settingFile', record);
+    this.gotoState('fetchingNextContent', node);
   },
 
   /**
@@ -57,11 +57,12 @@ Multivio.DisplayingContent = SC.State.extend({
     Goes to the next file in the document structure
   */
   goToNextFile: function () {
-    if (Multivio.currentFileNodeController.get('hasNextFile')) {
+    var next = Multivio.currentFileNodeController.get('hasNextFile');
+    if (next) {
       Multivio.currentFileNodeController.set('currentIndex', 1);
       Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
       // STATE TRANSITION
-      this.gotoState('gettingNextFile', Multivio.currentFileNodeController);
+      this.gotoState('fetchingNextContent', next);
     }
   },
 
@@ -71,21 +72,60 @@ Multivio.DisplayingContent = SC.State.extend({
     Goes to the previous file in the file structure
   */
   goToPreviousFile: function () {
-    if (Multivio.currentFileNodeController.get('hasPreviousFile')) {
+    var previous = Multivio.currentFileNodeController.get('hasPreviousFile');
+    if (previous) {
       Multivio.currentFileNodeController.set('currentIndex', 1);
       Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
       // STATE TRANSITION
-      this.gotoState('gettingPreviousFile', Multivio.currentFileNodeController);
+      this.gotoState('fetchingPreviousContent', previous);
     }
   },
   
+  exitState: function () {
+    //close the node in the tree
+    Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
+  },
+
   /**
     SUBSTATE DECLARATION
     
     Dummy state used as initial substate
     @type SC.State
   */
-  displayingDummy: SC.State.design({}),
+  dispatchingContent: SC.State.design({
+    enterState: function (fileNode) {
+      if (fileNode) {
+        //open the node in the tree
+        fileNode.set('treeItemIsExpanded', YES);
+        
+        //set the currentFileNode and the index
+        Multivio.currentFileNodeController.set('content', fileNode);
+        Multivio.currentFileNodeController.set('currentIndex', 1);
+        
+        //update the treeView selection
+        var selection = Multivio.getPath('treeController.selection');
+        if (!selection || selection.getPath('firstObject.storeKey') !== fileNode.get('storeKey')) {
+          Multivio.treeController.selectObject(fileNode);
+        }
+        
+        //dispatching
+        if (fileNode.get('isPDF')) {
+          SC.Logger.debug("PDF....");
+          // STATE TRANSITION
+          this.gotoState('displayingPDF', fileNode);
+          return;
+        }
+        if (fileNode.get('isImage')) {
+          SC.Logger.debug("Image....");
+          // STATE TRANSITION
+          this.gotoState('displayingImage', fileNode);
+          return;
+        }
+        this.gotoState('displayingUnsupported');
+      }
+    }
+
+  }),
 
   /**
     SUBSTATE DECLARATION
@@ -105,25 +145,25 @@ Multivio.DisplayingContent = SC.State.extend({
     currentPageBinding: 'Multivio.currentFileNodeController.currentIndex',
 
     /** */
-    enterState: function () {
+    enterState: function (fileNode) {
       var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
+      
+      //a pdf was already displayed
       if (viewToChange.get('nowShowing') !== 'mainPdfView') {
         viewToChange.set('nowShowing', 'mainPdfView');
         Multivio.getPath('mainPage.mainPdfView').becomeFirstResponder();
+
         // add bindings only after the current file is determined
         Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('content', 'Multivio.pdfThumbnailsController.arrangedObjects');
         Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('selection', 'Multivio.pdfThumbnailsController.selection');
         Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('target', 'Multivio.pdfThumbnailsController');
         // TODO: unbind these afterwards
+        
+        // display toolbar
         Multivio.getPath('mainPage.mainPdfView.bottomToolbar').displayBar();
       }
-      //Multivio.currentFileNodeController.set('currentIndex', 1);
-      Multivio.pdfFileController.set('content', Multivio.currentFileNodeController);
-      Multivio.pdfFileController.set('currentPage', this.get('currentPage'));
-      var selection = Multivio.getPath('treeController.selection');
-      if (!selection || selection.getPath('firstObject.storeKey') !== Multivio.currentFileNodeController.get('storeKey')) {
-        Multivio.treeController.selectObject(Multivio.currentFileNodeController.get('content'));
-      }
+      Multivio.pdfFileController.set('content', fileNode);
+      Multivio.pdfFileController.set('currentPage', 1);
     },
 
     /** */
@@ -181,22 +221,19 @@ Multivio.DisplayingContent = SC.State.extend({
     /** @scope Multivio.DisplayingContent.displayingImage.prototype */
 
     /** */
-    enterState: function () {
+    enterState: function (fileNode) {
       var viewToChange = Multivio.getPath('mainPage.mainPane.centerView');
       if (viewToChange.get('nowShowing') !== 'mainImageView') {
         viewToChange.set('nowShowing', 'mainImageView');
         Multivio.getPath('mainPage.mainImageView').becomeFirstResponder();
+
         Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('content', 'Multivio.imageThumbnailsController.arrangedObjects');
         Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('selection', 'Multivio.imageThumbnailsController.selection');
         Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('target', 'Multivio.imageThumbnailsController');
         Multivio.getPath('mainPage.mainImageView.bottomToolbar').displayBar();
         Multivio.getPath('mainPage.mainImageView.imageScrollView.contentView.infoPanel').displayBar();
       }
-      Multivio.imageFileController.set('content', Multivio.currentFileNodeController);
-      var selection = Multivio.getPath('treeController.selection');
-      if (!selection || selection.getPath('firstObject.storeKey') !== Multivio.currentFileNodeController.get('storeKey')) {
-        Multivio.treeController.selectObject(Multivio.currentFileNodeController.get('content'));
-      }
+      Multivio.imageFileController.set('content', fileNode);
     },
 
     /** */

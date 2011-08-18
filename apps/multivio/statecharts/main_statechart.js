@@ -164,44 +164,43 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
     contentOperational: SC.State.design({
       /** @scope Multivio.mainStatechart.applicationReady.contentOperational.prototype */
 
-      initialSubstate: 'fetchingContent',
+      initialSubstate: 'contentOperationalDummy',
+      
+      contentOperationalDummy: SC.State,
 
       /**
         Binds to the root node object. Its URL must be observed for changes
         @type SC.ObjectController
       */
-      currentRootNode: null,
-      currentRootNodeBinding: 'Multivio.rootNodeController',
+      currentFetchingRootNode: null,
 
       /** */
       enterState: function () {
         Multivio.getPath('mainPage.mainPane').append();
         var url_to_get = Multivio.getPath('inputParameters.options.url');
         var record = Multivio.store.find(Multivio.FileRecord, url_to_get);
-        //set root file
-        //Multivio.rootNodeController.set('content', record); TODO mom 10.08.2011 remove if next line does the job
-        this.get('currentRootNode').set('content', record);
+        this.set('currentFetchingRootNode', record);
       },
 
       /** */
       exitState: function () {
         Multivio.getPath('mainPage.mainPane').remove();
       },
-
-      /**
-        Initialize the tree with the root node
-        @private
-      */
-      _rootNodeDidChange: function () {
-        var currentRootNode = this.getPath('currentRootNode');
-        if (currentRootNode && currentRootNode.get('isLoaded')) {
-          Multivio.treeController.get('content').set('treeItemChildren',
-              [currentRootNode]);
-          //set current file
-          Multivio.currentFileNodeController.set('content',
-              currentRootNode.get('content'));
+      
+      _currentFetchingRootNode: function () {
+        var currentFetchingRootNode = this.get('currentFetchingRootNode');
+        if (currentFetchingRootNode.get('mime')) {
+          Multivio.setPath('rootNodeController.content', currentFetchingRootNode);
+          currentFetchingRootNode.set('treeItemIsExpanded', YES);
+          Multivio.setPath('treeController.content.treeItemChildren', [currentFetchingRootNode]);
+          if (currentFetchingRootNode.get('isContent')) {
+            this.gotoState('displayingContent', currentFetchingRootNode);
+          } else {
+            this.gotoState('fetchingNextContent', currentFetchingRootNode.getPath('hasNextFile')); 
+          }
         }
-      }.observes('*currentRootNode.url'),
+      }.observes('*currentFetchingRootNode.mime'),
+
 
       /**
         SUBSTATE DECLARATION

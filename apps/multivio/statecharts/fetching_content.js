@@ -6,12 +6,6 @@
 ==============================================================================
 */
 
-sc_require('resources/main_page.js');
-sc_require('controllers/file.js');
-sc_require('controllers/tree.js');
-sc_require('controllers/pdf.js');
-sc_require('controllers/image.js');
-
 /** @class
 
   STATE DEFINITION
@@ -23,136 +17,87 @@ sc_require('controllers/image.js');
   @since 1.0
 */
 Multivio.FetchingContent = SC.State.extend({
-  /** @scope Multivio.FetchingContent.prototype */
-
-  /**
-  */
   initialSubstate: 'fetchingDummy',
-
-  /**
-  */
-  currentFileNode: null,
-  currentFileNodeBinding: 'Multivio.currentFileNodeController',
-
-  /**
-    STATE EVENT
-  */
-  _fileTypeDidChange: function () {
-    var record = this.get('currentFileNode');
-    SC.Logger.debug("Mime changed: %@".fmt(record.get('mime')));
-    if (record.get('mime')) {
-      if (record.get('isPDF')) {
-        SC.Logger.debug("PDF....");
-        // STATE TRANSITION
-        this.gotoState('displayingPDF');
-        return;
-      }
-      if (record.get('isImage')) {
-        SC.Logger.debug("Image....");
-        // STATE TRANSITION
-        this.gotoState('displayingImage');
-        return;
-      }
-      if (record.get('isXML')) {
-        // STATE TRANSITION
-        this.gotoState('gettingNextFile', this.get('currentFileNode'));
-        return;
-      }
-      // STATE TRANSITION
-      this.gotoState('displayingUnsupported');
-    }
-  }.observes('*currentFileNode.mime'),
-
-
-
-  /************** SubStates *************************/
-
-  /**
-    SUBSTATE DECLARATION
-
-    @type SC.State
-  */
   fetchingDummy: SC.State,
 
-  /**
-    SUBSTATE DECLARATION
+  fetchingNextContent: SC.State.extend({
+    /** @scope Multivio.FetchingContent.prototype */
 
-    @type SC.State
-  */
-  settingFile: SC.State.design({
-    
+    /**
+*/
+    currentFetchingFileNode: null,
+
     /** */
     enterState: function (fromNode) {
-      var node;
+      var currentNode;
+      var fileNode;
       if (fromNode.get('isFetchable')) {
-        node = fromNode;
+        currentNode = fromNode;
+        fileNode = Multivio.store.find(Multivio.FileRecord, fromNode.get('url'));
+        //already fetched?
+        if (!fileNode.get('_children')) {
+          currentNode.appendChildren([fileNode]);
+        }
       } else {
-        node = fromNode.get('nearestFileNode');
+        currentNode = fromNode.get('nearestFileNode');
+        fileNode = Multivio.store.find(Multivio.FileRecord, currentNode.get('url'));
       }
-      var record = Multivio.store.find(Multivio.FileRecord, node.get('url'));
-      if (!record.get('isReady')) {
-        SC.Logger.debug("Append");
-        record.set('_ancestorFileNode', node.get('_ancestorFileNode'));
-        node.appendChildren([record]);
-      }
-      //SC.Logger.debug("Get Next: %@ (%@)".fmt(node.get('url'), Multivio.currentFileNodeController.get('url')));
-      Multivio.currentFileNodeController.set('content', record);
-    }
-  }),
+      this.set('currentFetchingFileNode', fileNode);
+    },
 
-  /**
-    SUBSTATE DECLARATION
-
-    @type SC.State
-  */
-  gettingNextFile: SC.State.design({
-    
-    /** */
-    enterState: function (fromNode) {
-      var node;
-      if (fromNode.get('isFetchable')) {
-        node = fromNode;
-      } else {
-        if (fromNode.get('isFile')) {
-          var next = fromNode.get('nearestFileNode').get('hasNextFile');
-          node = next;
+    _currentFetchingFileNodeDidChange: function () {
+      var fileNode = this.get('currentFetchingFileNode');
+      if (fileNode.get('mime')) {
+        if (fileNode.get('isContent')) {
+          this.gotoState('displayingContent', fileNode);
         } else {
-          node = fromNode.get('nearestFileNode');
+          //xml file or logical node
+          fileNode.set('treeItemIsExpanded', YES);
+          this.gotoState('fetchingNextContent', fileNode.getPath('hasNextFile'));
         }
       }
-      var record = Multivio.store.find(Multivio.FileRecord, node.get('url'));
-      if (!record.get('_ancestorFileNode')) {
-        SC.Logger.debug("Append");
-        record.set('_ancestorFileNode', node.get('_ancestorFileNode'));
-        node.appendChildren([record]);
-      }
-      //alert('set currentFileNode: %@'.fmt(record.get('url')));
-      if (record && record.getPath('storeKey') !== Multivio.currentFileNodeController.get('storeKey')) {
-        Multivio.currentFileNodeController.set('content', record);
-      }
-      Multivio.currentFileNodeController.set('currentIndex', 1);
-    }
+    }.observes('*currentFetchingFileNode.mime')
+
   }),
+  
+  fetchingPreviousContent: SC.State.extend({
+    /** @scope Multivio.FetchingContent.prototype */
 
-  /**
-    SUBSTATE DECLARATION
+    /**
+*/
+    currentFetchingFileNode: null,
 
-    @type SC.State
-  */
-  gettingPreviousFile: SC.State.design({
-    
     /** */
     enterState: function (fromNode) {
-      var previous = fromNode.get('hasPreviousFile');
-      var record = Multivio.store.find(Multivio.FileRecord, previous.get('url'));
-      record.set('_ancestorFileNode', previous.get('_ancestorFileNode'));
-      SC.Logger.debug("Get Previous: %@".fmt(previous.get('url')));
-      if (record && record.getPath('storeKey') !== Multivio.currentFileNodeController.get('storeKey')) {
-        Multivio.currentFileNodeController.set('content', record);
+      var currentNode;
+      var fileNode;
+      SC.Logger.warn(fromNode.get('id'));
+      if (fromNode.get('isFetchable')) {
+        currentNode = fromNode;
+        fileNode = Multivio.store.find(Multivio.FileRecord, fromNode.get('url'));
+        //already fetched?
+        if (!fileNode.get('_children')) {
+          currentNode.appendChildren([fileNode]);
+        }
+      } else {
+        currentNode = fromNode.get('nearestFileNode');
+        fileNode = Multivio.store.find(Multivio.FileRecord, currentNode.get('url'));
       }
-      Multivio.currentFileNodeController.set('currentIndex', 1);
-    }
+      this.set('currentFetchingFileNode', fileNode);
+    },
+
+    _currentFetchingFileNodeDidChange: function () {
+      var fileNode = this.get('currentFetchingFileNode');
+      if (fileNode.get('mime')) {
+        if (fileNode.get('isContent')) {
+          this.gotoState('displayingContent', fileNode);
+        } else {
+          //xml file or logical node
+          fileNode.set('treeItemIsExpanded', YES);
+          this.gotoState('fetchingPreviousContent', fileNode.getPath('lastChild'));
+        }
+      }
+    }.observes('*currentFetchingFileNode.mime')
+
   })
-
-
 });

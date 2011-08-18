@@ -36,7 +36,7 @@ Multivio.treeController = SC.TreeController.create({
 
       if (Multivio.currentFileNodeController.get('url') &&
            (selection.get('url') !== Multivio.currentFileNodeController.get('url'))) {
-        Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
+        SC.Logger.warn('User click');
         Multivio.mainStatechart.sendEvent('fetchFile', selection);
       }
     }
@@ -49,6 +49,7 @@ Multivio.treeController = SC.TreeController.create({
     if (currentFileNode && currentIndex) {
       var record = this._getNodeFromIndex(currentIndex, currentFileNode);
       if (record && record !== this.getPath('selection.firstObject')) {
+        SC.Logger.warn('SelectObject');
         this.selectObject(record);
       }
     }

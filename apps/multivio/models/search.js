@@ -96,7 +96,7 @@ Multivio.SearchRecord = SC.Record.extend(SC.TreeItemContent, /** @scope Multivio
     @field
     @type Array
   */ 
-  treeItemChildren: function () {
+  searchTreeItemChildren: function () {
     var children = this.get('results');
     if (children) {
       //create children records for both file and indexNode
