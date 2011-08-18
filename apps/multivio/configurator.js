@@ -36,7 +36,7 @@ Multivio.configurator = SC.Object.create({
     
     @property String
   */  
-  serverVersion: undefined,
+  serverVersion: null,
   
   /**
     The version of compatibility between server and client

@@ -29,8 +29,8 @@ proxy '/local',
 # required libraries
 mode :all do
  config :all,
-   :required => [:sproutcore, 'sproutcore/animation', 'sproutcore/statechart']
-   #:theme_name => 'sc-theme test',
+   :required => [:sproutcore, 'sproutcore/animation', 'sproutcore/statechart'],
+   :theme_name => 'mvo mvo-default-theme'
 	 #:load_fixtures => true
 end
 

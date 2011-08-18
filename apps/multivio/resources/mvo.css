@@ -6,42 +6,31 @@
 ==============================================================================
 */
 
-/* thumbnails */
-
-.ace.body {
+body {
   background: none repeat scroll 0 0 #fff;
 }
 
-.ace.sc-pane, .ace.sc-main {
+.sc-pane, .sc-main {
   background: none repeat scroll 0 0 #444;
   color: #fff;
 }
 
-/*
-.ace.sc-view {
-  background: none repeat scroll 0 0 #ccc;
-}
-*/
-
-.ace.source-list.collection {
+.source-list.collection,
+.sc-grid-view.collection {
   background: none repeat scroll 0 0 #ccc;
   color: #000;
 }
 
-.image-and-highlight-container {
-  background: none repeat scroll 0 0 red;
-}
-
-
 /*
 -----------------------------
-Multivio main styles
+Multivio specific styles
 -----------------------------
 */
 
+/** for page entry */
 .mvo-pagenr input {
-	text-align: center;
-	height: 24px;
+  text-align: center;
+  height: 24px;
 }
 
 .sc-pane.sc-panel.mvo-palette-pane .sc-scroll-view {
@@ -53,7 +42,7 @@ Multivio main styles
 }
 
 
-.ace.sc-container-view {
+.sc-container-view {
   background: none repeat scroll 0 0 #666;
 }
 
@@ -87,7 +76,7 @@ Multivio main styles
   display: block;
   margin: auto;
   position: static;
-  line-height: 100px;
+  /*line-height: 130px;*/
   vertical-align: middle;
 }
 
@@ -141,7 +130,7 @@ Multivio main styles
   padding: 20px;
 }
 
-.ace.toolbar, .mvo-front-view-transparent {
+.toolbar, .mvo-front-view-transparent {
   background: sc_static("images/transparency_ddd_90.png") repeat scroll 0 0 transparent;
   border: none;
   /*z-index: -10000;*/
@@ -180,7 +169,7 @@ label {
   background: none repeat scroll 0 0 lightSteelBlue;
 }
 
-.toolbar .sc-image-button-view.disabled .img{
+.toolbar .sc-image-button-view.disabled .img {
   opacity: 0.3;
   moz-opacity : 0.3;
   ms-filter: "alpha(opacity=3)"; /* IE 8 */
@@ -191,6 +180,16 @@ label {
   width: 16px;
   height: 16px;
   background-image: sc_static("images/icons/file.png");
+}
+
+.mvo-default-theme .sc-image-button-view {
+  border: 2px solid red;
+}
+.mvo-default-theme .sc-image-button-view.sel {
+  border: 2px solid blue;
+}
+.mvo-default-theme .sc-image-button-view.focus {
+  border: 2px solid blue;
 }
 
 /*

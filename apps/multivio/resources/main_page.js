@@ -33,7 +33,7 @@ Multivio.mainPage = SC.Page.design({
   //  and http://groups.google.com/group/sproutcore/browse_thread/thread/914c2c6c0558fcbc/9cc1bb65f0adcd0d
   // for more details
   // load.
-  rightView: undefined,
+  rightView: null,
 
   mainPane: SC.MainPane.design({
     childViews: 'bottomView centerView leftView'.w(),

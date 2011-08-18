@@ -20,7 +20,7 @@ Multivio.inputParameters = SC.Object.create({
   read: function () {
     this.beginPropertyChanges();
     this.set('options', {});
-    var inputUrl = !SC.none(location.hash) ? location.hash.slice(1) : undefined;
+    var inputUrl = !SC.none(location.hash) ? location.hash.slice(1) : null;
     SC.Logger.debug("Read input args: " + inputUrl);
     if (!SC.none(inputUrl)) {
       var inputRegExp = /(.*?)url=(.*)/;

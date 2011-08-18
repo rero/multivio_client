@@ -18,7 +18,7 @@ sc_require('views/tree.js');
 sc_require('views/search.js');
 Multivio.navigationController = SC.ArrayController.create({
 
-  currentOpenPanel: undefined,
+  currentOpenPanel: null,
 
   content: [
     SC.Object.create({

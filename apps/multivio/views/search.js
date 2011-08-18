@@ -52,7 +52,7 @@ Multivio.SearchViewItem = SC.ListItemView.extend(SC.AutoResize, {
 Multivio.SearchView = SC.PalettePane.design({
   isAnchored: YES,
   isModal: NO,
-  layout: {left: 45, top: 15, width: 314, bottom: 100},
+  layout: {left: 45, top: 10, width: 314, bottom: 100},
   classNames: 'mvo-palette-pane'.w(),
   layerId: 'mvo-tree-view',
   canBeClosed: YES,
