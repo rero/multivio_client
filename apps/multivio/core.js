@@ -26,8 +26,14 @@ Multivio = SC.Application.create({
   // TODO: Add global constants or singleton objects needed by your app here.
   store: null,
 
+  /**
+    The thumbnail controller must be updated according to the type of the
+    current file
+  */
+  currentThumbnailController: null,
+
   // the name of the active theme
-  currentTheme: undefined
+  currentTheme: null
 });
 
 /**

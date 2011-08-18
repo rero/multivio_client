@@ -20,7 +20,9 @@ Multivio.thumbnailView = SC.ListItemView.extend({
   //contentIconKey: 'url',
   //contentRightIconKey: 'url'
   //renderDelegateName: 'thumbnailRenderDelegate',
-  layout: {height: 400},
+
+  //layout: { height: 130, width: 130 },
+
   mouseEntered: function () {
     var jquery = this.$();
     jquery.css('cursor', 'pointer');

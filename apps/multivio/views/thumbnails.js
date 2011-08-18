@@ -11,7 +11,7 @@ sc_require('views/thumbnail.js');
 sc_require('controllers/thumbnails.js');
 
 Multivio.thumbnailsView = SC.PalettePane.design({
-  layout: {left: 45, top: 15, width: 130, bottom: 100},
+  layout: {left: 45, top: 10, width: 150, bottom: 100},
   classNames: 'mvo-palette-pane'.w(),
   isAnchored: YES,
   canBeClosed: YES,
@@ -25,7 +25,7 @@ Multivio.thumbnailsView = SC.PalettePane.design({
 
     thumbnailScrollView: SC.ScrollView.design(Multivio.innerGradientThinTopBottom, {
       layout: { left: 0, top: 0, right: 0, bottom: 42 },
-      contentView: SC.SourceListView.design({
+      contentView: SC.GridView.design({
         layerId: 'mvo-thumbnails',
         contentValueKey: 'pageNumber',
         contentIconKey: 'url',
@@ -33,10 +33,11 @@ Multivio.thumbnailsView = SC.PalettePane.design({
         //selectionBinding: 'Multivio.pdfThumbnailsController.selection',
         actOnSelect: YES,
         action: 'userClicked',
-        target: 'Multivio.pdfThumbnailsController',
+        target: 'Multivio.currentThumbnailController',
         exampleView: Multivio.thumbnailView,
         rowHeight: 130,
         rowSpacing: 10,
+        columnWidth: 130,
 
         _selectionDidChanged: function () {
           var selection = this.getPath('selection').firstObject();
@@ -54,16 +55,16 @@ Multivio.thumbnailsView = SC.PalettePane.design({
       title: 'thumbnailListMode',
       buttonBehavior: SC.TOGGLE_ON_BEHAVIOR,
       toolTip: '_ThumbnailListMode'.loc(),
-      valueBinding: 'Multivio.paletteController.thumbnailMode',
+      valueBinding: 'Multivio.currentThumbnailController.thumbnailMode',
       toggleOnValue: 'list'
     }),
 
     thumbnailGridModeButtom: SC.ImageButtonView.design({
-      layout: { height: 32, bottom: 4, width: 32, left: 32 },
+      layout: { height: 32, bottom: 4, width: 32, left: 36 },
       name: 'thumbnailGridMode',
       toolTip: '_ThumbnailGridMode'.loc(),
       image: 'thumbnail_grid_mode',
-      valueBinding: 'Multivio.paletteController.thumbnailMode',
+      valueBinding: 'Multivio.currentThumbnailController.thumbnailMode',
       buttonBehavior: SC.TOGGLE_ON_BEHAVIOR,
       toggleOnValue: 'grid'
     })

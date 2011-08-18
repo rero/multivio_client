@@ -153,6 +153,9 @@ Multivio.DisplayingContent = SC.State.extend({
         viewToChange.set('nowShowing', 'mainPdfView');
         Multivio.getPath('mainPage.mainPdfView').becomeFirstResponder();
 
+        var tc = Multivio.pdfThumbnailsController;
+        Multivio.set('currentThumbnailController', tc);
+
         // add bindings only after the current file is determined
         var tv = Multivio.getPath('mainPage.thumbnailsView.contentView.thumbnailScrollView.contentView');
         tv.bind('content', 'Multivio.pdfThumbnailsController.arrangedObjects');
@@ -170,6 +173,7 @@ Multivio.DisplayingContent = SC.State.extend({
     /** */
     exitState: function () {
       Multivio.pdfFileController.set('content', null);
+      Multivio.set('currentThumbnailController', null);
     },
 
     /**
@@ -227,9 +231,16 @@ Multivio.DisplayingContent = SC.State.extend({
       if (viewToChange.get('nowShowing') !== 'mainImageView') {
         viewToChange.set('nowShowing', 'mainImageView');
         Multivio.getPath('mainPage.mainImageView').becomeFirstResponder();
-        Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('content', 'Multivio.imageThumbnailsController.arrangedObjects');
-        Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('selection', 'Multivio.imageThumbnailsController.selection');
-        Multivio.getPath('mainPage.thumbnailsView.contentView.contentView').bind('target', 'Multivio.imageThumbnailsController');
+
+        var ic = Multivio.imageThumbnailsController;
+        Multivio.set('currentThumbnailController', ic);
+
+        // add bindings only after the current file is determined
+        var tv = Multivio.getPath('mainPage.thumbnailsView.contentView.thumbnailScrollView.contentView');
+        tv.bind('content', 'Multivio.imageThumbnailsController.arrangedObjects');
+        tv.bind('selection', 'Multivio.imageThumbnailsController.selection');
+        tv.bind('target', 'Multivio.imageThumbnailsController');
+
         Multivio.getPath('mainPage.mainImageView.bottomToolbar').displayBar();
         Multivio.getPath('mainPage.mainImageView.imageScrollView.contentView.infoPanel').displayBar();
       }
