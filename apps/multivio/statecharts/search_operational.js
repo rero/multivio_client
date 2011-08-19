@@ -117,6 +117,7 @@ Multivio.SearchOperationalState = SC.State.extend({
       @type SC.RecordArray
     */
     currentSearchResults: null,
+    currentFetchingFileNode: null,
     
     enterState: function (currentUserQuery) {
       if (currentUserQuery && currentUserQuery !== "") {
@@ -141,7 +142,13 @@ Multivio.SearchOperationalState = SC.State.extend({
       @private
     */
     updateSearch: function (currentUserQuery) {
-      if (Multivio.getPath('currentFileNodeController.isContent')) {
+      var currentFetchingFileNode = Multivio.getPath('currentFileNodeController.content');
+      if (currentFetchingFileNode.get('isContent')) {
+        //reset seachResult and counters
+        this.set('currentFetchingFileNode', currentFetchingFileNode);
+        Multivio.store.find(Multivio.FileRecord).setEach('numberOfSearchResults', 0);
+        currentFetchingFileNode.set('searchResults', null);
+
         var storeQuery = SC.Query.local(Multivio.SearchRecord,
           "query={query} AND url={url}",
           { 
@@ -150,8 +157,6 @@ Multivio.SearchOperationalState = SC.State.extend({
           }
           );
 
-        Multivio.setPath('searchTreeController.content.treeItemChildren',
-          Multivio.store.find(storeQuery));
         SC.Logger.debug('Searching in current file...');
         this.set('currentSearchResults', Multivio.store.find(storeQuery));
         Multivio.setPath('searchTreeController.msgStatus', "Searching in current file...");
@@ -167,10 +172,23 @@ Multivio.SearchOperationalState = SC.State.extend({
     }.observes('*currentSearchResults.status'),
 
     _concludeSearchProcess: function (statusMessage, statusCode) {
+      var currentSearchResults = this.get('currentSearchResults');
+      var currentFetchingFileNode = this.get('currentFetchingFileNode');
+
+      var searchResults = currentSearchResults.getPath('firstObject.searchTreeItemChildren');
+      currentFetchingFileNode.updateParentSearchResults(searchResults.get('length'));
+      searchResults.setEach('_parentNode', currentFetchingFileNode);
+      searchResults.setEach('_ancestorFileNode', currentFetchingFileNode);
+      currentFetchingFileNode.set('searchResults', searchResults);
+
+      Multivio.setPath('searchTreeController.content.searchTreeItemChildren',
+        [Multivio.getPath('rootNodeController.content')]);
+
       Multivio.setPath('searchTreeController.msgStatus', statusMessage);
       Multivio.setPath('searchTreeController.loadingStatus', statusCode);
       this.set('currentSearchResults', null);
     }
+
   }),
 
   
@@ -197,14 +215,16 @@ Multivio.SearchOperationalState = SC.State.extend({
       @private
     */
     updateSearch: function (currentUserQuery) {
+      Multivio.store.find(Multivio.FileRecord).setEach('numberOfSearchResults', 0);
+      Multivio.store.find(Multivio.FileRecord).setEach('searchResults', null);
       SC.Logger.debug('Searching in all files...');
       Multivio.setPath('searchTreeController.msgStatus', "Searching in all files...");
       Multivio.setPath('searchTreeController.loadingStatus', Multivio.LOADING_LOADING);
-      var queryStore = SC.Query.local(Multivio.SearchRecord, "query={query}", { 
-        query: currentUserQuery
-      });
-      Multivio.setPath('searchTreeController.content.treeItemChildren',
-          Multivio.store.find(queryStore));
+      //var queryStore = SC.Query.local(Multivio.SearchRecord, "query={query}", { 
+      //  query: currentUserQuery
+      //});
+      Multivio.setPath('searchTreeController.content.searchTreeItemChildren',
+        [Multivio.getPath('rootNodeController.content')]);
       this.gotoState('gettingNextSearchResult', Multivio.getPath('rootNodeController.hasNextFile'));
     }
   }),
@@ -234,12 +254,12 @@ Multivio.SearchOperationalState = SC.State.extend({
     enterState: function (fromNode) {
       var currentNode;
       var fileNode;
-      SC.Logger.warn('fetching: %@'.fmt(fromNode.get('id')));
       if (fromNode.get('isFetchable')) {
         currentNode = fromNode;
         fileNode = Multivio.store.find(Multivio.FileRecord, fromNode.get('url'));
         //already fetched?
         if (!fileNode.get('_children')) {
+          fileNode.set('_ancestorFileNode', currentNode.get('_ancestorFileNode'));
           currentNode.appendChildren([fileNode]);
         }
       } else {
@@ -277,6 +297,7 @@ Multivio.SearchOperationalState = SC.State.extend({
     _currentSearchResultsDidChange: function () {
       if (this.getPath('currentSearchResults.status') & SC.Record.READY) {
         Multivio.mainStatechart.sendEvent('updateHighlighting');
+        this._concludeCurrentSearchProcess();
         this._proceedSearchWithNextFile();
       }
     }.observes('*currentSearchResults.status'),
@@ -308,10 +329,20 @@ Multivio.SearchOperationalState = SC.State.extend({
       the list of admitted codes
       @private
     */
+    _concludeCurrentSearchProcess: function () {
+      var currentSearchResults = this.get('currentSearchResults');
+      var currentFetchingFileNode = this.get('currentFetchingFileNode');
+
+      var searchResults = currentSearchResults.getPath('firstObject.searchTreeItemChildren');
+      currentFetchingFileNode.updateParentSearchResults(searchResults.get('length'));
+      searchResults.setEach('_parentNode', currentFetchingFileNode);
+      searchResults.setEach('_ancestorFileNode', currentFetchingFileNode);
+      currentFetchingFileNode.set('searchResults', searchResults);
+      Multivio.searchTreeController.update();
+    },
 
     _concludeSearchProcess: function (statusMessage, statusCode) {
       Multivio.setPath('searchTreeController.msgStatus', statusMessage);
-      SC.Logger.debug(statusMessage);
       Multivio.setPath('searchTreeController.loadingStatus', statusCode);
       this.set('currentFetchingFileNode', null);
       this.set('currentSearchResults', null);

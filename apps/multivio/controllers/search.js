@@ -27,8 +27,7 @@ Multivio.currentSearchResultsController = SC.ArrayController.create(
 
   @extends SC.Object
 */
-Multivio.searchTreeController = SC.TreeController.create(
-  /** @scope Multivio.searchTreeController.prototype */ {
+Multivio.searchTreeController = SC.TreeController.create( /** @scope Multivio.searchTreeController.prototype */ {
 
   allowsMultipleSelection: NO,
   currentUserQuery: null,
@@ -36,12 +35,14 @@ Multivio.searchTreeController = SC.TreeController.create(
   searchInAllFiles: null,
   msgStatus: "",
   loadingStatus: Multivio.LOADING_DONE,
+  treeItemChildrenKey: 'searchTreeItemChildren',
+
 
   init: function () {
     sc_super();
     var rootNode = SC.Object.create({
       treeItemIsExpanded: YES,
-      treeItemChildren: null,
+      searchTreeItemChildren: null,
       guid: '0'
     });
     this.set('content', rootNode);
@@ -70,16 +71,20 @@ Multivio.searchTreeController = SC.TreeController.create(
 
   userClicked: function (pane) {
     var currentSelection = pane.getPath('selection.firstObject');
-    if (currentSelection) {
+    if (currentSelection && currentSelection.get('isSearchResult')) {
       var selectedIndex = currentSelection.get('page');
       var selectedUrl = currentSelection.get('url');
       if (!selectedIndex) {
         selectedIndex = 1;
       }
-      Multivio.mainStatechart.sendEvent('goToFile', selectedUrl);
+      Multivio.setPath('currentFileNodeController.content', currentSelection.get('_ancestorFileNode'));
       Multivio.currentFileNodeController.set('currentIndex', selectedIndex);
     }
-  }.observes('selection')
+  }.observes('selection'),
+
+  update: function () {
+    this.notifyPropertyChange('content');
+  }
   
 });
 

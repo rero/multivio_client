@@ -11,7 +11,7 @@
   @extends SC.Record
   @version 0.1
 */
-Multivio.SearchResultRecord = SC.Record.extend(SC.TreeItemContent, {
+Multivio.SearchResultRecord = SC.Record.extend({
   /** @scope Multivio.SearchResultRecord.prototype */
   
   /** @type String */
@@ -31,12 +31,17 @@ Multivio.SearchResultRecord = SC.Record.extend(SC.TreeItemContent, {
   /** @type Number */
   page: SC.Record.attr(Number),
   /** @type Array */
-  treeItemChildren: null,
+  searchTreeItemChildren: null,
   /** @type String */
   url: null,
   /** @type String */
   query: null,
 
+  isSearchResult: YES,
+  _parentNode: null,
+
+  _ancestorFileNode: null,
+  
   /**
     @field
     @type String
@@ -56,7 +61,7 @@ Multivio.SearchResultRecord = SC.Record.extend(SC.TreeItemContent, {
   @extends SC.Record
   @version 0.1
 */
-Multivio.SearchRecord = SC.Record.extend(SC.TreeItemContent, /** @scope Multivio.SearchRecord.prototype */ {
+Multivio.SearchRecord = SC.Record.extend(/** @scope Multivio.SearchRecord.prototype */ {
 
   /** @type String */
   query: SC.Record.attr(String),
@@ -69,7 +74,7 @@ Multivio.SearchRecord = SC.Record.extend(SC.TreeItemContent, /** @scope Multivio
   /** @type Array */
   results: SC.Record.attr(Array, {lazilyInstantiate: YES}),
   /** @type Boolean */
-  treeItemIsExpanded: NO,
+  treeItemIsExpanded: YES,
  
   /**
     @field
@@ -109,7 +114,7 @@ Multivio.SearchRecord = SC.Record.extend(SC.TreeItemContent, /** @scope Multivio
       }, this);
     }
     return null;
-  }.property('results').cacheable(),
+  }.property('results', 'url', 'query').cacheable(),
 
   /**
     @field

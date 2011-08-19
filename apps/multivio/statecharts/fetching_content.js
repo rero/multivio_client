@@ -36,6 +36,7 @@ Multivio.FetchingContent = SC.State.extend({
         fileNode = Multivio.store.find(Multivio.FileRecord, fromNode.get('url'));
         //already fetched?
         if (!fileNode.get('_children')) {
+          fileNode.set('_ancestorFileNode', currentNode.get('_ancestorFileNode'));
           currentNode.appendChildren([fileNode]);
         }
       } else {
@@ -47,7 +48,7 @@ Multivio.FetchingContent = SC.State.extend({
 
     _currentFetchingFileNodeDidChange: function () {
       var fileNode = this.get('currentFetchingFileNode');
-      if (fileNode.get('mime')) {
+      if (fileNode && fileNode.get('mime')) {
         if (fileNode.get('isContent')) {
           this.gotoState('displayingContent', fileNode);
         } else {
@@ -77,6 +78,7 @@ Multivio.FetchingContent = SC.State.extend({
         fileNode = Multivio.store.find(Multivio.FileRecord, fromNode.get('url'));
         //already fetched?
         if (!fileNode.get('_children')) {
+          fileNode.set('_ancestorFileNode', currentNode.get('_ancestorFileNode'));
           currentNode.appendChildren([fileNode]);
         }
       } else {

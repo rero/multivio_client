@@ -38,7 +38,7 @@
   @version 0.1
 */
 
-Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent, {
+Multivio.FileRecord = SC.Record.extend({
   /** @scope Multivio.FileRecord.prototype */
 
   /**
@@ -95,6 +95,10 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent, {
     @type FileRecord
   */
   _parentNode: null,
+  
+  numberOfSearchResults: 0,
+
+  searchResults: null,
 
   /**
     The nearest ancestor that is a **file** node
@@ -110,6 +114,7 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent, {
     @type Array
   */
   _children: null,
+  treeItemIsExpanded: NO,
 
 
   /** */
@@ -381,7 +386,7 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent, {
     }
     return null;
 
-  }.property('children', '_children').cacheable(),
+  }.property('children', '_children', '_ancestoreFileNode').cacheable(),
   
 
   /**
@@ -513,7 +518,50 @@ Multivio.FileRecord = SC.Record.extend(SC.TreeItemContent, {
     }
     
     return this._previousFile(ancestor, this);
-  }.property('isContent', '_ancestorFileNode', 'treeItemChildren')
+  }.property('isContent', '_ancestorFileNode', 'treeItemChildren'),
+
+
+  /**
+    See SC.TreeItemContent.treeItemChildren
+    @field
+    @type Array
+  */
+  searchTreeItemChildren: function () {
+
+    //is a final leaf in the tree?
+    if (this.get('numberOfSearchResults') < 1) {
+      return null;
+    }
+    if (this.get('isFinal')) {
+      return null;
+    }
+    if (this.get('searchResults')) {
+      return this.get('searchResults');
+    }
+
+    var children = this.get('treeItemChildren');
+    children = children.filter(function (item, index, self) {
+      if (item.numberOfSearchResults > 0) { return true; }
+    });
+    return children;
+
+  }.property('numberOfSearchResults', 'treeItemChildren', 'searchResults').cacheable(),
+  
+  label: function () {
+    return this.get('numberOfSearchResults') ? "%@ (%@)".fmt(this.get('title'), this.get('numberOfSearchResults')) : "Not Results";
+  }.property('title', 'numberOfSearchResults').cacheable(),
+
+  updateParentSearchResults: function (value) {
+    this._updateSearchCounter(this, value);
+  },
+
+  _updateSearchCounter: function (node, value) {
+    var numberOfSearchResults = node.get('numberOfSearchResults');
+    node.set('numberOfSearchResults', value + numberOfSearchResults);
+    var parent = node.get('_parentNode');
+    if (parent) {
+      this._updateSearchCounter(parent, value);
+    }
+  }
   
 });
-
