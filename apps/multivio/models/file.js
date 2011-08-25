@@ -482,6 +482,7 @@ Multivio.FileRecord = SC.Record.extend({
   /**
     @field
     @type Boolean
+    TODO MOM : return type is inconsistent
   */
   hasNextFile: function () {
     

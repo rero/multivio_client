@@ -280,7 +280,7 @@ Multivio.SearchOperationalState = SC.State.extend({
         [Multivio.getPath('rootNodeController.content')]);
       // launch the search process from the root node of the document tree
       // STATE TRANSITION
-      this.gotoState('gettingNextSearchResult',
+      this.gotoState('gettingSearchResultsForFile',
           Multivio.getPath('rootNodeController.hasNextFile'));
     }
   }),
@@ -334,6 +334,13 @@ Multivio.SearchOperationalState = SC.State.extend({
 
     /**
       STATE EVENT
+    */ 
+    cancelSearch: function () {
+      this._concludeSearchProcess("Aborted", Multivio.LOADING_CANCEL);
+    },
+
+    /**
+      STATE EVENT
 
       Continue search with the next file, if present, otherwise set search
       process as done
@@ -343,7 +350,7 @@ Multivio.SearchOperationalState = SC.State.extend({
       var next = this.getPath('currentFetchingFileNode.hasNextFile');
       if (next) {
         // STATE TRANSITION
-        this.gotoState('gettingNextSearchResult', next);
+        this.gotoState('gettingSearchResultsForFile', next);
       } else {
         // STATE TRANSITION (will be executed inside the called function)
         this._concludeSearchProcess("Done", Multivio.LOADING_DONE);
