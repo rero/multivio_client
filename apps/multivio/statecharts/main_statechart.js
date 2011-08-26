@@ -39,13 +39,15 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
 
     /** */
     enterState: function () {
+      // initialize store
       Multivio.set('store', SC.Store.create().from('Multivio.DataSource'));
+      // show main pane
       Multivio.getPath('mainPage.mainPane').append();
       //Multivio.inputParameters.read();
     },
 
     /**
-      STATE EVENT
+      STATE EVENT (transient)
 
       @private
     */
@@ -82,7 +84,7 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
     }.observes('*inputParameters.options'),
     
     /**
-      SUBSTATE DECLARATION
+      SUBSTATE DECLARATION (transient)
 
       Dummy state used as initial substate
       @type SC.State
@@ -90,7 +92,7 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
     mainDummy: SC.State,
 
     /**
-      SUBSTATE DECLARATION
+      SUBSTATE DECLARATION (transient)
       
       Is active while the application is waiting for a server response
       @type SC.State
@@ -115,7 +117,7 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
       },
 
       /**
-        STATE EVENT
+        STATE EVENT (internal)
 
         @private
       */
@@ -159,6 +161,8 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
 
     /**
       SUBSTATE DECLARATION
+      
+      The parent state of all content-related states
       @type SC.State
     */
     contentOperational: SC.State.design({
@@ -166,6 +170,12 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
 
       initialSubstate: 'contentOperationalDummy',
       
+      /**
+        SUBSTATE DECLARATION (transient)
+
+        Dummy state used as initial substate
+        @type SC.State
+      */
       contentOperationalDummy: SC.State,
 
       /**
@@ -188,19 +198,24 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
       },
       
       /**
-        Initialize the tree with the root node
+        STATE EVENT (transient)
+
+        The root node has been loaded. Initialize the tree with the root node
         @private
       */
-      _currentFetchingRootNode: function () {
+      _rootNodeHasBeenLoaded: function () {
         var currentFetchingRootNode = this.get('currentFetchingRootNode');
         if (currentFetchingRootNode.get('mime')) {
           Multivio.setPath('rootNodeController.content', currentFetchingRootNode);
           currentFetchingRootNode.set('treeItemIsExpanded', YES);
           Multivio.setPath('treeController.content.treeItemChildren', [currentFetchingRootNode]);
           if (currentFetchingRootNode.get('isContent')) {
+            // STATE TRANSITION
             this.gotoState('displayingContent', currentFetchingRootNode);
           } else {
-            this.gotoState('fetchingNextContent', currentFetchingRootNode.getPath('hasNextFile')); 
+            // STATE TRANSITION
+            this.gotoState('fetchingNextContent',
+                currentFetchingRootNode.getPath('nextFile')); 
           }
         }
       }.observes('*currentFetchingRootNode.mime'),
@@ -210,40 +225,44 @@ Multivio.mainStatechart = SC.Object.create(SC.StatechartManager, {
         SUBSTATE DECLARATION
         
         See Multivio#FetchingContent
-        @type Multivio.FetchingContent
+        @type Multivio.FetchingContentState
       */
-      fetchingContent: SC.State.plugin('Multivio.FetchingContent'),
+      fetchingContent: SC.State.plugin('Multivio.FetchingContentState'),
 
       /**
         SUBSTATE DECLARATION
 
         See Multivio#DisplayingContent
-        @type Multivio.DisplayingContent
+        @type Multivio.DisplayingContentState
       */
-      displayingContent: SC.State.plugin('Multivio.DisplayingContent')
+      displayingContent: SC.State.plugin('Multivio.DisplayingContentState')
 
     }),
+
     /**
       SUBSTATE DECLARATION
+
+      The parent state of all search-related states
 
       See Multivio#SearchOperationalState
       @type Multivio.SearchOperationalState
     */
     searchOperational: SC.State.plugin('Multivio.SearchOperationalState')
+
   }),
 
   /**
-    SUBSTATE DECLARATION
+    SUBSTATE DECLARATION (transient)
     
-    Transitional state - it is used for handling fatal errors and then
-    transition to the end state
+    Transient state - it is used for handling fatal errors and then transition
+    to the end state
     @type SC.State
   */
   error: SC.State.design({
     /** @scope Multivio.mainStatechart.error.prototype */
 
     /**
-      STATE EVENT
+      STATE EVENT (transient)
       
       Handle the error and go to the end state
     */

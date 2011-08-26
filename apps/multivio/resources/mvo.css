@@ -182,6 +182,7 @@ label {
   background-image: sc_static("images/icons/file.png");
 }
 
+/*
 .mvo-default-theme .sc-image-button-view {
   border: 2px solid red;
 }
@@ -191,6 +192,7 @@ label {
 .mvo-default-theme .sc-image-button-view.focus {
   border: 2px solid blue;
 }
+*/
 
 /*
 -----------------------------

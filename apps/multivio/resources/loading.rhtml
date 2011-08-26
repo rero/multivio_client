@@ -33,6 +33,7 @@
 
 <% end %>
 
+
 <% content_for :loading do %>
 <% # Any HTML in this file will be visible on screen while your page loads
    # its application JavaScript.  SproutCore applications are optimized for 
@@ -40,10 +41,20 @@
    # content for a brief moment on their first app load, if at all.
 %>
 
+<script>
+  SC.benchmarkPreloadEvents['loading.rhtml_BenchmarkStart'] =
+    new Date().getTime();
+</script>
+
 <div id="mvo-splash-content">
     <img src="<%= static_url('images/multivio_logo_231x49_grayscale.png') %>">
     loading...
     <img src="<%= static_url('images/progress_wheel_medium.gif') %>">
 </div>
+
+<script>
+  SC.benchmarkPreloadEvents['loading.rhtml_BenchmarkStart'] =
+    new Date().getTime();
+</script>
 
 <% end %>

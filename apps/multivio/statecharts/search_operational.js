@@ -46,6 +46,8 @@ Multivio.SearchOperationalState = SC.State.extend({
   },
 
   /**
+    STATE EVENT (internal)
+
     Update the highlighting of search results in the displayed content
   */
   updateHighlighting: function () {
@@ -152,7 +154,7 @@ Multivio.SearchOperationalState = SC.State.extend({
     },
 
     /**
-      STATE EVENT
+      STATE EVENT (internal)
     
       This function starts or resumes the search process in the current file.
       It usually results from one of the following events:
@@ -193,7 +195,12 @@ Multivio.SearchOperationalState = SC.State.extend({
       }
     }.observes('*currentSearchResults.status'),
 
-    /** @private */
+    /**
+      @param String statusMessage
+      @param String statusCode See Multivio.currentSearchResultsController for
+      the list of admitted codes
+      @private
+    */
     _concludeSearchProcess: function (statusMessage, statusCode) {
       var currentSearchResults = this.get('currentSearchResults');
       var currentFetchingFileNode = this.get('currentFetchingFileNode');
@@ -244,7 +251,7 @@ Multivio.SearchOperationalState = SC.State.extend({
     },
     
     /**
-      STATE EVENT
+      STATE EVENT (internal)
 
       This function starts or resumes the search process in the all the files
       of the current document. Each time it is called, it starts the search
@@ -281,13 +288,13 @@ Multivio.SearchOperationalState = SC.State.extend({
       // launch the search process from the root node of the document tree
       // STATE TRANSITION
       this.gotoState('gettingSearchResultsForFile',
-          Multivio.getPath('rootNodeController.hasNextFile'));
+          Multivio.getPath('rootNodeController.nextFile'));
     }
   }),
 
 
   /**
-    SUBSTATE DECLARATION
+    SUBSTATE DECLARATION (transient)
     
     Is active while the application is getting the search results for a
     searchable file. This is used only when searching in all files.
@@ -321,9 +328,9 @@ Multivio.SearchOperationalState = SC.State.extend({
         currentNode = fromNode;
         fileNode = Multivio.store.find(Multivio.FileRecord, fromNode.get('url'));
         //already fetched?
-        if (!fileNode.get('_children')) {
+        if (!fileNode.get('fetchableChild')) {
           fileNode.set('_ancestorFileNode', currentNode.get('_ancestorFileNode'));
-          currentNode.appendChildren([fileNode]);
+          currentNode.appendFetchableChild(fileNode);
         }
       } else {
         currentNode = fromNode.get('nearestFileNode');
@@ -340,14 +347,14 @@ Multivio.SearchOperationalState = SC.State.extend({
     },
 
     /**
-      STATE EVENT
+      STATE EVENT (transient)
 
       Continue search with the next file, if present, otherwise set search
       process as done
       @private
     */
     _proceedSearchWithNextFile: function () {
-      var next = this.getPath('currentFetchingFileNode.hasNextFile');
+      var next = this.getPath('currentFetchingFileNode.nextFile');
       if (next) {
         // STATE TRANSITION
         this.gotoState('gettingSearchResultsForFile', next);
@@ -365,13 +372,23 @@ Multivio.SearchOperationalState = SC.State.extend({
     _currentSearchResultsDidChange: function () {
       if (this.getPath('currentSearchResults.status') & SC.Record.READY) {
         Multivio.mainStatechart.sendEvent('updateHighlighting');
-        this._concludeCurrentSearchProcess();
+
+        var currentSearchResults = this.get('currentSearchResults');
+        var currentFetchingFileNode = this.get('currentFetchingFileNode');
+        var searchResults =
+            currentSearchResults.getPath('firstObject.searchTreeItemChildren');
+        currentFetchingFileNode.updateParentSearchResults(searchResults.get('length'));
+        searchResults.setEach('_parentNode', currentFetchingFileNode);
+        searchResults.setEach('_ancestorFileNode', currentFetchingFileNode);
+        currentFetchingFileNode.set('searchResults', searchResults);
+        Multivio.searchTreeController.update();
+
         this._proceedSearchWithNextFile();
       }
     }.observes('*currentSearchResults.status'),
 
     /**
-      STATE EVENT
+      STATE EVENT (transient)
       
       While traversing the tree for multi-file searching, if the current
       searched file has a different MIME type than the previous, check if it's
@@ -394,25 +411,12 @@ Multivio.SearchOperationalState = SC.State.extend({
       }
     }.observes('*currentFetchingFileNode.mime'),
 
-    
     /**
       @param String statusMessage
       @param String statusCode See Multivio.currentSearchResultsController for
       the list of admitted codes
       @private
     */
-    _concludeCurrentSearchProcess: function () {
-      var currentSearchResults = this.get('currentSearchResults');
-      var currentFetchingFileNode = this.get('currentFetchingFileNode');
-
-      var searchResults = currentSearchResults.getPath('firstObject.searchTreeItemChildren');
-      currentFetchingFileNode.updateParentSearchResults(searchResults.get('length'));
-      searchResults.setEach('_parentNode', currentFetchingFileNode);
-      searchResults.setEach('_ancestorFileNode', currentFetchingFileNode);
-      currentFetchingFileNode.set('searchResults', searchResults);
-      Multivio.searchTreeController.update();
-    },
-
     _concludeSearchProcess: function (statusMessage, statusCode) {
       Multivio.setPath('searchTreeController.msgStatus', statusMessage);
       Multivio.setPath('searchTreeController.loadingStatus', statusCode);

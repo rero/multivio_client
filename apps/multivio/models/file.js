@@ -29,7 +29,7 @@
     they have no children, and will never have
   - **fetchable** nodes: these are (temporarily) leaf nodes which are
     descendant of a **structural** file node; the fact that they are fetchable
-    means that they link to file nodes that have not yet been loaded into the
+    means that they link to a file node that has not yet been loaded into the
     tree, and can thus be fetched; for example, a node corresponding to an XML
     DC file contains children that point each to a **content** file (e.g.
     PDFs), that will only be loaded later into the tree;
@@ -110,10 +110,15 @@ Multivio.FileRecord = SC.Record.extend({
 
   /**
     @field
-    @private
-    @type Array
+    
+    The child of a fetchable node - there is only one of them
+    @type FileRecord
   */
-  _children: null,
+  fetchableChild: null,
+  
+  /**
+    field
+  */
   treeItemIsExpanded: NO,
 
 
@@ -270,12 +275,14 @@ Multivio.FileRecord = SC.Record.extend({
   }.property('isFile', 'isFinal', 'children').cacheable(),
 
   /**
-    @param Array children
+    Append the child to a fetchable node (fetchable nodes have a single child)
+
+    @param FileRecord child
     @returns Boolean
   */
-  appendChildren: function (children) {
-    if (!this.get('_children')) {
-      this.set('_children', children);
+  appendFetchableChild: function (child) {
+    if (!this.get('fetchableChild')) {
+      this.set('fetchableChild', child);
       this.notifyPropertyChange('treeItemChildren');
       this.get('_parentNode').notifyPropertyChange('treeItemChildren');
       this.set('treeItemIsExpanded', YES);
@@ -360,8 +367,8 @@ Multivio.FileRecord = SC.Record.extend({
         if (Multivio.store.storeKeyExists(Multivio.FileRecord, guid)) {
           tmp = Multivio.store.find(Multivio.FileRecord, guid);
           SC.Logger.warn('fusion');
-          if (tmp.get('_children')) {
-            var fileNode = tmp.get('_children')[0];
+          if (tmp.get('fetchableChild')) {
+            var fileNode = tmp.get('fetchableChild');
             fileNode.title = tmp.get('title');
             tmp = fileNode;
           }
@@ -381,12 +388,12 @@ Multivio.FileRecord = SC.Record.extend({
 
     //current node is not final and has no children property yet
     //fetch from the server!
-    if (this.get('_children')) {
-      return this.get('_children');
+    if (this.get('fetchableChild')) {
+      return this.get('fetchableChild');
     }
     return null;
 
-  }.property('children', '_children', '_ancestoreFileNode').cacheable(),
+  }.property('children', 'fetchableChild', '_ancestoreFileNode').cacheable(),
   
 
   /**
@@ -481,19 +488,27 @@ Multivio.FileRecord = SC.Record.extend({
 
   /**
     @field
-    @type Boolean
-    TODO MOM : return type is inconsistent
+    @type FileRecord
   */
-  hasNextFile: function () {
-    
+  nextFile: function () {
     if (!this.get('isFile')) {
-      return NO;
+      return null;
     }
-
     //rootNode
     return this._nextFile(this, null);
   }.property('isContent', '_ancestorFileNode', 'treeItemChildren'),
 
+  /**
+    @field
+    @type Boolean
+  */
+  hasNextFile: function () {
+    return this.get('nextFile') !== null;
+  }.property('nextFile').cacheable(),
+
+  /**
+    @field
+  */
   lastChild: function () {
     
     if (!this.get('isFile')) {

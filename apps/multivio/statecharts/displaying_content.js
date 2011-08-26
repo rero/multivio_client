@@ -18,11 +18,11 @@
   @extends SC.State
   @since 1.0
 */
-Multivio.DisplayingContent = SC.State.extend({
-  /** @scope Multivio.DisplayingContent.prototype */
+Multivio.DisplayingContentState = SC.State.extend({
+  /** @scope Multivio.DisplayingContentState.prototype */
 
   /**
-    @default SC.State displayingDummy
+    @default SC.State dispatchingContent
   */
   initialSubstate: 'dispatchingContent',
 
@@ -39,7 +39,7 @@ Multivio.DisplayingContent = SC.State.extend({
   },
 
   /**
-    Goes to the file indicated in the URL
+    Sets the current file as the one indicated in the URL
     
     @param {String} url The URL of the destination file
   */
@@ -57,7 +57,7 @@ Multivio.DisplayingContent = SC.State.extend({
     Goes to the next file in the document structure
   */
   goToNextFile: function () {
-    var next = Multivio.currentFileNodeController.get('hasNextFile');
+    var next = Multivio.currentFileNodeController.get('nextFile');
     if (next) {
       Multivio.currentFileNodeController.set('currentIndex', 1);
       Multivio.currentFileNodeController.set('treeItemIsExpanded', NO);
@@ -87,12 +87,17 @@ Multivio.DisplayingContent = SC.State.extend({
   },
 
   /**
-    SUBSTATE DECLARATION
+    SUBSTATE DECLARATION (transient)
     
-    Dummy state used as initial substate
+    Active while choosing the destination state according to the content type
+    of the current file
     @type SC.State
   */
   dispatchingContent: SC.State.design({
+
+    /**
+      STATE EVENT (transient)
+    */
     enterState: function (fileNode) {
       if (fileNode) {
         //open the node in the tree
@@ -121,6 +126,7 @@ Multivio.DisplayingContent = SC.State.extend({
           this.gotoState('displayingImage', fileNode);
           return;
         }
+        // STATE TRANSITION
         this.gotoState('displayingUnsupported');
       }
     }
@@ -177,6 +183,8 @@ Multivio.DisplayingContent = SC.State.extend({
     },
 
     /**
+      STATE EVENT (internal)
+
       Goes to the next page, image, ... in the current sequence
       @returns Boolean YES if successful
     */
@@ -190,6 +198,8 @@ Multivio.DisplayingContent = SC.State.extend({
     },
 
     /**
+      STATE EVENT (internal)
+
       Goes to the previous page, image, ... in the current sequence
       @returns Boolean YES if successful
     */
@@ -223,7 +233,7 @@ Multivio.DisplayingContent = SC.State.extend({
     @type SC.State
   */
   displayingImage: SC.State.design({
-    /** @scope Multivio.DisplayingContent.displayingImage.prototype */
+    /** @scope Multivio.DisplayingContentState.displayingImage.prototype */
 
     /** */
     enterState: function (fileNode) {
@@ -261,7 +271,7 @@ Multivio.DisplayingContent = SC.State.extend({
     @type SC.State
   */
   displayingUnsupported: SC.State.design({
-    /** @scope Multivio.DisplayingContent.displayingUnsupported.prototype */
+    /** @scope Multivio.DisplayingContentState.displayingUnsupported.prototype */
 
     /** */
     enterState: function () {
